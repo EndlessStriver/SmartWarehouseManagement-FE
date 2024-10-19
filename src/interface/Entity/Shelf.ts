@@ -6,6 +6,7 @@ interface Shelf {
     name: string;
     maxColumns: number;
     maxLevels: number;
+    typeShelf: string;
 }
 
 export default Shelf;

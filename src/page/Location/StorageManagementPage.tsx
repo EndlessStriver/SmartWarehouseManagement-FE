@@ -1,6 +1,6 @@
 import React from "react";
 import './css/ShelfDetails.css';
-import Shelf from "../../interface/Entity/Shelf";
+import Shelf from '../../interface/Entity/Shelf';
 import PaginationType from "../../interface/Pagination";
 import GetShelfs from "../../services/Location/GetShelfs";
 import { useDispatchMessage } from "../../Context/ContextMessage";
@@ -10,12 +10,17 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import './css/StorageManagementPage.css'
 import ShelfDetails from "./Compoments/ShelfDetails";
+import { Button, Table } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 
 const LocationPage: React.FC = () => {
 
     const dispatch = useDispatchMessage();
     const [shelfId, setShelfId] = React.useState<string>('')
     const [showShelfDetails, setShowShelfDetails] = React.useState<boolean>(false)
+    const [showModelCreateShelf, setShowModelCreateShelf] = React.useState<boolean>(false)
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [shelfList, setShelfList] = React.useState<Shelf[]>([]);
     const [pagination, setPagination] = React.useState<PaginationType>({
@@ -72,22 +77,52 @@ const LocationPage: React.FC = () => {
         setPagination({ ...pagination, offset: page })
     }
 
+    const handleUpdatePage = (page: PaginationType) => {
+        setPagination(page)
+    }
+
+    const handleUpdateListShelf = (shlefs: Shelf[]) => {
+        setShelfList(shlefs)
+    }
+
     const renderShelfs = shelfList.map((shelf: Shelf, index: number) => {
         return (
-            <div
-                onClick={() => {
-                    setShelfId(shelf.id)
-                    setShowShelfDetails(true)
-                }}
-                key={index}
-                className="btn btn-light shadow shelf d-flex justify-content-center align-items-center"
-            >
-                <div className="shelf-content">
-                    <div className="h4">{shelf.name}</div>
-                    <div className="shelf-description">Max Column: {shelf.maxColumns}</div>
-                    <div className="shelf-description">Max Level: {shelf.maxLevels}</div>
-                </div>
-            </div>
+            <tr>
+                <td>{index + 1}</td>
+                <td>{shelf.name}</td>
+                <td>{shelf.maxColumns}</td>
+                <td>{shelf.maxLevels}</td>
+                <td>{shelf.typeShelf}</td>
+                <td>
+                    <div className="d-flex flex-row gap-2">
+                        <Button
+                            onClick={() => {
+                                setShelfId(shelf.id)
+                                setShowShelfDetails(true)
+                            }}
+                            variant="info"
+                        >
+                            <FontAwesomeIcon icon={faEye} />
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                // Add your edit functionality here
+                            }}
+                            variant="primary"
+                        >
+                            <FontAwesomeIcon icon={faPencilAlt} />
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                // Add your delete functionality here
+                            }}
+                            variant="danger"
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </Button>
+                    </div>
+                </td>
+            </tr>
         )
     })
 
@@ -98,11 +133,28 @@ const LocationPage: React.FC = () => {
                     <h2 className={"h2 fw-bold"}>Shelf Management</h2>
                     <p className={"h6"}>Manager your shelf here</p>
                 </div>
+                <div>
+                    <Button onClick={() => {
+                        setShowModelCreateShelf(true)
+                    }} variant="info text-light fw-bold">+ NEW</Button>
+                </div>
             </div>
             <div className="d-flex justify-content-center">
-                <div className="shelf-container shadow rounded">
-                    {renderShelfs}
-                </div>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Shelf Name</th>
+                            <th>Max Column</th>
+                            <th>Max Level</th>
+                            <th>Type Shelf</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {renderShelfs}
+                    </tbody>
+                </Table>
             </div>
             {
                 isLoading && <SpinnerLoading />
@@ -125,6 +177,16 @@ const LocationPage: React.FC = () => {
                         setShelfId('')
                         setShowShelfDetails(false)
                     }}
+                />
+            }
+            {
+                showModelCreateShelf &&
+                <ModelCreateShelf
+                    onClose={() => {
+                        setShowModelCreateShelf(false)
+                    }}
+                    updatePage={handleUpdatePage}
+                    updateShelfList={handleUpdateListShelf}
                 />
             }
         </div>
