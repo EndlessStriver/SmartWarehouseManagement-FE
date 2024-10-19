@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import React from "react";
 import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
@@ -14,7 +14,6 @@ import { faCogs, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
-import GoodsQualityInspectionPage from "./compoments/ProcessStockEntry";
 
 const StockEntry: React.FC = () => {
 
@@ -88,49 +87,45 @@ const StockEntry: React.FC = () => {
 
     const listStockEntry = stockEntry.map((stockEntry) => {
         return (
-            <Card className="mb-3 shadow">
-                <Card.Body>
-                    <Row>
-                        <Col md={10}>
-                            <h5>{stockEntry.receiveCode} - {stockEntry.receiveBy}</h5>
-                            <p><strong>Received Date:</strong> {stockEntry.receiveDate}</p>
-                            <p><strong>Status:</strong> {renderTypeStatus(stockEntry.status)}</p>
-                            <p><strong>Description:</strong> {stockEntry.description}</p>
-                            <p><strong>Total Amount:</strong> {stockEntry.totalAmount}$</p>
-                        </Col>
-                        <Col md={2} className="d-flex align-items-center justify-content-center gap-2">
-                            <Button
-                                onClick={() => {
-                                    setStockEntryId(stockEntry.id);
-                                    setShowFormEdit(true);
-                                }}
-                                variant="primary"
-                                className="text-light fw-bold">
-                                <FontAwesomeIcon icon={faPencilAlt} />
-                            </Button>
+            <div className="mb-3 shadow p-3 rounded">
+                <div>
+                    <h5>{stockEntry.receiveCode} - {stockEntry.receiveBy}</h5>
+                    <p><strong>Received Date:</strong> {stockEntry.receiveDate}</p>
+                    <p><strong>Status:</strong> {renderTypeStatus(stockEntry.status)}</p>
+                    <p><strong>Description:</strong> {stockEntry.description}</p>
+                    <p><strong>Total Amount:</strong> {stockEntry.totalAmount}$</p>
+                </div>
+                <div className="d-flex align-items-center justify-content-start gap-2">
+                    <Button
+                        onClick={() => {
+                            setStockEntryId(stockEntry.id);
+                            setShowFormEdit(true);
+                        }}
+                        variant="primary"
+                        className="text-light fw-bold">
+                        <FontAwesomeIcon icon={faPencilAlt} />
+                    </Button>
 
-                            <Button
-                                onClick={() => {
-                                    setStockEntryId(stockEntry.id);
-                                    setShowModelConfirmDelete(true);
-                                }}
-                                variant="danger"
-                                className="text-light fw-bold">
-                                <FontAwesomeIcon icon={faTrash} />
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    setShowHandleStockEntry(true);
-                                    setStockEntryId(stockEntry.id);
-                                }}
-                                variant="success"
-                                className="text-light fw-bold">
-                                <FontAwesomeIcon icon={faCogs} />
-                            </Button>
-                        </Col>
-                    </Row>
-                </Card.Body>
-            </Card>
+                    <Button
+                        onClick={() => {
+                            setStockEntryId(stockEntry.id);
+                            setShowModelConfirmDelete(true);
+                        }}
+                        variant="danger"
+                        className="text-light fw-bold">
+                        <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setShowHandleStockEntry(true);
+                            setStockEntryId(stockEntry.id);
+                        }}
+                        variant="success"
+                        className="text-light fw-bold">
+                        <FontAwesomeIcon icon={faCogs} />
+                    </Button>
+                </div>
+            </div>
         );
     });
 
@@ -164,7 +159,17 @@ const StockEntry: React.FC = () => {
                         Success
                     </Button>
                 </div>
-                <div className="border p-3 rounded" style={{ height: "700px", overflowY: "auto" }}>
+                <div
+                    className="border p-3 rounded"
+                    style={{
+                        height: "700px",
+                        overflowY: "auto",
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                        gridAutoRows: "300px",
+                        gap: "20px"
+                    }}
+                >
                     {listStockEntry}
                 </div>
             </div>
@@ -203,16 +208,6 @@ const StockEntry: React.FC = () => {
                         setShowModelConfirmDelete(false);
                     }}
                     loading={loadingDelete}
-                />
-            }
-            {
-                ShowHandleStockEntry &&
-                <GoodsQualityInspectionPage
-                    close={() => {
-                        setShowHandleStockEntry(false);
-                        setStockEntryId("");
-                    }}
-                    stockEntryId={stockEntryId}
                 />
             }
         </div>

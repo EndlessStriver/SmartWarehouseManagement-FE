@@ -7,4 +7,5 @@ export default interface ProductHeader {
     unit: string;
     description: string;
     productCode: string;
+    img: string;
 }

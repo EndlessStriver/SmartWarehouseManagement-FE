@@ -233,8 +233,17 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             <tr key={product.id} className={"text-center"} style={{ verticalAlign: "middle" }}>
                 <td>{index + 1}</td>
                 <td>
-                    <img src="https://via.placeholder.com/50" alt="product" className={"img-fluid"}
-                        width={80} height={80} />
+                    <img src={product.img || "https://via.placeholder.com/50"} 
+                    style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                        marginLeft: "auto",
+                        marginRight: "auto"
+                    }}
+                    alt="product" 
+                    />
                 </td>
                 <td>{product.name}</td>
                 <td>
@@ -436,7 +445,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         <FormGroup>
                             <Form.Label>Create Date</Form.Label>
                             <Form.Control
-                                type="date"
+                                type="datetime-local"
                                 value={createDate}
                                 className={"form-control py-3"}
                                 onChange={(e) => setCreateDate(e.target.value)}
