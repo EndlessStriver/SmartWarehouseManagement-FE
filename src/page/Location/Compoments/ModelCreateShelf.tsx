@@ -6,6 +6,7 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import PaginationType from "../../../interface/Pagination";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfs from "../../../services/Location/GetShelfs";
+import GetShelfById from "../../../services/Location/GetShelfById";
 
 interface ModelCreateShelfProps {
     onClose: () => void;
@@ -77,6 +78,7 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                             type="text" className="form-control p-3"
                             onChange={(e) => setShelfName(e.target.value)}
                             placeholder="Enter shelf name"
+                            value={shelfName}
                         />
                     </div>
                     <div>
@@ -85,6 +87,7 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                             type="number" className="form-control p-3"
                             onChange={(e) => setMaxColumn(parseInt(e.target.value))}
                             placeholder="Enter max column"
+                            value={maxColumn}
                         />
                     </div>
                     <div>
@@ -92,12 +95,14 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                         <input type="number" className="form-control p-3"
                             onChange={(e) => setMaxLevel(parseInt(e.target.value))}
                             placeholder="Enter max level"
+                            value={maxLevel}
                         />
                     </div>
                     <div>
                         <label htmlFor="typeShelf" className="form-label">Type Shelf</label>
                         <select className="form-select p-3"
                             onChange={(e) => setTypeShelf(e.target.value)}
+                            value={typeShelf}
                         >
                             <option value="">Choose a select...</option>
                             <option value="NORMAL">NORMAL</option>
@@ -114,9 +119,7 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                             onClick={() => handleCreateShelf()}
                             disabled={isLoading || shelfName === '' || maxColumn === 0 || maxLevel === 0 || typeShelf === ''}
                         >
-                            {
-                                isLoading ? "Creating..." : "Create Shelf"
-                            }
+                            {isLoading ? "Creating..." : "Create"}
                         </button>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { OverLay } from "../../../compoments/OverLay/OverLay"
-import { CloseButton } from "react-bootstrap";
+import { Badge, CloseButton } from "react-bootstrap";
 import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelfIdt";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
@@ -72,11 +72,17 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
         return (
             <div
                 key={index}
-                className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center"
+                className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"
             >
                 <div>
                     <div className="h4">{location.locationCode}</div>
                 </div>
+                {
+                    location.occupied ?
+                    <Badge className="position-absolute top-0 end-0" bg="danger">Occupied</Badge>
+                    :
+                    <Badge className="position-absolute top-0 end-0" bg="primary">Unoccupied</Badge>
+                }
             </div>
         )
     })
@@ -94,7 +100,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 <CloseButton
                     onClick={() => { props.close() }}
                     className="position-fixed bg-light"
-                    style={{ top: "15px", right: "15px" }}
+                    style={{ top: "15px", right: "15px", zIndex: "10000" }}
                 />
                 {renderLocation}
             </div>

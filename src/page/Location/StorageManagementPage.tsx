@@ -8,11 +8,10 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
-import './css/StorageManagementPage.css'
 import ShelfDetails from "./Compoments/ShelfDetails";
 import { Button, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 
 const LocationPage: React.FC = () => {
@@ -106,14 +105,6 @@ const LocationPage: React.FC = () => {
                         </Button>
                         <Button
                             onClick={() => {
-                                // Add your edit functionality here
-                            }}
-                            variant="primary"
-                        >
-                            <FontAwesomeIcon icon={faPencilAlt} />
-                        </Button>
-                        <Button
-                            onClick={() => {
                                 // Add your delete functionality here
                             }}
                             variant="danger"
@@ -184,6 +175,7 @@ const LocationPage: React.FC = () => {
                 <ModelCreateShelf
                     onClose={() => {
                         setShowModelCreateShelf(false)
+                        setShelfId('')
                     }}
                     updatePage={handleUpdatePage}
                     updateShelfList={handleUpdateListShelf}
