@@ -22,7 +22,7 @@ import UpdateStockEntryById from "../../../services/StockEntry/UpdateStockEntryB
 import PaginationType from "../../../interface/Pagination";
 import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
-
+import Pagination from '../../../compoments/Pagination/Pagination';
 interface FormEditStockEntryProps {
     handleClose: () => void;
     stockEntryId: string;
@@ -59,6 +59,12 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const [productItems, setProductItems] = React.useState<ProductItem[]>([]);
     const [loadingProducts, setLoadingProducts] = React.useState(false);
     const [showProductList, setShowProductList] = React.useState(true);
+    const [pagination, setPagination] = React.useState<PaginationType>({
+        totalPage: 1,
+        limit: 5,
+        offset: 0,
+        totalElementOfPage: 0
+    });
 
     const [loadingSubmit, setLoadingSubmit] = React.useState(false);
 
@@ -117,6 +123,12 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             GetProductsBySupplier(supplierSelected.value)
                 .then((res) => {
                     setProducts(res.data);
+                    setPagination({
+                        totalPage: res.totalPage,
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage
+                    });
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 }).finally(() => {
@@ -124,6 +136,33 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 })
         }
     }, [supplierSelected, dispatch])
+
+    React.useEffect(() => {
+        if (supplierSelected) {
+            setLoadingProducts(true);
+            GetProductsBySupplier(supplierSelected.value, {offset: pagination.offset})
+                .then((res) => {
+                    setProducts(res.data);
+                    setPagination({
+                        totalPage: res.totalPage,
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage
+                    });
+                }).catch((err) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                }).finally(() => {
+                    setLoadingProducts(false);
+                })
+        }
+    }, [supplierSelected, dispatch, pagination.offset])
+
+    const handleChangePage = (page: number) => {
+        setPagination({
+            ...pagination,
+            offset: page
+        });
+    }
 
     React.useEffect(() => {
         if (supplierSelected && stockEntryId === "") {
@@ -233,16 +272,16 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             <tr key={product.id} className={"text-center"} style={{ verticalAlign: "middle" }}>
                 <td>{index + 1}</td>
                 <td>
-                    <img src={product.img || "https://via.placeholder.com/50"} 
-                    style={{
-                        width: "100px",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "5px",
-                        marginLeft: "auto",
-                        marginRight: "auto"
-                    }}
-                    alt="product" 
+                    <img src={product.img || "https://via.placeholder.com/50"}
+                        style={{
+                            width: "100px",
+                            height: "100px",
+                            objectFit: "cover",
+                            borderRadius: "5px",
+                            marginLeft: "auto",
+                            marginRight: "auto"
+                        }}
+                        alt="product"
                     />
                 </td>
                 <td>{product.name}</td>
@@ -558,6 +597,14 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                             loadingProducts && (
                                                 <SpinnerLoading />
                                             )
+                                        }
+                                        {
+                                            products.length > 0 && 
+                                            <Pagination
+                                                currentPage={pagination?.offset}
+                                                totalPages={pagination?.totalPage}
+                                                onPageChange={handleChangePage}
+                                            />
                                         }
                                     </>
                                 ) : (

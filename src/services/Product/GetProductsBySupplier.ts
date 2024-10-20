@@ -10,7 +10,14 @@ interface ProductHeaderResponse {
     totalElementOfPage: number
 }
 
-const GetProductsBySupplier = async (supplierId: string): Promise<ProductHeaderResponse> => {
+interface GetProductBySupplierRequestPage {
+    limit?: number,
+    offset?: number,
+    order?: string,
+    orderBy?: string
+}
+
+const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<ProductHeaderResponse> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -23,7 +30,7 @@ const GetProductsBySupplier = async (supplierId: string): Promise<ProductHeaderR
             window.location.href = "/session-expired";
         }
 
-        const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=10&offset=1&order=ASC&orderBy=name`, {
+        const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=${pageRequest?.limit || 5}&offset=${pageRequest?.offset || 1}&order=${pageRequest?.order || "ASC"}&orderBy=${pageRequest?.orderBy || "name"}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
