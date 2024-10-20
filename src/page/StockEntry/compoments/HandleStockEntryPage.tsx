@@ -7,6 +7,7 @@ import ViewStockEntry from "./ViewStockEntry"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye } from "@fortawesome/free-solid-svg-icons"
 import ListProductStockEntry from "./ListProductStockEntry"
+import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDelete"
 
 interface HandleStockEntryPageProps {
     onClose: () => void

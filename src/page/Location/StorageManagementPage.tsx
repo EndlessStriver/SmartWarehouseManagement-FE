@@ -13,6 +13,8 @@ import { Button, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import ModelCreateShelf from "./Compoments/ModelCreateShelf";
+import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
+import DeleteShelf from "../../services/Location/DeleteShelf";
 
 const LocationPage: React.FC = () => {
 
@@ -20,7 +22,10 @@ const LocationPage: React.FC = () => {
     const [shelfId, setShelfId] = React.useState<string>('')
     const [showShelfDetails, setShowShelfDetails] = React.useState<boolean>(false)
     const [showModelCreateShelf, setShowModelCreateShelf] = React.useState<boolean>(false)
+    const [showModelConfirmDelete, setShowModelConfirmDelete] = React.useState<boolean>(false)
+
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [isLoadingDelete, setIsLoadingDelete] = React.useState<boolean>(false)
     const [shelfList, setShelfList] = React.useState<Shelf[]>([]);
     const [pagination, setPagination] = React.useState<PaginationType>({
         limit: 10,
@@ -84,6 +89,30 @@ const LocationPage: React.FC = () => {
         setShelfList(shlefs)
     }
 
+    const handleDeleteShelf = () => {
+        setIsLoadingDelete(true)
+        DeleteShelf(shelfId)
+            .then(() => {
+                return GetShelfs()
+            }).then((res) => {
+                setShelfList(res.data)
+                setPagination({
+                    limit: Number(res.limit),
+                    offset: Number(res.offset),
+                    totalPage: res.totalPage,
+                    totalElementOfPage: res.totalElementOfPage
+                })
+                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete shelf success" })
+                setShelfId('')
+                setShowModelConfirmDelete(false)
+            }).catch((error) => {
+                console.error(error)
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+            }).finally(() => {
+                setIsLoadingDelete(false)
+            }) 
+    }
+
     const renderShelfs = shelfList.map((shelf: Shelf, index: number) => {
         return (
             <tr>
@@ -105,7 +134,8 @@ const LocationPage: React.FC = () => {
                         </Button>
                         <Button
                             onClick={() => {
-                                // Add your delete functionality here
+                                setShelfId(shelf.id)
+                                setShowModelConfirmDelete(true)
                             }}
                             variant="danger"
                         >
@@ -179,6 +209,18 @@ const LocationPage: React.FC = () => {
                     }}
                     updatePage={handleUpdatePage}
                     updateShelfList={handleUpdateListShelf}
+                />
+            }
+            {
+                showModelConfirmDelete &&
+                <ModelConfirmDelete
+                    message="Are you sure you want to delete this shelf?"
+                    onClose={() => {
+                        setShowModelConfirmDelete(false)
+                        setShelfId('')
+                    }}
+                    loading={isLoadingDelete}
+                    onConfirm={handleDeleteShelf}
                 />
             }
         </div>
