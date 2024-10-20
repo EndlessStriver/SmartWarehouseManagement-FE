@@ -48,7 +48,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const [supplierSelected, setSupplierSelected] = React.useState<OptionType | null>(null);
     const [loadingSuppliers, setLoadingSuppliers] = React.useState(false);
 
-    const [createDate, setCreateDate] = React.useState(new Date().toISOString().split("T")[0]);
+    const [createDate, setCreateDate] = React.useState("");
     const [address, setAddress] = React.useState("");
     const [phoneNumber, setPhoneNumber] = React.useState("");
     const [descriptionDefault, setDescriptionDefault] = React.useState("");
@@ -67,6 +67,13 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     });
 
     const [loadingSubmit, setLoadingSubmit] = React.useState(false);
+
+    React.useEffect(() => {
+        const now = new Date();
+        now.setHours(now.getHours() + 7);
+        const formattedDate = now.toISOString().slice(0, 16);
+        setCreateDate(formattedDate);
+    }, []);
 
     React.useEffect(() => {
         if (stockEntryId) {
@@ -575,6 +582,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                             {
                                 showProductList ? (
                                     <>
+                                        <input type="search" placeholder="Search product..." className="form-control mb-3" />
                                         <Table striped bordered hover responsive>
                                             <thead>
                                                 <tr style={{ textAlign: "center" }}>

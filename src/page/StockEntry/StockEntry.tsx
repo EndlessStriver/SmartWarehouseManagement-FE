@@ -14,6 +14,7 @@ import { faCogs, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
+import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 
 const StockEntry: React.FC = () => {
 
@@ -208,6 +209,16 @@ const StockEntry: React.FC = () => {
                         setShowModelConfirmDelete(false);
                     }}
                     loading={loadingDelete}
+                />
+            }
+            {
+                ShowHandleStockEntry &&
+                <HandleStockEntryPage
+                    onClose={() => {
+                        setShowHandleStockEntry(false);
+                        setStockEntryId("");
+                    }}
+                    stockEntryId={stockEntryId}
                 />
             }
         </div>
