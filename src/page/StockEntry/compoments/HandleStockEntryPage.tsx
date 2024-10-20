@@ -6,6 +6,7 @@ import React from "react"
 import ViewStockEntry from "./ViewStockEntry"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye } from "@fortawesome/free-solid-svg-icons"
+import ListProductStockEntry from "./ListProductStockEntry"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -17,6 +18,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const dispatch = useDispatchMessage();
     const profile = GetProfile();
     const [showViewStockEntry, setShowViewStockEntry] = React.useState<boolean>(false);
+    const [showListProductStockEntry, setShowListProductStockEntry] = React.useState<boolean>(false);
     const [createDate, setCreateDate] = React.useState<string>("");
 
     React.useEffect(() => {
@@ -48,7 +50,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                             className="form-control p-3"
                             placeholder="Enter goods inspector"
                             value={profile?.fullName}
-                            disabled={true}
+                            readOnly
+                            disabled
                         />
                     </div>
                     <div className="w-100">
@@ -57,12 +60,15 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                             type="datetime-local"
                             className="form-control p-3"
                             value={createDate}
+                            onChange={(e) => setCreateDate(e.target.value)}
                         />
                     </div>
                 </div>
                 <div>
                     <div className="d-flex flex-row justify-content-end align-items-center p-2">
-                        <Button variant="primary" className="text-light fw-bold">Add Product Check</Button>
+                        <Button onClick={() => {
+                            setShowListProductStockEntry(true);
+                        }} variant="primary" className="text-light fw-bold">Add Item Check</Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>
@@ -88,6 +94,15 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     onClose={() => {
                         setShowViewStockEntry(false);
                     }}
+                />
+            }
+            {
+                showListProductStockEntry &&
+                <ListProductStockEntry
+                    onClose={() => {
+                        setShowListProductStockEntry(false);
+                    }}
+                    stockEntryId={props.stockEntryId}
                 />
             }
         </OverLay>
