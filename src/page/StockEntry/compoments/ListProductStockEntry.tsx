@@ -5,11 +5,14 @@ import React from "react"
 import GetListItemByStockEntryId from '../../../services/StockEntry/GetListItemByStockEntryId';
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 
 interface ListProductStockEntryProps {
     onClose: () => void
     stockEntryId: string
+    addProductCheck: (productCheck: any) => void
 }
 
 const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
@@ -24,13 +27,13 @@ const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
             })
             .catch(err => {
                 console.error(err);
-                dispatch({type: ActionTypeEnum.ERROR, message: err.message})
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
             })
     }, [dispatch, props.stockEntryId]);
 
     return (
         <OverLay>
-            <div className="bg-white rounded" style={{width: "700px"}}>
+            <div className="bg-white rounded" style={{ width: "700px" }}>
                 <div className="d-flex justify-content-between align-items-center p-3">
                     <h2 className="fw-bold">List Product Stock Entry</h2>
                     <CloseButton onClick={props.onClose} />
@@ -51,7 +54,28 @@ const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
                                         <td>{index + 1}</td>
                                         <td>{item.product.name}</td>
                                         <td>
-                                            <button className="btn btn-primary">Add Check</button>
+                                            <div className="d-flex gap-2">
+                                                <button
+                                                    onClick={() => {
+                                                        props.addProductCheck({
+                                                            id: item.id,
+                                                            productName: item.product.name,
+                                                            quantity: 0,
+                                                            productStatus: "",
+                                                            location: ""
+                                                        })
+                                                        props.onClose();
+                                                    }}
+                                                    className="btn btn-primary"
+                                                >
+                                                    <FontAwesomeIcon icon={faCheck} /> Add
+                                                </button>
+                                                <button
+                                                    className="btn btn-danger"
+                                                >
+                                                    <FontAwesomeIcon icon={faExclamationTriangle} /> Add
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
