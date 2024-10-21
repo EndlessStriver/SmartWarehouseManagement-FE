@@ -1,4 +1,4 @@
-import { Button, CloseButton, Table } from "react-bootstrap"
+import { Button, CloseButton, Col, Row, Table } from "react-bootstrap"
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import GetProfile from "../../../util/GetProfile"
@@ -69,23 +69,30 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     <div className="d-flex flex-row justify-content-end align-items-center p-2">
                         <Button onClick={() => {
                             setShowListProductStockEntry(true);
-                        }} variant="primary" className="text-light fw-bold">Add Item Check</Button>
+                        }} variant="primary" className="text-light fw-bold">Add Item Check Or Issule</Button>
                     </div>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Product Status</th>
-                                <th>Location</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <Row>
+                        <Col>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Product Status</th>
+                                        <th>Location</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                        </tbody>
-                    </Table>
+                                </tbody>
+                            </Table>
+                        </Col>
+                        <Col>
+                            
+                        </Col>
+                    </Row>
                 </div>
             </div>
             {
