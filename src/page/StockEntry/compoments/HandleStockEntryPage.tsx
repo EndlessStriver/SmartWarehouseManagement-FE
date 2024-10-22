@@ -1,4 +1,4 @@
-import { Button, CloseButton, Col, Row, Table } from "react-bootstrap"
+import { Button, CloseButton, Table } from "react-bootstrap"
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import GetProfile from "../../../util/GetProfile"
@@ -8,10 +8,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faMapMarkerAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
 import ListProductStockEntry from "./ListProductStockEntry"
 import { NoData } from "../../../compoments/NoData/NoData"
+import ListShelf from "./ListShelf"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
     stockEntryId: string
+}
+
+interface IncidentLog {
+    description: string,
+    reportBy: string,
+    actionTaken: string
 }
 
 interface ProductCheck {
@@ -23,14 +30,17 @@ interface ProductCheck {
         id: string
         name: string
     }
+    incidentLog: IncidentLog | null
 }
 
 const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
     const dispatch = useDispatchMessage();
     const profile = GetProfile();
+    const [currentIndex, setCurrentIndex] = React.useState<number>(-1);
     const [showViewStockEntry, setShowViewStockEntry] = React.useState<boolean>(false);
     const [showListProductStockEntry, setShowListProductStockEntry] = React.useState<boolean>(false);
+    const [showListShelf, setShowListShelf] = React.useState<boolean>(false);
     const [createDate, setCreateDate] = React.useState<string>("");
     const [productChecks, setProductChecks] = React.useState<ProductCheck[]>([]);
 
@@ -44,6 +54,16 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const handleAddProductCheck = (productCheck: ProductCheck) => {
         setProductChecks([...productChecks, productCheck]);
     }
+
+    const handleSetLocation = (nameLocation: string, locationId: string, index: number) => {
+        const newProductChecks = [...productChecks];
+        newProductChecks[index].location = {
+            id: locationId,
+            name: nameLocation
+        }
+        setProductChecks(newProductChecks);
+    }
+
 
     return (
         <OverLay className="disabled-padding">
@@ -85,89 +105,109 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     <div className="d-flex flex-row justify-content-end align-items-center p-2">
                         <Button onClick={() => {
                             setShowListProductStockEntry(true);
-                        }} variant="primary" className="text-light fw-bold">Add Product & Resolve Issue</Button>
+                        }} variant="primary" className="text-light fw-bold">Add Product Check</Button>
                     </div>
-                    <Row>
-                        <Col sm={7}>
-                            <h6 className="fw-bold">Product Check</h6>
-                            <Table striped bordered hover>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Product Name</th>
-                                        <th>Quantity</th>
-                                        <th>Product Status</th>
-                                        <th>Location</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        productChecks.map((productCheck, index) => (
-                                            <tr key={productCheck.id}>
-                                                <td>{index + 1}</td>
-                                                <td>{productCheck.productName}</td>
-                                                <td style={{ width: "120px" }}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control"
-                                                        value={productCheck.quantity}
-                                                        onChange={(e) => {
-                                                            const newProductChecks = [...productChecks];
-                                                            newProductChecks[index].quantity = parseInt(e.target.value);
-                                                            setProductChecks(newProductChecks);
-                                                        }}
-                                                    />
-                                                </td>
-                                                <td>
-                                                    <select
-                                                        className="form-select"
-                                                        value={productCheck.productStatus}
-                                                        onChange={(e) => {
-                                                            const newProductChecks = [...productChecks];
-                                                            newProductChecks[index].productStatus = e.target.value;
-                                                            setProductChecks(newProductChecks);
-                                                        }}
-                                                    >
-                                                        <option value="">-- Select a status --</option>
-                                                        <option value="NORMAL">NORMAL</option>
-                                                        <option value="DAMAGED">DAMAGED</option>
-                                                        <option value="MISSING">MISSING</option>
-                                                    </select>
-                                                </td>
-                                                <td className="text-center">
-                                                    <button className="btn btn-light shadow">
-                                                        <FontAwesomeIcon icon={faMapMarkerAlt} />
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <Button
-                                                        variant="danger"
-                                                        className="text-light"
-                                                        onClick={() => {
-                                                            const newProductChecks = [...productChecks];
-                                                            newProductChecks.splice(index, 1);
-                                                            setProductChecks(newProductChecks);
-                                                        }}
-                                                    >
-                                                        <FontAwesomeIcon icon={faTrash} />
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    }
-                                </tbody>
-                            </Table>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Product Status</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {
-                                productChecks.length === 0 &&
-                                <NoData />
+                                productChecks.map((productCheck, index) => (
+                                    <tr key={productCheck.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{productCheck.productName}</td>
+                                        <td style={{ width: "200px" }}>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                value={productCheck.quantity}
+                                                onChange={(e) => {
+                                                    const newProductChecks = [...productChecks];
+                                                    newProductChecks[index].quantity = parseInt(e.target.value);
+                                                    setProductChecks(newProductChecks);
+                                                }}
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                className="form-select"
+                                                value={productCheck.productStatus}
+                                                onChange={(e) => {
+                                                    const newProductChecks = [...productChecks];
+                                                    newProductChecks[index].productStatus = e.target.value;
+                                                    setProductChecks(newProductChecks);
+                                                }}
+                                            >
+                                                <option value="">-- Select a status --</option>
+                                                <option value="NORMAL">NORMAL</option>
+                                                <option value="DAMAGED">DAMAGED</option>
+                                                <option value="MISSING">MISSING</option>
+                                                <option value="SURPLUS">SURPLUS</option>
+                                            </select>
+                                        </td>
+                                        <td className="d-flex gap-2">
+                                            {
+                                                (productCheck.productStatus === "" || productCheck.productStatus === "MISSING") ?
+                                                    <span>---</span>
+                                                    :
+                                                    <>
+                                                        {
+                                                            productCheck.location !== null ?
+                                                                <div className="d-flex justify-content-center align-items-center gap-3">
+                                                                    <span>{productCheck.location.name}</span>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setCurrentIndex(index);
+                                                                            setShowListShelf(true);
+                                                                        }}
+                                                                        className="btn btn-light shadow"
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faMapMarkerAlt} />
+                                                                    </button>
+                                                                </div>
+                                                                : <button
+                                                                    onClick={() => {
+                                                                        setCurrentIndex(index);
+                                                                        setShowListShelf(true);
+                                                                    }}
+                                                                    className="btn btn-light shadow"
+                                                                >
+                                                                    <FontAwesomeIcon icon={faMapMarkerAlt} />
+                                                                </button>
+                                                        }
+                                                    </>
+                                            }
+                                        </td>
+                                        <td>
+                                            <Button
+                                                variant="danger"
+                                                className="text-light"
+                                                onClick={() => {
+                                                    const newProductChecks = [...productChecks];
+                                                    newProductChecks.splice(index, 1);
+                                                    setProductChecks(newProductChecks);
+                                                }}
+                                            >
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))
                             }
-                        </Col>
-                        <Col sm={5}>
-                            <h6 className="fw-bold">Product Issue</h6>
-                            <NoData />
-                        </Col>
-                    </Row>
+                        </tbody>
+                    </Table>
+                    {
+                        productChecks.length === 0 &&
+                        <NoData />
+                    }
                 </div>
             </div>
             {
@@ -187,6 +227,17 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     }}
                     stockEntryId={props.stockEntryId}
                     addProductCheck={handleAddProductCheck}
+                />
+            }
+            {
+                showListShelf &&
+                <ListShelf
+                    onClose={() => {
+                        setShowListShelf(false);
+                        setCurrentIndex(-1);
+                    }}
+                    currentIndex={currentIndex}
+                    handleSetLocation={handleSetLocation}
                 />
             }
         </OverLay>

@@ -62,18 +62,14 @@ const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
                                                             productName: item.product.name,
                                                             quantity: 0,
                                                             productStatus: "",
-                                                            location: null
+                                                            location: null,
+                                                            incidentLog: null
                                                         })
                                                         props.onClose();
                                                     }}
                                                     className="btn btn-primary"
                                                 >
                                                     <FontAwesomeIcon icon={faCheck} /> Add
-                                                </button>
-                                                <button
-                                                    className="btn btn-danger"
-                                                >
-                                                    <FontAwesomeIcon icon={faExclamationTriangle} /> Add
                                                 </button>
                                             </div>
                                         </td>
