@@ -19,7 +19,10 @@ interface ProductCheck {
     productName: string
     quantity: number
     productStatus: string
-    location: string
+    location: {
+        id: string
+        name: string
+    }
 }
 
 const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {

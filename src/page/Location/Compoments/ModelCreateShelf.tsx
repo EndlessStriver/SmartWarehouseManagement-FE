@@ -6,7 +6,6 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import PaginationType from "../../../interface/Pagination";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfs from "../../../services/Location/GetShelfs";
-import GetShelfById from "../../../services/Location/GetShelfById";
 
 interface ModelCreateShelfProps {
     onClose: () => void;

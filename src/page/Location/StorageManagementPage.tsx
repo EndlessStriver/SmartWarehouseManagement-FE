@@ -9,12 +9,13 @@ import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import ShelfDetails from "./Compoments/ShelfDetails";
-import { Button, Table } from "react-bootstrap";
+import { Badge, Button, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteShelf from "../../services/Location/DeleteShelf";
+import './css/StorageManagementPage.css'
 
 const LocationPage: React.FC = () => {
 
@@ -110,40 +111,39 @@ const LocationPage: React.FC = () => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
             }).finally(() => {
                 setIsLoadingDelete(false)
-            }) 
+            })
     }
 
     const renderShelfs = shelfList.map((shelf: Shelf, index: number) => {
         return (
-            <tr>
-                <td>{index + 1}</td>
-                <td>{shelf.name}</td>
-                <td>{shelf.maxColumns}</td>
-                <td>{shelf.maxLevels}</td>
-                <td>{shelf.typeShelf}</td>
-                <td>
-                    <div className="d-flex flex-row gap-2">
-                        <Button
-                            onClick={() => {
-                                setShelfId(shelf.id)
-                                setShowShelfDetails(true)
-                            }}
-                            variant="info"
-                        >
-                            <FontAwesomeIcon icon={faEye} />
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                setShelfId(shelf.id)
-                                setShowModelConfirmDelete(true)
-                            }}
-                            variant="danger"
-                        >
-                            <FontAwesomeIcon icon={faTrash} />
-                        </Button>
-                    </div>
-                </td>
-            </tr>
+            <div
+                className="d-flex gap-1 flex-column justify-content-center align-items-center shadow btn btn-light position-relative"
+                key={index}
+                style={{ height: "250px" }}
+            >
+                <CloseButton
+                    className="position-absolute"
+                    style={{ top: "10px", right: "10px" }}
+                    onClick={() => {
+                        setShelfId(shelf.id)
+                        setShowModelConfirmDelete(true)
+                    }}
+                />
+                <h4 className="fw-bold">{shelf.name}</h4>
+                <h6>MaxColumns: {shelf.maxColumns}</h6>
+                <h6>MaxRows: {shelf.maxLevels}</h6>
+                <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
+                    {shelf.typeShelf}
+                </Badge>
+                <div
+                    onClick={() => {
+                        setShelfId(shelf.id)
+                        setShowShelfDetails(true)
+                    }}
+                >
+                    <FontAwesomeIcon icon={faEye} />
+                </div>
+            </div>
         )
     })
 
@@ -161,21 +161,14 @@ const LocationPage: React.FC = () => {
                 </div>
             </div>
             <div className="d-flex justify-content-center">
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Shelf Name</th>
-                            <th>Max Column</th>
-                            <th>Max Level</th>
-                            <th>Type Shelf</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {renderShelfs}
-                    </tbody>
-                </Table>
+                {
+                    shelfList.length > 0 ?
+                        <div className="shelf-container shadow rounded">
+                            {renderShelfs}
+                        </div>
+                        :
+                        <NoData />
+                }
             </div>
             {
                 isLoading && <SpinnerLoading />

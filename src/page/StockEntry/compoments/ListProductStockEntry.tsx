@@ -62,7 +62,7 @@ const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
                                                             productName: item.product.name,
                                                             quantity: 0,
                                                             productStatus: "",
-                                                            location: ""
+                                                            location: null
                                                         })
                                                         props.onClose();
                                                     }}
