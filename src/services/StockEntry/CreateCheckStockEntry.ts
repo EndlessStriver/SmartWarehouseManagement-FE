@@ -1,27 +1,22 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-export interface ReceiveItemCheckGoodsApi {
+interface ReceiveItem {
     receiveItemId: string;
-    receiveQuantity: string;
-    missingQuantity: string;
-    damagedQuantity: string;
-    status: string;
-    notes: string;
-    serverity: string,
-    actionTaken: string
+    receiveQuantity: number;
+    itemStatus: 'NORMAL' | 'DAMAGED' | 'MISSING' | 'SURPLUS';
+    locationId?: string;
 }
 
-export interface CreateReceiveCheckProps {
+export interface Receive {
     receiveId: string;
     receiveDate: string;
-    description: string;
     receiveBy: string;
     supplierId: string;
-    receiveItems: ReceiveItemCheckGoodsApi[];
+    receiveItems: ReceiveItem[];
 }
 
-const CreateReceiveCheck = async (data: CreateReceiveCheckProps): Promise<void> => {
+const CreateCheckStockEntry = async (data: Receive) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -55,4 +50,4 @@ const CreateReceiveCheck = async (data: CreateReceiveCheckProps): Promise<void> 
     }
 }
 
-export default CreateReceiveCheck;
+export default CreateCheckStockEntry;

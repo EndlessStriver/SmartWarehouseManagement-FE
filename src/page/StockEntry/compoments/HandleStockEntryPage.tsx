@@ -9,10 +9,15 @@ import { faEye, faMapMarkerAlt, faTrash } from "@fortawesome/free-solid-svg-icon
 import ListProductStockEntry from "./ListProductStockEntry"
 import { NoData } from "../../../compoments/NoData/NoData"
 import ListShelf from "./ListShelf"
+import GetStockEntryById from "../../../services/StockEntry/GetStockEntryById"
+import StockEntry from "../../../interface/Entity/StockEntry"
+import ActionTypeEnum from "../../../enum/ActionTypeEnum"
+import CreateCheckStockEntry, { Receive } from "../../../services/StockEntry/CreateCheckStockEntry"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
     stockEntryId: string
+    reload: () => void
 }
 
 interface IncidentLog {
@@ -33,6 +38,13 @@ interface ProductCheck {
     incidentLog: IncidentLog | null
 }
 
+enum ItemStatus {
+    NORMAL = "NORMAL",
+    DAMAGED = "DAMAGED",
+    MISSING = "MISSING",
+    SURPLUS = "SURPLUS"
+}
+
 const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
     const dispatch = useDispatchMessage();
@@ -43,6 +55,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [showListShelf, setShowListShelf] = React.useState<boolean>(false);
     const [createDate, setCreateDate] = React.useState<string>("");
     const [productChecks, setProductChecks] = React.useState<ProductCheck[]>([]);
+    const [stockEntry, setStockEntry] = React.useState<StockEntry>();
 
     React.useEffect(() => {
         const now = new Date();
@@ -50,6 +63,16 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         const formattedDate = now.toISOString().slice(0, 16);
         setCreateDate(formattedDate);
     }, []);
+
+    React.useEffect(() => {
+        GetStockEntryById(props.stockEntryId)
+            .then((response) => {
+                setStockEntry(response);
+            })
+            .catch((error) => {
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+            })
+    })
 
     const handleAddProductCheck = (productCheck: ProductCheck) => {
         setProductChecks([...productChecks, productCheck]);
@@ -64,6 +87,68 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         setProductChecks(newProductChecks);
     }
 
+    const validateProductCheck = () => {
+
+        for (let i = 0; i < productChecks.length; i++) {
+            if (productChecks[i].productStatus === "") {
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Please select product status" });
+                return false;
+            }
+
+            if (productChecks[i].productStatus !== "MISSING" && productChecks[i].location === null) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Please select location" });
+                return false;
+            }
+
+            if (productChecks[i].quantity <= 0 || isNaN(productChecks[i].quantity)) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Quantity must be greater than 0" });
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const validateProductCheckLocation = () => {
+        for (let i = 0; i < productChecks.length; i++) {
+            for (let j = 0; j < productChecks.length; j++) {
+                if (i !== j && productChecks[i].location.id === productChecks[j].location.id) {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: "Location must be unique" });
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    const handleSubmit = () => {
+        if (validateProductCheck() && validateProductCheckLocation()) {
+            const dataSubmit: Receive = {
+                receiveId: props.stockEntryId,
+                receiveDate: createDate,
+                receiveBy: profile?.fullName || "",
+                supplierId: stockEntry?.supplier.id || "",
+                receiveItems: productChecks.map((productCheck) => {
+                    return {
+                        receiveItemId: productCheck.id,
+                        receiveQuantity: productCheck.quantity,
+                        itemStatus: ItemStatus[productCheck.productStatus as keyof typeof ItemStatus],
+                        locationId: productCheck.location?.id
+                    }
+                })
+            }
+
+            CreateCheckStockEntry(dataSubmit)
+                .then(() => {
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create check stock entry successfully" });
+                    props.reload();
+                    props.onClose();
+                })
+                .catch((error) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                })
+        }
+    }
+
 
     return (
         <OverLay className="disabled-padding">
@@ -75,9 +160,19 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 />
                 <div className="d-flex justify-content-between align-items-center">
                     <h2 className="fw-bold">Handle Stock Entry</h2>
-                    <Button variant="info" className="text-light fw-bold" onClick={() => setShowViewStockEntry(true)}>
-                        <FontAwesomeIcon icon={faEye} className="me-2" /> Stock Entry
-                    </Button>
+                    <div className="d-flex gap-3">
+                        <Button variant="info" className="text-light" onClick={() => setShowViewStockEntry(true)}>
+                            <FontAwesomeIcon icon={faEye} className="me-2" /> Stock Entry
+                        </Button>
+                        <Button
+                            variant="primary"
+                            className="text-light"
+                            onClick={handleSubmit}
+                            disabled={productChecks.length === 0}
+                        >
+                            Create
+                        </Button>
+                    </div>
                 </div>
                 <div className="d-flex flex-row gap-3 w-100 mb-3">
                     <div className="w-100">
@@ -105,7 +200,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     <div className="d-flex flex-row justify-content-end align-items-center p-2">
                         <Button onClick={() => {
                             setShowListProductStockEntry(true);
-                        }} variant="primary" className="text-light fw-bold">Add Product Check</Button>
+                        }} variant="danger" className="text-light">Add Product Check</Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>

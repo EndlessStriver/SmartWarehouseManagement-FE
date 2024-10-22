@@ -75,8 +75,12 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         return (
             <div
                 onClick={() => {
-                    props.closeAll();
-                    props.handleSetLocation(location.locationCode, location.id, props.currentIndex)
+                    if (location.occupied) {
+                        dispatch({ type: ActionTypeEnum.ERROR, message: "Location is occupied" })
+                    } else {
+                        props.closeAll();
+                        props.handleSetLocation(location.locationCode, location.id, props.currentIndex)
+                    }
                 }}
                 key={index}
                 className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"

@@ -1,7 +1,6 @@
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import React from "react";
 import Pagination from "../../compoments/Pagination/Pagination";
-import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import PaginationType from "../../interface/Pagination";
 import ReceiveHeader from "../../interface/Entity/ReceiveHeader";
@@ -10,7 +9,7 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import FormEditStockEntry from "./compoments/FormEditStockEntry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCogs, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCogs, faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
@@ -19,6 +18,7 @@ import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 const StockEntry: React.FC = () => {
 
     const dispatch = useDispatchMessage();
+    const [reload, setReload] = React.useState<boolean>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [stockEntry, setStockEntry] = React.useState<ReceiveHeader[]>([]);
     const [stockEntryId, setStockEntryId] = React.useState<string>("");
@@ -49,11 +49,7 @@ const StockEntry: React.FC = () => {
             }).finally(() => {
                 setIsLoading(false);
             })
-    }, [dispatch]);
-
-    React.useEffect(() => {
-
-    }, [pagination.offset])
+    }, [dispatch, reload]);
 
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page });
@@ -86,47 +82,52 @@ const StockEntry: React.FC = () => {
         }
     }
 
-    const listStockEntry = stockEntry.map((stockEntry) => {
+    const listStockEntry = stockEntry.map((stockEntry, index) => {
         return (
-            <div className="mb-3 shadow p-3 rounded">
-                <div>
-                    <h5>{stockEntry.receiveCode} - {stockEntry.receiveBy}</h5>
-                    <p><strong>Received Date:</strong> {stockEntry.receiveDate}</p>
-                    <p><strong>Status:</strong> {renderTypeStatus(stockEntry.status)}</p>
-                    <p><strong>Description:</strong> {stockEntry.description}</p>
-                    <p><strong>Total Amount:</strong> {stockEntry.totalAmount}$</p>
-                </div>
-                <div className="d-flex align-items-center justify-content-start gap-2">
-                    <Button
-                        onClick={() => {
-                            setStockEntryId(stockEntry.id);
-                            setShowFormEdit(true);
-                        }}
-                        variant="primary"
-                        className="text-light fw-bold">
-                        <FontAwesomeIcon icon={faPencilAlt} />
-                    </Button>
-
-                    <Button
-                        onClick={() => {
-                            setStockEntryId(stockEntry.id);
-                            setShowModelConfirmDelete(true);
-                        }}
-                        variant="danger"
-                        className="text-light fw-bold">
-                        <FontAwesomeIcon icon={faTrash} />
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            setShowHandleStockEntry(true);
-                            setStockEntryId(stockEntry.id);
-                        }}
-                        variant="success"
-                        className="text-light fw-bold">
-                        <FontAwesomeIcon icon={faCogs} />
-                    </Button>
-                </div>
-            </div>
+            <tr key={stockEntry.id}>
+                <td>{index + 1}</td>
+                <td>{stockEntry.receiveCode}</td>
+                <td>{stockEntry.receiveBy}</td>
+                <td>{stockEntry.receiveDate}</td>
+                <td>{renderTypeStatus(stockEntry.status)}</td>
+                <td>{stockEntry.totalAmount}$</td>
+                <td>
+                    <div className="d-flex flex-row gap-2">
+                        {
+                            stockEntry.status === "PENDING" &&
+                            <>
+                                <Button onClick={() => {
+                                    setStockEntryId(stockEntry.id);
+                                    setShowHandleStockEntry(true);
+                                }} variant="info" size="sm">
+                                    <FontAwesomeIcon icon={faCogs} />
+                                </Button>
+                                <Button onClick={() => {
+                                    setStockEntryId(stockEntry.id);
+                                    setShowFormEdit(true);
+                                }} variant="primary" size="sm">
+                                    <FontAwesomeIcon icon={faPencilAlt} />
+                                </Button>
+                                <Button onClick={() => {
+                                    setStockEntryId(stockEntry.id);
+                                    setShowModelConfirmDelete(true);
+                                }} variant="danger" size="sm">
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </Button>
+                            </>
+                        }
+                        {
+                            stockEntry.status !== "PENDING" &&
+                            <Button onClick={() => {
+                                setStockEntryId(stockEntry.id);
+                                setShowFormEdit(true);
+                            }} variant="info" size="sm">
+                                <FontAwesomeIcon icon={faEye} />
+                            </Button>
+                        }
+                    </div>
+                </td>
+            </tr>
         );
     });
 
@@ -151,35 +152,27 @@ const StockEntry: React.FC = () => {
                     }} variant="info text-light fw-bold">+ NEW</Button>
                 </div>
             </div>
-            <div className="stock-entry-content-container">
-                <div className="px-3 d-flex flex-column gap-2">
-                    <Button variant="primary" className="w-100">
-                        Pending
-                    </Button>
-                    <Button variant="outline-primary" className="w-100">
-                        Success
-                    </Button>
-                </div>
-                <div
-                    className="border p-3 rounded"
-                    style={{
-                        height: "700px",
-                        overflowY: "auto",
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                        gridAutoRows: "300px",
-                        gap: "20px"
-                    }}
-                >
-                    {listStockEntry}
-                </div>
-            </div>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Receive Code</th>
+                        <th>Receive By</th>
+                        <th>Receive Date</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        listStockEntry
+                    }
+                </tbody>
+            </Table>
             {
                 stockEntry.length > 0 && <Pagination currentPage={pagination?.offset} totalPages={pagination?.totalPage}
                     onPageChange={handleChangePage} />
-            }
-            {
-                (stockEntry.length === 0) && !isLoading && <NoData />
             }
             {
                 isLoading && <SpinnerLoading />
@@ -219,6 +212,7 @@ const StockEntry: React.FC = () => {
                         setStockEntryId("");
                     }}
                     stockEntryId={stockEntryId}
+                    reload={() => setReload(!reload)}
                 />
             }
         </div>

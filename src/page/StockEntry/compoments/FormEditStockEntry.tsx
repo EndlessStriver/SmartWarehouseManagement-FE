@@ -23,6 +23,7 @@ import PaginationType from "../../../interface/Pagination";
 import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
 import Pagination from '../../../compoments/Pagination/Pagination';
+
 interface FormEditStockEntryProps {
     handleClose: () => void;
     stockEntryId: string;
@@ -65,7 +66,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         offset: 0,
         totalElementOfPage: 0
     });
-
+    const [statusStockEntry, setStatusStockEntry] = React.useState<string>("");
     const [loadingSubmit, setLoadingSubmit] = React.useState(false);
 
     React.useEffect(() => {
@@ -79,6 +80,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         if (stockEntryId) {
             GetStockEntryById(stockEntryId)
                 .then((res) => {
+                    console.log(res);
+                    setStatusStockEntry(res.status);
                     setDescription(res.description);
                     setDescriptionDefault(res.description);
                     setSupplierSelected({
@@ -147,7 +150,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     React.useEffect(() => {
         if (supplierSelected) {
             setLoadingProducts(true);
-            GetProductsBySupplier(supplierSelected.value, {offset: pagination.offset})
+            GetProductsBySupplier(supplierSelected.value, { offset: pagination.offset })
                 .then((res) => {
                     setProducts(res.data);
                     setPagination({
@@ -238,6 +241,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                 return item;
                             }));
                         }}
+                        disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                     />
                 </td>
                 <td style={{ verticalAlign: "middle" }}>
@@ -259,13 +263,18 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                 return item;
                             }));
                         }}
+                        disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                     />
                 </td>
                 <td style={{ minWidth: "150px" }}>
                     ${isNaN(product.quantity * product.price) ? 0 : (product.quantity * product.price).toFixed(2)}
                 </td>
                 <td>
-                    <button onClick={() => { handleDeleteItem(product.productId) }} className={"btn btn-danger"}>
+                    <button
+                        disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
+                        onClick={() => { handleDeleteItem(product.productId) }}
+                        className={"btn btn-danger"}
+                    >
                         <FontAwesomeIcon icon={faTrash} />
                     </button>
                 </td>
@@ -297,7 +306,11 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productItems.find((item) => item.productId === product.id) ? (
                             <span className={"badge bg-success py-2"}>Added</span>
                         ) : (
-                            <button onClick={() => { handleAddItem(product.id) }} className={"btn btn-primary"}>
+                            <button
+                                disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
+                                onClick={() => { handleAddItem(product.id) }}
+                                className={"btn btn-primary"}
+                            >
                                 <FontAwesomeIcon icon={faPlus} />
                             </button>
                         )
@@ -434,7 +447,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">{stockEntryId ? "Edit" : "New"} Stock Entry</h2>
+                        <h2 className="fw-bold mb-0">Stock Entry</h2>
                     </div>
                     <div>
                         {
@@ -449,27 +462,29 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                     Create
                                 </Button>
                             ) : (
-                                <div>
-                                    <Button
-                                        onClick={() => {
-                                            handleSubmit();
-                                        }}
-                                        variant="primary"
-                                        className="px-4"
-                                        disabled={!handleCheckChangeData()}
-                                    >
-                                        <FontAwesomeIcon icon={faSave} className="me-2" /> Save
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            handleClose();
-                                        }}
-                                        variant="secondary"
-                                        className="px-4 ms-2"
-                                    >
-                                        Cancel
-                                    </Button>
-                                </div>
+                                statusStockEntry === "PENDING" && (
+                                    <div>
+                                        <Button
+                                            onClick={() => {
+                                                handleSubmit();
+                                            }}
+                                            variant="primary"
+                                            className="px-4"
+                                            disabled={!handleCheckChangeData()}
+                                        >
+                                            <FontAwesomeIcon icon={faSave} className="me-2" /> Save
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                handleClose();
+                                            }}
+                                            variant="secondary"
+                                            className="px-4 ms-2"
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                )
                             )
                         }
                     </div>
@@ -491,6 +506,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         <FormGroup>
                             <Form.Label>Create Date</Form.Label>
                             <Form.Control
+                                disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                                 type="datetime-local"
                                 value={createDate}
                                 className={"form-control py-3"}
@@ -552,6 +568,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                             rows={4}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
+                            disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                         />
                     </FormGroup>
                 </Row>
@@ -607,7 +624,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                             )
                                         }
                                         {
-                                            products.length > 0 && 
+                                            products.length > 0 &&
                                             <Pagination
                                                 currentPage={pagination?.offset}
                                                 totalPages={pagination?.totalPage}

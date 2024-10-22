@@ -1,4 +1,4 @@
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 import axios from "axios";
 import ReceiveHeader from "../../interface/Entity/ReceiveHeader";
 
@@ -10,7 +10,7 @@ interface GetStockEntriesResponse {
     totalElementOfPage: number
 }
 
-const GetStockEntries = async ():Promise<GetStockEntriesResponse>  => {
+const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -34,7 +34,7 @@ const GetStockEntries = async ():Promise<GetStockEntriesResponse>  => {
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
