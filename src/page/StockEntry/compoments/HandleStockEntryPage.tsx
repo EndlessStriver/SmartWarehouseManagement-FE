@@ -72,7 +72,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
             .catch((error) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
             })
-    })
+    }, [props.stockEntryId, dispatch])
 
     const handleAddProductCheck = (productCheck: ProductCheck) => {
         setProductChecks([...productChecks, productCheck]);

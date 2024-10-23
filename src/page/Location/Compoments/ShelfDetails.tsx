@@ -5,6 +5,7 @@ import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelf
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import Location from "../../../interface/Entity/Location";
+import ModelLocationDetail from "./ModelLocationDetail";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -17,6 +18,8 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     const [locations, setLocations] = React.useState<Location[]>([]);
     const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
+    const [locationCode, setLocationCode] = React.useState<string>('');
+    const [showLocationDetail, setShowLocationDetail] = React.useState(false);
     const [startX, setStartX] = React.useState(0);
     const [startY, setStartY] = React.useState(0);
     const [scrollLeft, setScrollLeft] = React.useState(0);
@@ -71,17 +74,22 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     const renderLocation = locations.map((location, index) => {
         return (
             <div
+                onClick={() => {
+                    setLocationCode(location.locationCode)
+                    setShowLocationDetail(true)
+                }}
                 key={index}
                 className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"
             >
                 <div>
                     <div className="h4">{location.locationCode}</div>
+                    <div className="h6">Used {((location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
                 </div>
                 {
                     location.occupied ?
-                    <Badge className="position-absolute top-0 end-0" bg="danger">Occupied</Badge>
-                    :
-                    <Badge className="position-absolute top-0 end-0" bg="primary">Unoccupied</Badge>
+                        <Badge className="position-absolute top-0 end-0" bg="danger">Occupied</Badge>
+                        :
+                        <Badge className="position-absolute top-0 end-0" bg="primary">Unoccupied</Badge>
                 }
             </div>
         )
@@ -100,10 +108,20 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 <CloseButton
                     onClick={() => { props.close() }}
                     className="position-fixed bg-light"
-                    style={{ top: "15px", right: "15px", zIndex: "10000" }}
+                    style={{ top: "15px", right: "15px", zIndex: "3000" }}
                 />
                 {renderLocation}
             </div>
+            {
+                showLocationDetail &&
+                <ModelLocationDetail
+                    onClose={() => {
+                        setShowLocationDetail(false)
+                        setLocationCode('')
+                    }}
+                    locationCode={locationCode}
+                />
+            }
         </OverLay>
     )
 }
