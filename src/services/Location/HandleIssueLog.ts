@@ -1,19 +1,17 @@
-import { checkTokenExpired } from "../../util/DecodeJWT";
 import axios from "axios";
-import ReceiveHeader from "../../interface/Entity/ReceiveHeader";
+import { checkTokenExpired } from "../../util/DecodeJWT";
+import { ResponseError } from "../../interface/ResponseError";
+import { Incident } from "./GetIssueLogs";
 
-interface GetStockEntriesResponse {
-    data: ReceiveHeader[],
-    totalPage: number,
-    limit: number,
-    offset: number,
-    totalElementOfPage: number
+interface HandleIssueLogRequest {
+    status: "COMPLETED" | "CANCELLED";
+    actionTaken: string;
 }
 
-const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
+const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): Promise<Incident> => {
 
     try {
-        const HOST = process.env.REACT_APP_HOST_BE;
+        const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -24,13 +22,14 @@ const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
             window.location.href = "/session-expired";
         }
 
-        const response = await axios.get(`${HOST}/receives?limit=10&offset=1&order=DESC&orderBy=receiveDate`, {
+        const response = await axios.put(`${HOST}/incident-log/${issueLogId}`, data, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
+        })
 
         return response.data.data;
+
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {
@@ -39,13 +38,12 @@ const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An error occurred during registration.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
-
     }
 }
 
-export default GetStockEntries;
+export default HandleIssueLog;

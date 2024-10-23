@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faEye, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import Select from "react-select";
@@ -23,6 +23,7 @@ import PaginationType from "../../../interface/Pagination";
 import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
 import Pagination from '../../../compoments/Pagination/Pagination';
+import ViewReceiveCheck from "./ViewReceiveCheck";
 
 interface FormEditStockEntryProps {
     handleClose: () => void;
@@ -68,19 +69,26 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     });
     const [statusStockEntry, setStatusStockEntry] = React.useState<string>("");
     const [loadingSubmit, setLoadingSubmit] = React.useState(false);
+    const [showReceiveCheck, setShowReceiveCheck] = React.useState(false);
+
+    const getVietnamTime = (date: Date) => {
+        const vietnamTime = new Date(date.getTime() + (7 * 60 * 60 * 1000));
+        return vietnamTime.toISOString().slice(0, 16);
+    };
 
     React.useEffect(() => {
-        const now = new Date();
-        now.setHours(now.getHours() + 7);
-        const formattedDate = now.toISOString().slice(0, 16);
-        setCreateDate(formattedDate);
+        const currentDate = new Date();
+        setCreateDate(getVietnamTime(currentDate));
     }, []);
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCreateDate(e.target.value);
+    };
 
     React.useEffect(() => {
         if (stockEntryId) {
             GetStockEntryById(stockEntryId)
                 .then((res) => {
-                    console.log(res);
                     setStatusStockEntry(res.status);
                     setDescription(res.description);
                     setDescriptionDefault(res.description);
@@ -462,7 +470,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                     Create
                                 </Button>
                             ) : (
-                                statusStockEntry === "PENDING" && (
+                                statusStockEntry === "PENDING" ? (
                                     <div>
                                         <Button
                                             onClick={() => {
@@ -484,6 +492,17 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                             Cancel
                                         </Button>
                                     </div>
+                                ) : (
+                                    <Button
+                                        onClick={() => {
+                                            setShowReceiveCheck(true);
+                                        }}
+                                        variant="info"
+                                        className="px-4"
+                                    >
+                                        <FontAwesomeIcon icon={faEye} className="me-2" />
+                                        Received Check
+                                    </Button>
                                 )
                             )
                         }
@@ -510,7 +529,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                 type="datetime-local"
                                 value={createDate}
                                 className={"form-control py-3"}
-                                onChange={(e) => setCreateDate(e.target.value)}
+                                onChange={handleDateChange}
                             />
                         </FormGroup>
                     </Col>
@@ -665,6 +684,16 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     <SpinnerLoadingOverLayer />
                 }
             </Container>
+            {
+                showReceiveCheck && (
+                    <ViewReceiveCheck
+                        onClose={() => {
+                            setShowReceiveCheck(false);
+                        }}
+                        stockEntryId={stockEntryId}
+                    />
+                )
+            }
         </OverLay>
     );
 };

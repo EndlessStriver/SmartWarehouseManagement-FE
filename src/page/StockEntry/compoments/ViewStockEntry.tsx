@@ -17,15 +17,15 @@ const ViewStockEntry: React.FC<ViewStockEntryProps> = (props) => {
     const dispatch = useDispatchMessage();
 
     const formattedDate = stockEntry?.receiveDate
-    ? new Date(stockEntry.receiveDate).toLocaleString('vi-VN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-      })
-    : '';
+        ? new Date(stockEntry.receiveDate).toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        })
+        : '';
 
     React.useEffect(() => {
         GetStockEntryById(props.stockEntryId)
@@ -35,7 +35,7 @@ const ViewStockEntry: React.FC<ViewStockEntryProps> = (props) => {
                 console.error(err);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             })
-    }, [props.stockEntryId]);
+    }, [props.stockEntryId, dispatch]);
 
     return (
         <OverLay>
@@ -44,15 +44,30 @@ const ViewStockEntry: React.FC<ViewStockEntryProps> = (props) => {
                 <h1 className="fw-bold">View Stock Entry</h1>
                 <Row>
                     <Col>
-                        <p>Create By: {stockEntry?.receiveBy}</p>
-                        <p>Supplier Name: {stockEntry?.supplier.name}</p>
+                        <p>
+                            <span className="fw-bold">Create By: </span>
+                            {stockEntry?.receiveBy}
+                        </p>
+                        <p>
+                            <span className="fw-bold">Supplier Name: </span>
+                            {stockEntry?.supplier.name}
+                        </p>
                     </Col>
                     <Col>
-                        <p>Create Date: {formattedDate}</p>
-                        <p>Supplier Phone: {stockEntry?.supplier.phone}</p>
+                        <p>
+                            <span className="fw-bold">Create Date:  </span>
+                            {formattedDate}
+                        </p>
+                        <p>
+                            <span className="fw-bold">Supplier Phone: </span>
+                            {stockEntry?.supplier.phone}
+                        </p>
                     </Col>
                     <Row>
-                        <p>Supplier Address: {stockEntry?.supplier.address}</p>
+                        <p>
+                            <span className="fw-bold">Supplier Address: </span>
+                            {stockEntry?.supplier.address}
+                        </p>
                     </Row>
                 </Row>
                 <h6>List Product Orders</h6>

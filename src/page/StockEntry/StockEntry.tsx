@@ -88,7 +88,7 @@ const StockEntry: React.FC = () => {
                 <td>{index + 1}</td>
                 <td>{stockEntry.receiveCode}</td>
                 <td>{stockEntry.receiveBy}</td>
-                <td>{stockEntry.receiveDate}</td>
+                <td>{new Date(stockEntry.receiveDate).toLocaleDateString()}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
                 <td>{stockEntry.totalAmount}$</td>
                 <td>

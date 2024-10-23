@@ -19,6 +19,7 @@ import SessionExpiredPage from "./page/SessionExpired/SessionExpiredPage";
 import StockEntry from "./page/StockEntry/StockEntry";
 import ProfilePage from './page/Profile/ProfilePage';
 import LocationPage from './page/Location/StorageManagementPage';
+import IssueLog from './page/StockEntry/IssueLog';
 
 const router = createBrowserRouter([
     {
@@ -58,11 +59,15 @@ const router = createBrowserRouter([
                 element: <StockEntry />,
             },
             {
-                path: "/profile",
+                path: "issue-log",
+                element: <IssueLog />,
+            },
+            {
+                path: "profile",
                 element: <ProfilePage />,
             },
             {
-                path: "/location",
+                path: "location",
                 element: <LocationPage />,
             }
         ]

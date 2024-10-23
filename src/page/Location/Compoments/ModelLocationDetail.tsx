@@ -47,10 +47,16 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                 </div>
                 <Row className="mb-3">
                     <Col>
-                        <div>Max Capacity: {locationDetail?.maxCapacity}cm</div>
+                        <div>
+                            <span className="fw-semibold">Max Capacity: </span>
+                            {locationDetail?.maxCapacity}cm
+                        </div>
                     </Col>
                     <Col>
-                        <div>Current Capacity: {Number(locationDetail?.currentCapacity).toFixed(2)}cm</div>
+                        <div>
+                            <span className="fw-semibold">Current Capacity: </span>
+                            {Number(locationDetail?.currentCapacity).toFixed(2)}cm
+                        </div>
                     </Col>
                 </Row>
                 <h4>Product Information:</h4>
@@ -63,14 +69,32 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                         }} />
                     </div>
                     <Col>
-                        <div>SKU Code: {locationDetail?.skus?.skuCode || "Chưa có thông tin!"}</div>
-                        <div>Product Name: {locationDetail?.skus?.productDetails[0]?.product?.name || "Chưa có thông tin!"}</div>
-                        <div>Weight: {locationDetail?.skus?.weight + "g" || "Chưa có thông tin!"}</div>
+                        <div>
+                            <span className="fw-semibold">SKU Code: </span>
+                            {locationDetail?.skus?.skuCode || "Chưa có thông tin!"}
+                        </div>
+                        <div>
+                            <span className="fw-semibold">Product Name: </span>
+                            {locationDetail?.skus?.productDetails[0]?.product?.name || "Chưa có thông tin!"}
+                        </div>
+                        <div>
+                            <span className="fw-semibold">Weight: </span>
+                            {locationDetail?.skus?.weight + "g" || "Chưa có thông tin!"}
+                        </div>
                     </Col>
                     <Col>
-                        <div>Quantity: {locationDetail?.skus?.productDetails[0].quantity + "" || "Chưa có thông tin!"}</div>
-                        <div>Product Code: {locationDetail?.skus?.productDetails[0]?.product?.productCode || "Chưa có thông tin!"}</div>
-                        <div>Dimension: {locationDetail?.skus?.dimension + "cm" || "Chưa có thông tin!"}</div>
+                        <div>
+                            <span className="fw-semibold">Quantity: </span>
+                            {locationDetail?.skus?.productDetails[0].quantity + "" || "Chưa có thông tin!"}
+                        </div>
+                        <div>
+                            <span className="fw-semibold">Product Code: </span>
+                            {locationDetail?.skus?.productDetails[0]?.product?.productCode || "Chưa có thông tin!"}
+                        </div>
+                        <div>
+                            <span className="fw-semibold">Dimension: </span>
+                            {locationDetail?.skus?.dimension + "cm" || "Chưa có thông tin!"}
+                        </div>
                     </Col>
                 </Row>
             </div>

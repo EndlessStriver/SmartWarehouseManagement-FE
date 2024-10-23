@@ -24,6 +24,7 @@ export const Sidebar: React.FC = () => {
                     subItems={
                         [
                             { href: "/stock-entry", lable: "Stock Entry" },
+                            { href: "/issue-log", lable: "Issue Log" },
                         ]
                     }
                 />
