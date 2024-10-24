@@ -34,7 +34,7 @@ interface ProductCheck {
     location: {
         id: string
         name: string
-    }
+    } | null
     incidentLog: IncidentLog | null
 }
 
@@ -88,7 +88,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     }
 
     const validateProductCheck = () => {
-
         for (let i = 0; i < productChecks.length; i++) {
             if (productChecks[i].productStatus === "") {
                 dispatch({ type: ActionTypeEnum.ERROR, message: "Please select product status" });
@@ -111,13 +110,14 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const validateProductCheckLocation = () => {
         for (let i = 0; i < productChecks.length; i++) {
             for (let j = 0; j < productChecks.length; j++) {
-                if (i !== j && productChecks[i].location.id === productChecks[j].location.id) {
+                if (productChecks[i].location?.id === null || productChecks[j].location?.id === null) continue;
+                if (i !== j && productChecks[i].location?.id === productChecks[j].location?.id) {
                     dispatch({ type: ActionTypeEnum.ERROR, message: "Location must be unique" });
                     return false;
                 }
             }
+            return true;
         }
-        return true;
     }
 
     const handleSubmit = () => {
@@ -167,7 +167,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                         <Button
                             variant="primary"
                             className="text-light"
-                            onClick={handleSubmit}
+                            onClick={() => handleSubmit()}
                             disabled={productChecks.length === 0}
                         >
                             Create

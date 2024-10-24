@@ -234,7 +234,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     <Form.Control
                         type="number"
                         value={product.quantity}
-                        step={0.01}
                         min={0}
                         style={{ width: "150px", margin: "0 auto" }}
                         onChange={(e) => {

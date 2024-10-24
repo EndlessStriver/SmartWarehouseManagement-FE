@@ -70,7 +70,7 @@ const GetIssueLogs = async (data?: GetIssueLogsRequest): Promise<IncidentDataRes
             window.location.href = "/session-expired";
         }
 
-        const response = await axios.get(`${HOST}/incident-log?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || "ASC"}&orderBy=${data?.orderBy || "locationCode"}`, {
+        const response = await axios.get(`${HOST}/incident-log?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || "DESC"}&orderBy=${data?.orderBy || "incidentDate"}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
