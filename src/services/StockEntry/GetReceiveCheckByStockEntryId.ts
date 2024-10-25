@@ -1,7 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface IProduct {
+interface Product {
     id: string;
     create_at: string;
     update_at: string;
@@ -13,7 +13,7 @@ interface IProduct {
     img: string;
 }
 
-interface ISKU {
+interface Sku {
     id: string;
     create_at: string;
     update_at: string;
@@ -25,41 +25,47 @@ interface ISKU {
     description: string;
 }
 
-interface ICheckItem {
+interface Location {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    locationCode: string;
+    maxCapacity: string;
+    currentCapacity: string;
+    maxWeight: string;
+    currentWeight: string;
+    occupied: boolean;
+}
+
+interface CheckItem {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
     expectQuantity: number;
     receiveQuantity: number;
-    missingQuantity: number;
-    damagedQuantity: number;
     price: string;
     totalAmount: string;
-    notes: string;
-    serverity: string;
-    actionTaken: string;
-    status: string;
-    product: IProduct;
-    sku: ISKU;
+    itemStatus: string;
+    location: string;
+    product: Product;
+    sku: Sku;
+    locations: Location[];
 }
 
-interface IReceiving {
+export interface IReceiving {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
     receiveDate: string;
-    description: string;
     receiveBy: string;
     expectTotalAmount: string;
     totalAmount: string;
     totalExpectQuantity: number;
     totalReceiveQuantity: number;
-    totalMissingQuantity: number;
-    totalDamagedQuantity: number;
-    status: string;
-    checkItems: ICheckItem[];
+    checkItems: CheckItem[];
 }
 
 const GetReceiveCheckByStockEntryId = async (stockEntryId: string): Promise<IReceiving> => {

@@ -77,9 +77,11 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     };
 
     React.useEffect(() => {
-        const currentDate = new Date();
-        setCreateDate(getVietnamTime(currentDate));
-    }, []);
+        if (stockEntryId === "") {
+            const currentDate = new Date();
+            setCreateDate(getVietnamTime(currentDate));
+        }
+    }, [stockEntryId]);
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCreateDate(e.target.value);
@@ -89,6 +91,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         if (stockEntryId) {
             GetStockEntryById(stockEntryId)
                 .then((res) => {
+                    setCreateDate(getVietnamTime(new Date(res.receiveDate)));
                     setStatusStockEntry(res.status);
                     setDescription(res.description);
                     setDescriptionDefault(res.description);
@@ -183,12 +186,12 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     }
 
     React.useEffect(() => {
-        if (supplierSelected && stockEntryId === "") {
+        if (supplierSelected) {
             GetSupplierById(supplierSelected.value)
                 .then((res) => {
                     setAddress(res.address);
                     setPhoneNumber(res.phone);
-                    setProductItems([]);
+                    // setProductItems([]);
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 })
@@ -481,15 +484,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                         >
                                             <FontAwesomeIcon icon={faSave} className="me-2" /> Save
                                         </Button>
-                                        <Button
-                                            onClick={() => {
-                                                handleClose();
-                                            }}
-                                            variant="secondary"
-                                            className="px-4 ms-2"
-                                        >
-                                            Cancel
-                                        </Button>
                                     </div>
                                 ) : (
                                     <Button
@@ -500,7 +494,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                         className="px-4"
                                     >
                                         <FontAwesomeIcon icon={faEye} className="me-2" />
-                                        Received Check
+                                        Check
                                     </Button>
                                 )
                             )

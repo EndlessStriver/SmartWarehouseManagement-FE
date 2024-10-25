@@ -116,7 +116,12 @@ const IssueLog: React.FC = () => {
                             <td>{index + 1}</td>
                             <td>{issue.description}</td>
                             <td>{issue.actionTaken}</td>
-                            <td>
+                            <td
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                }}
+                            >
                                 <StatusBadge status={issue.status as StatusType} />
                             </td>
                             <td>{issue.incidentDate}</td>
