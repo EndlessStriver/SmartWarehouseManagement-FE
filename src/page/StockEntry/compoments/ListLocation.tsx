@@ -87,6 +87,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             >
                 <div>
                     <div className="h4">{location.locationCode}</div>
+                    <div className="h6">Used {((location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
                 </div>
                 {
                     location.occupied ?

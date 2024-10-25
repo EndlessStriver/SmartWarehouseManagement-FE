@@ -180,14 +180,12 @@ const LocationPage: React.FC = () => {
                 isLoading && <SpinnerLoading />
             }
             {
-                (shelfList.length > 0) ?
-                    <Pagination
-                        currentPage={pagination.offset}
-                        totalPages={pagination?.totalPage}
-                        onPageChange={handleChangePage}
-                    />
-                    :
-                    (!isLoading && <NoData />) || null
+                (shelfList.length > 0) &&
+                <Pagination
+                    currentPage={pagination.offset}
+                    totalPages={pagination?.totalPage}
+                    onPageChange={handleChangePage}
+                />
             }
             {
                 showShelfDetails && shelfId &&
