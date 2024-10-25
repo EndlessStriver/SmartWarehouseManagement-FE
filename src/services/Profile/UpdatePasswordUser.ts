@@ -18,16 +18,15 @@ const UpdatePasswordUser = async (data: UpdatePasswordUserProps): Promise<void> 
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/account/update-password`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/account/update-password`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

@@ -49,13 +49,15 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         setIsLoading(true);
         GetAttributeDetail({ id: attributeId, offset: pagination.offset })
             .then((response) => {
-                setAttributeValues(response.data);
-                setPagination({
-                    totalPage: response.totalPage,
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalElementOfPage: response.totalElementOfPage
-                });
+                if (response) {
+                    setAttributeValues(response.data);
+                    setPagination({
+                        totalPage: response.totalPage,
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalElementOfPage: response.totalElementOfPage
+                    });
+                }
             }).catch((error) => {
                 console.error(error);
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -71,16 +73,18 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                 .then(() => {
                     return GetAttributeDetail({ id: attributeId });
                 }).then((response) => {
-                    updateAttributeValues(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    setAttributeValueId("");
-                    setShowModelConfirmDelete(false);
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete attribute value successfully" });
+                    if (response) {
+                        updateAttributeValues(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        setAttributeValueId("");
+                        setShowModelConfirmDelete(false);
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete attribute value successfully" });
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });

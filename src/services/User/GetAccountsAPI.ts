@@ -2,7 +2,7 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Account } from "../../interface/Account";
 import Order from "../../enum/Order";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 enum OrderBy {
     Username = "username",
@@ -28,7 +28,7 @@ interface GetAccountsAPIProps {
     orderBy?: OrderBy;
 }
 
-const GetAccountsAPI = async (input?: GetAccountsAPIProps): Promise<ResponseGetAccounts> => {
+const GetAccountsAPI = async (input?: GetAccountsAPIProps): Promise<ResponseGetAccounts | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -40,19 +40,18 @@ const GetAccountsAPI = async (input?: GetAccountsAPIProps): Promise<ResponseGetA
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/account/ad?limit=${input?.limit || 10}&offset=${input?.offset || 1}&order=${input?.order || Order.ASC}&orderBy=${input?.orderBy || OrderBy.FullName}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/account/ad?limit=${input?.limit || 10}&offset=${input?.offset || 1}&order=${input?.order || Order.ASC}&orderBy=${input?.orderBy || OrderBy.FullName}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return response.data.data;
-
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

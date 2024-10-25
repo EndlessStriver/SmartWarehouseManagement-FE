@@ -1,34 +1,31 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface LogoutResponse {
     message: string;
 }
 
-const LogoutAPI = async (): Promise<LogoutResponse> => {
+const LogoutAPI = async (): Promise<LogoutResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");
-
         if (!token) {
             window.location.href = "/login";
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            return (await axios.post(`${HOST}/auth/logout`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })).data.data;
         }
-
-        return (await axios.post(`${HOST}/auth/logout`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })).data.data;
-
     } catch (error) {
-
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
@@ -38,7 +35,6 @@ const LogoutAPI = async (): Promise<LogoutResponse> => {
         } else {
             throw new Error("An unexpected error occurred.");
         }
-
     }
 }
 

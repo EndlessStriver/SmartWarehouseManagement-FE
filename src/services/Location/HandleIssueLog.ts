@@ -8,7 +8,7 @@ interface HandleIssueLogRequest {
     actionTaken: string;
 }
 
-const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): Promise<Incident> => {
+const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): Promise<Incident | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE
@@ -20,16 +20,15 @@ const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): 
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/incident-log/${issueLogId}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/incident-log/${issueLogId}`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

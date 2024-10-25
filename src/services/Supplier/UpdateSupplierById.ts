@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import FormDataSupplier from "../../interface/FormDataSupplier";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const UpdateSupplierById = async (supplierID: string, data: FormDataSupplier): Promise<void> => {
     try {
@@ -14,18 +14,18 @@ const UpdateSupplierById = async (supplierID: string, data: FormDataSupplier): P
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/suppliers/${supplierID}`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/suppliers/${supplierID}`, data, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

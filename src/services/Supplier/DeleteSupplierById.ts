@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const DeleteSupplierById = async (supplierID: string): Promise<void> => {
     try {
@@ -13,17 +13,18 @@ const DeleteSupplierById = async (supplierID: string): Promise<void> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
-        }
-        const response = await axios.delete(`${HOST}/suppliers/${supplierID}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        } else {
+            const response = await axios.delete(`${HOST}/suppliers/${supplierID}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        return response.data.data;
+            return response.data.data;
+        }
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

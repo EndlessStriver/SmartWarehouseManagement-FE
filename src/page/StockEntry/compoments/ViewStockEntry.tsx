@@ -88,7 +88,7 @@ const ViewStockEntry: React.FC<ViewStockEntryProps> = (props) => {
                                         <td>{index + 1}</td>
                                         <td>{item.product.name}</td>
                                         <td>{item.quantity}</td>
-                                        <td>{item.price}$</td>
+                                        <td>{Number(item.price).toLocaleString()}$</td>
                                     </tr>
                                 )
                             })

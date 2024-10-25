@@ -23,7 +23,7 @@ const ListProductStockEntry: React.FC<ListProductStockEntryProps> = (props) => {
     React.useEffect(() => {
         GetListItemByStockEntryId(props.stockEntryId)
             .then(data => {
-                setListImte(data);
+                if (data) setListImte(data);
             })
             .catch(err => {
                 console.error(err);

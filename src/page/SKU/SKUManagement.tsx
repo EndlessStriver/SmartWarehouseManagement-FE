@@ -26,13 +26,15 @@ export const SKUManagement: React.FC = () => {
         setIsLoading(true);
         GetSKUs()
             .then((data) => {
-                setSkuData(data.data);
-                setPagination({
-                    totalPage: data.totalPage,
-                    limit: data.limit,
-                    offset: data.offset,
-                    totalElementOfPage: data.totalElementOfPage
-                })
+                if (data) {
+                    setSkuData(data.data);
+                    setPagination({
+                        totalPage: data.totalPage,
+                        limit: data.limit,
+                        offset: data.offset,
+                        totalElementOfPage: data.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             }).finally(() => {
@@ -44,13 +46,15 @@ export const SKUManagement: React.FC = () => {
         setIsLoading(true);
         GetSKUs({ offset: pagination.offset })
             .then((data) => {
-                setSkuData(data.data);
-                setPagination({
-                    totalPage: data.totalPage,
-                    limit: data.limit,
-                    offset: data.offset,
-                    totalElementOfPage: data.totalElementOfPage
-                })
+                if (data) {
+                    setSkuData(data.data);
+                    setPagination({
+                        totalPage: data.totalPage,
+                        limit: data.limit,
+                        offset: data.offset,
+                        totalElementOfPage: data.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             }).finally(() => {
@@ -70,7 +74,9 @@ export const SKUManagement: React.FC = () => {
                 <td>{sku.batchCode}</td>
                 <td>{sku.weight}</td>
                 <td>{sku.dimension}</td>
-                <td>{sku.description}</td>
+                <td style={{ maxWidth: "400px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {sku.description}
+                </td>
             </tr>
         )
     })

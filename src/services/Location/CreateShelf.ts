@@ -20,13 +20,13 @@ const CreateShelf = async (data: CreateShelfProps) => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            await axios.post(`${HOST}/shelf`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
         }
-
-        await axios.post(`${HOST}/shelf`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

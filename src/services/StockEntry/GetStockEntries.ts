@@ -10,7 +10,7 @@ interface GetStockEntriesResponse {
     totalElementOfPage: number
 }
 
-const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
+const GetStockEntries = async (): Promise<GetStockEntriesResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -22,15 +22,15 @@ const GetStockEntries = async (): Promise<GetStockEntriesResponse> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/receives?limit=10&offset=1&order=DESC&orderBy=receiveDate`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/receives?limit=10&offset=1&order=DESC&orderBy=receiveDate`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

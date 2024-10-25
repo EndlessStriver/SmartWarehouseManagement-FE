@@ -216,7 +216,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                         <tbody>
                             {
                                 productChecks.map((productCheck, index) => (
-                                    <tr key={productCheck.id}>
+                                    <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{productCheck.productName}</td>
                                         <td style={{ width: "200px" }}>

@@ -12,14 +12,13 @@ const RemoveStockEntry = async (id: string): Promise<void> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            await axios.delete(`${HOST}/receives/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         }
-
-        await axios.delete(`${HOST}/receives/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

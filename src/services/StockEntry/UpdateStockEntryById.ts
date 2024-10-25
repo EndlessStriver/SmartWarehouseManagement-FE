@@ -17,7 +17,7 @@ interface UpdateStockEntryByIdTypeDataUpdate {
     receiveItems?: ReceiveItem[];
 }
 
-const UpdateStockEntryById = async (id: string, data: UpdateStockEntryByIdTypeDataUpdate): Promise<StockEntry> => {
+const UpdateStockEntryById = async (id: string, data: UpdateStockEntryByIdTypeDataUpdate): Promise<StockEntry | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -28,15 +28,15 @@ const UpdateStockEntryById = async (id: string, data: UpdateStockEntryByIdTypeDa
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/receives/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/receives/${id}`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

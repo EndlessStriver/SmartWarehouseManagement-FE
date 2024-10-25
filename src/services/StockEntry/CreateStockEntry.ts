@@ -26,13 +26,13 @@ const CreateStockEntry = async (data: CreateStockEntryProps): Promise<void> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            return await axios.post(`${HOST}/receives`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         }
-
-        return await axios.post(`${HOST}/receives`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

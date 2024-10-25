@@ -13,15 +13,14 @@ const DeleteShelf = async (shelfId: String): Promise<void> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.delete(`${HOST}/shelf/${shelfId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            return response.data.data;
         }
-
-        const response = await axios.delete(`${HOST}/shelf/${shelfId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

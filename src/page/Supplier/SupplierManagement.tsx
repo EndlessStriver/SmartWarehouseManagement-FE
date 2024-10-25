@@ -36,13 +36,15 @@ export const SupplierManagement: React.FC = () => {
         setIsLoading(true);
         GetSuppliers()
             .then((response) => {
-                setSuppliers(response.data);
-                setPagination({
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                });
+                if (response) {
+                    setSuppliers(response.data);
+                    setPagination({
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    });
+                }
             }).catch((error) => {
                 console.error(error);
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -56,13 +58,15 @@ export const SupplierManagement: React.FC = () => {
             setIsLoading(true);
             GetSuppliers({ offset: pagination.offset })
                 .then((response) => {
-                    setSuppliers(response.data);
-                    setPagination({
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
+                    if (response) {
+                        setSuppliers(response.data);
+                        setPagination({
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -80,16 +84,18 @@ export const SupplierManagement: React.FC = () => {
                 .then(() => {
                     return GetSuppliers();
                 }).then((response) => {
-                    updateSuppliers(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    setShowConfirmDelete(false);
-                    setSupplierId("");
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete supplier successfully" });
+                    if (response) {
+                        updateSuppliers(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        setShowConfirmDelete(false);
+                        setSupplierId("");
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete supplier successfully" });
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -128,7 +134,7 @@ export const SupplierManagement: React.FC = () => {
                 <td>{supplier.supplierCode}</td>
                 <td>{supplier.name}</td>
                 <td>{supplier.description}</td>
-                <td>{supplier.phone}</td>
+                <td style={{ width: "200px" }}>{supplier.phone}</td>
                 <td>{supplier.address}</td>
                 <td>{supplier.email}</td>
                 <td>

@@ -35,13 +35,15 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
         setIsLoading(true)
         GetShelfs()
             .then((response) => {
-                setShelfs(response.data)
-                setPagination({
-                    limit: Number(response.limit),
-                    offset: Number(response.offset),
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                })
+                if (response) {
+                    setShelfs(response.data)
+                    setPagination({
+                        limit: Number(response.limit),
+                        offset: Number(response.offset),
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
@@ -55,13 +57,15 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
             setIsLoading(true)
             GetShelfs({ offset: pagination.offset })
                 .then((response) => {
-                    setShelfs(response.data)
-                    setPagination({
-                        limit: Number(response.limit),
-                        offset: Number(response.offset),
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    })
+                    if (response) {
+                        setShelfs(response.data)
+                        setPagination({
+                            limit: Number(response.limit),
+                            offset: Number(response.offset),
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        })
+                    }
                 }).catch((error) => {
                     console.error(error)
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message })

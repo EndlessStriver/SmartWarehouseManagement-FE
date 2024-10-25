@@ -39,13 +39,15 @@ const LocationPage: React.FC = () => {
         setIsLoading(true)
         GetShelfs()
             .then((response) => {
-                setShelfList(response.data)
-                setPagination({
-                    limit: Number(response.limit),
-                    offset: Number(response.offset),
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                })
+                if (response) {
+                    setShelfList(response.data)
+                    setPagination({
+                        limit: Number(response.limit),
+                        offset: Number(response.offset),
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
@@ -59,13 +61,15 @@ const LocationPage: React.FC = () => {
             setIsLoading(true)
             GetShelfs({ offset: pagination.offset })
                 .then((response) => {
-                    setShelfList(response.data)
-                    setPagination({
-                        limit: Number(response.limit),
-                        offset: Number(response.offset),
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    })
+                    if (response) {
+                        setShelfList(response.data)
+                        setPagination({
+                            limit: Number(response.limit),
+                            offset: Number(response.offset),
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        })
+                    }
                 }).catch((error) => {
                     console.error(error)
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
@@ -96,16 +100,18 @@ const LocationPage: React.FC = () => {
             .then(() => {
                 return GetShelfs()
             }).then((res) => {
-                setShelfList(res.data)
-                setPagination({
-                    limit: Number(res.limit),
-                    offset: Number(res.offset),
-                    totalPage: res.totalPage,
-                    totalElementOfPage: res.totalElementOfPage
-                })
-                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete shelf success" })
-                setShelfId('')
-                setShowModelConfirmDelete(false)
+                if (res) {
+                    setShelfList(res.data)
+                    setPagination({
+                        limit: Number(res.limit),
+                        offset: Number(res.offset),
+                        totalPage: res.totalPage,
+                        totalElementOfPage: res.totalElementOfPage
+                    })
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete shelf success" })
+                    setShelfId('')
+                    setShowModelConfirmDelete(false)
+                }
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })

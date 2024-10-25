@@ -68,7 +68,7 @@ export interface IReceiving {
     checkItems: CheckItem[];
 }
 
-const GetReceiveCheckByStockEntryId = async (stockEntryId: string): Promise<IReceiving> => {
+const GetReceiveCheckByStockEntryId = async (stockEntryId: string): Promise<IReceiving | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -79,16 +79,14 @@ const GetReceiveCheckByStockEntryId = async (stockEntryId: string): Promise<IRec
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/receive-check/receive/${stockEntryId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/receive-check/receive/${stockEntryId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

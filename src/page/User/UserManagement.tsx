@@ -39,13 +39,15 @@ export const UserManagement: React.FC = () => {
         setIsLoading(true);
         GetAccountsAPI()
             .then((response) => {
-                setUsers(response.data);
-                setPagination({
-                    totalPage: response.totalPage,
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalElementOfPage: response.totalElementOfPage
-                });
+                if (response) {
+                    setUsers(response.data);
+                    setPagination({
+                        totalPage: response.totalPage,
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalElementOfPage: response.totalElementOfPage
+                    });
+                }
             }).catch((error) => {
                 console.error(error);
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -59,13 +61,15 @@ export const UserManagement: React.FC = () => {
             setIsLoading(true);
             GetAccountsAPI({ offset: pagination.offset })
                 .then((response) => {
-                    setUsers(response.data);
-                    setPagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
+                    if (response) {
+                        setUsers(response.data);
+                        setPagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -83,15 +87,17 @@ export const UserManagement: React.FC = () => {
                 .then(() => {
                     return GetAccountsAPI();
                 }).then((response) => {
-                    setUsers(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete user successfully" });
-                    handleHideOverlayModelDelete();
+                    if (response) {
+                        setUsers(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete user successfully" });
+                        handleHideOverlayModelDelete();
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });

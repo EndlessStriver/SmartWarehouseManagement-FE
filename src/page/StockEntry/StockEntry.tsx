@@ -37,13 +37,15 @@ const StockEntry: React.FC = () => {
         setIsLoading(true);
         GetStockEntries()
             .then((res) => {
-                setStockEntry(res.data);
-                setPagination({
-                    totalPage: res.totalPage,
-                    limit: res.limit,
-                    offset: res.offset,
-                    totalElementOfPage: res.totalElementOfPage
-                });
+                if (res) {
+                    setStockEntry(res.data);
+                    setPagination({
+                        totalPage: res.totalPage,
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage
+                    });
+                }
             }).catch((err) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             }).finally(() => {
@@ -90,7 +92,7 @@ const StockEntry: React.FC = () => {
                 <td>{stockEntry.receiveBy}</td>
                 <td>{new Date(stockEntry.receiveDate).toLocaleDateString()}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
-                <td>{stockEntry.totalAmount}$</td>
+                <td>{Number(stockEntry.totalAmount).toLocaleString()}$</td>
                 <td>
                     <div className="d-flex flex-row gap-2">
                         {

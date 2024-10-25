@@ -1,9 +1,9 @@
 import axios from "axios";
 import DataTypeUpdateProductAdmin from "../../interface/PageProduct/DataTypeUpdateProductAdmin";
-import {Product} from "../../interface/Entity/Product";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { Product } from "../../interface/Entity/Product";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
-const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin) :Promise<Product> => {
+const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin): Promise<Product | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -14,18 +14,17 @@ const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeU
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/products/${productId}`, dataUpdate, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/products/${productId}`, dataUpdate, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

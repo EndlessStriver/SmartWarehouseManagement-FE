@@ -229,20 +229,22 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         if (productId) {
             GetProductById(productId)
                 .then((data) => {
-                    setFormData(FormatDataGet(data));
-                    setDataDefault(FormatDataGet(data));
-                    setImagePreviews(data.productDetails?.images.map((image) => {
-                        return {
-                            key: crypto.randomUUID().toString(),
-                            url: image.url
-                        }
-                    }) || []);
-                    setImagePreviewsDefault(data.productDetails?.images.map((image) => {
-                        return {
-                            key: crypto.randomUUID().toString(),
-                            url: image.url
-                        }
-                    }) || []);
+                    if (data) {
+                        setFormData(FormatDataGet(data));
+                        setDataDefault(FormatDataGet(data));
+                        setImagePreviews(data.productDetails?.images.map((image) => {
+                            return {
+                                key: crypto.randomUUID().toString(),
+                                url: image.url
+                            }
+                        }) || []);
+                        setImagePreviewsDefault(data.productDetails?.images.map((image) => {
+                            return {
+                                key: crypto.randomUUID().toString(),
+                                url: image.url
+                            }
+                        }) || []);
+                    }
                 }).catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 }).finally(() => {
@@ -255,7 +257,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         const id = setTimeout(() => {
             GetColorsByName(color)
                 .then((data) => {
-                    setColors(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setColors(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -268,7 +270,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         const id = setTimeout(() => {
             GetBrandsByName(branch)
                 .then((data) => {
-                    setBranches(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setBranches(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -281,7 +283,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         const id = setTimeout(() => {
             GetMaterialsByName(model)
                 .then((data) => {
-                    setModels(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setModels(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -307,7 +309,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         const id = setTimeout(() => {
             GetCategoriesByName(category)
                 .then((data) => {
-                    setCategories(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setCategories(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -320,7 +322,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         const id = setTimeout(() => {
             GetSuppliersByName(supplier)
                 .then((data) => {
-                    setSuppliers(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setSuppliers(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -408,10 +410,12 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
             } else {
                 UpdateProductByProductId(productId, dataUpdate)
                     .then((response) => {
-                        setFormData(FormatDataGet(response));
-                        setDataDefault(FormatDataGet(response));
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update product success" });
-                        setIsEdit(false);
+                        if (response) {
+                            setFormData(FormatDataGet(response));
+                            setDataDefault(FormatDataGet(response));
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update product success" });
+                            setIsEdit(false);
+                        }
                     })
                     .catch((error) => {
                         dispatch({ type: ActionTypeEnum.ERROR, message: error.message });

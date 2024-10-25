@@ -3,7 +3,7 @@ import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
 import { Incident } from "./GetIssueLogs";
 
-const GetIssueLogById = async (issueLogId: string): Promise<Incident> => {
+const GetIssueLogById = async (issueLogId: string): Promise<Incident | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');
@@ -14,16 +14,15 @@ const GetIssueLogById = async (issueLogId: string): Promise<Incident> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/incident-log/${issueLogId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/incident-log/${issueLogId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

@@ -2,14 +2,12 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
 import Attribute from "../../interface/Attribute";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const AddAttributeValue = async (id: number, data: Attribute): Promise<void> => {
-
     const customData: Attribute = {
         ...data
     };
-
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");
@@ -20,41 +18,40 @@ const AddAttributeValue = async (id: number, data: Attribute): Promise<void> => 
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
-        }
+        } else {
+            if (returnNameAttribute(id) === "") throw new Error("Attribute is not found")
 
-        if (returnNameAttribute(id) === "") throw new Error("Attribute is not found")
-
-        switch (returnNameAttribute(id)) {
-            case "materials":
-                customData.materialCode = customData.sizeCode;
-                delete customData.sizeCode;
-                break;
-            case "colors":
-                customData.colorCode = customData.sizeCode;
-                delete customData.sizeCode;
-                break;
-            case "brands":
-                customData.brandCode = customData.sizeCode;
-                delete customData.sizeCode;
-                break;
-            case "categories":
-                customData.categoryCode = customData.sizeCode;
-                delete customData.sizeCode;
-                break;
-            default:
-                break;
-        }
-
-        const response = await axios.post(`${HOST}/${returnNameAttribute(id)}`, customData, {
-            headers: {
-                Authorization: `Bearer ${token}`
+            switch (returnNameAttribute(id)) {
+                case "materials":
+                    customData.materialCode = customData.sizeCode;
+                    delete customData.sizeCode;
+                    break;
+                case "colors":
+                    customData.colorCode = customData.sizeCode;
+                    delete customData.sizeCode;
+                    break;
+                case "brands":
+                    customData.brandCode = customData.sizeCode;
+                    delete customData.sizeCode;
+                    break;
+                case "categories":
+                    customData.categoryCode = customData.sizeCode;
+                    delete customData.sizeCode;
+                    break;
+                default:
+                    break;
             }
-        });
+            const response = await axios.post(`${HOST}/${returnNameAttribute(id)}`, customData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
-        return response.data.data;
+            return response.data.data;
+        }
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

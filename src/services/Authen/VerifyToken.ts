@@ -1,6 +1,6 @@
 import axios from "axios";
-import {ResponseError} from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { ResponseError } from "../../interface/ResponseError";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface VerifyTokenResponse {
     userId: string;
@@ -11,7 +11,7 @@ interface VerifyTokenResponse {
     exp: number;
 }
 
-const VerifyToken = async (): Promise<VerifyTokenResponse> => {
+const VerifyToken = async (): Promise<VerifyTokenResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_API_HOST;
         const token = localStorage.getItem("token");
@@ -22,18 +22,17 @@ const VerifyToken = async (): Promise<VerifyTokenResponse> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.post(`${HOST}/auth/verify-token`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.post(`${HOST}/auth/verify-token`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

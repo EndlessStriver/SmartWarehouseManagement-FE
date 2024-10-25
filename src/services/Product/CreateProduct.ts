@@ -1,7 +1,7 @@
 import axios from "axios";
 import DataTypeCreateProductAdmin from "../../interface/PageProduct/DataTypeCreateProductAdmin";
 import { ResponseError } from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const CreateProduct = async (product: DataTypeCreateProductAdmin): Promise<void> => {
     try {
@@ -14,31 +14,31 @@ const CreateProduct = async (product: DataTypeCreateProductAdmin): Promise<void>
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
-        }
-
-        const formData = new FormData();
-        Object.keys(product).forEach(key => {
-            const value = product[key as keyof DataTypeCreateProductAdmin];
-            if (value) {
-                if (Array.isArray(value)) {
-                    value.forEach((file: File) => {
-                        formData.append(key, file);
-                    });
-                } else {
-                    formData.append(key, value as string);
+        } else {
+            const formData = new FormData();
+            Object.keys(product).forEach(key => {
+                const value = product[key as keyof DataTypeCreateProductAdmin];
+                if (value) {
+                    if (Array.isArray(value)) {
+                        value.forEach((file: File) => {
+                            formData.append(key, file);
+                        });
+                    } else {
+                        formData.append(key, value as string);
+                    }
                 }
-            }
-        });
-        const response = await axios.post(`${HOST}/products`, formData, {
-            headers: {
-                "content-type": "multipart/form-data",
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        return response.data.data;
+            });
+            const response = await axios.post(`${HOST}/products`, formData, {
+                headers: {
+                    "content-type": "multipart/form-data",
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data.data;
+        }
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

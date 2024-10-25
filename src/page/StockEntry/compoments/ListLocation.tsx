@@ -28,7 +28,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     React.useEffect(() => {
         GetLocationByShelfIdt(props.shelfId)
             .then((response) => {
-                setLocations(response)
+                if (response) setLocations(response)
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })

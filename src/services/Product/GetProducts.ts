@@ -2,7 +2,7 @@ import axios from "axios";
 import { Product } from "../../interface/Entity/Product";
 import { ResponseError } from "../../interface/ResponseError";
 import Order from "../../enum/Order";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface GetProductsResponse {
     data: Product[],
@@ -19,7 +19,7 @@ interface GetProductsProps {
     orderBy?: string
 }
 
-const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse> => {
+const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -31,17 +31,17 @@ const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/products?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=name`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/products?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=name`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

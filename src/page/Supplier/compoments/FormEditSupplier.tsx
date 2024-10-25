@@ -128,23 +128,25 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
             setIsLoading(true);
             GetSupplierById(supplierId)
                 .then((response) => {
-                    setFormData({
-                        name: response.name,
-                        description: response.description,
-                        phone: response.phone,
-                        email: response.email,
-                        address: response.address,
-                        supplierCode: response.supplierCode,
-                        createdBy: response.createdBy,
-                        contactPerson: response.contactPerson,
-                        location: response.location,
-                        status: response.status,
-                        notes: response.notes,
-                        website: response.website,
-                        taxId: response.taxId,
-                        isActive: response.isActive
-                    });
-                    setDataDefault(response);
+                    if (response) {
+                        setFormData({
+                            name: response.name,
+                            description: response.description,
+                            phone: response.phone,
+                            email: response.email,
+                            address: response.address,
+                            supplierCode: response.supplierCode,
+                            createdBy: response.createdBy,
+                            contactPerson: response.contactPerson,
+                            location: response.location,
+                            status: response.status,
+                            notes: response.notes,
+                            website: response.website,
+                            taxId: response.taxId,
+                            isActive: response.isActive
+                        });
+                        setDataDefault(response);
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -172,16 +174,18 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                     .then(() => {
                         return GetSuppliers();
                     }).then((response) => {
-                        updateSuppliers(response.data);
-                        updatePagination({
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage,
-                            totalPage: response.totalPage
-                        });
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Supplier successfully" });
-                        setDataDefault(formData);
-                        setIsEditing(false);
+                        if (response) {
+                            updateSuppliers(response.data);
+                            updatePagination({
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage,
+                                totalPage: response.totalPage
+                            });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Supplier successfully" });
+                            setDataDefault(formData);
+                            setIsEditing(false);
+                        }
                     }).catch((error) => {
                         console.error(error);
                         dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -207,17 +211,19 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                     .then(() => {
                         return GetSuppliers();
                     }).then((response) => {
-                        updateSuppliers(response.data);
-                        updatePagination({
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage,
-                            totalPage: response.totalPage
-                        });
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create Supplier successfully" });
-                        setTimeout(() => {
-                            hideOverlay();
-                        }, 1000);
+                        if (response) {
+                            updateSuppliers(response.data);
+                            updatePagination({
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage,
+                                totalPage: response.totalPage
+                            });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create Supplier successfully" });
+                            setTimeout(() => {
+                                hideOverlay();
+                            }, 1000);
+                        }
                     }).catch((error) => {
                         console.error(error);
                         dispatch({ type: ActionTypeEnum.ERROR, message: error.message });

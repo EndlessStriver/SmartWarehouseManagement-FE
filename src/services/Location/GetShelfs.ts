@@ -19,7 +19,7 @@ interface GetShelfsProps {
     orderBy?: string;
 }
 
-const GetShelfs = async (data?: GetShelfsProps): Promise<GetShelfsResponse> => {
+const GetShelfs = async (data?: GetShelfsProps): Promise<GetShelfsResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -30,15 +30,14 @@ const GetShelfs = async (data?: GetShelfsProps): Promise<GetShelfsResponse> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/shelf?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=name`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/shelf?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=name`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

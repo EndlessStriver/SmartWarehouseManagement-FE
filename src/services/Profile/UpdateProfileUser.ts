@@ -12,7 +12,7 @@ interface DataTypeUpdateProfile {
     address?: string,
 }
 
-const UpdateProfileUser = async (data: DataTypeUpdateProfile): Promise<Profile> => {
+const UpdateProfileUser = async (data: DataTypeUpdateProfile): Promise<Profile | undefined> => {
 
     console.log(data);
 
@@ -26,16 +26,14 @@ const UpdateProfileUser = async (data: DataTypeUpdateProfile): Promise<Profile> 
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.put(`${HOST}/account/update-account`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data.data;
         }
-
-        const response = await axios.put(`${HOST}/account/update-account`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

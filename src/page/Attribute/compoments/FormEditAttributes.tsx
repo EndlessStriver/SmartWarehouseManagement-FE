@@ -44,11 +44,12 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
             setLoading(true);
             GetAttributeValueById(attributeId, attributeDetailId)
                 .then((response) => {
-                    setFormData({
-                        name: response.name,
-                        description: response.description,
-                        sizeCode: response.sizeCode || response.brandCode || response.colorCode || response.materialCode || response.categoryCode
-                    });
+                    if (response)
+                        setFormData({
+                            name: response.name,
+                            description: response.description,
+                            sizeCode: response.sizeCode || response.brandCode || response.colorCode || response.materialCode || response.categoryCode
+                        });
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -72,15 +73,17 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                 .then(() => {
                     return GetAttributeDetail({ id: attributeId });
                 }).then((response) => {
-                    updateAttributeValues(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Attribute value successfully" });
-                    setEditAttributeValue(false);
+                    if (response) {
+                        updateAttributeValues(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Attribute value successfully" });
+                        setEditAttributeValue(false);
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -92,17 +95,19 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                 .then(() => {
                     return GetAttributeDetail({ id: attributeId });
                 }).then((response) => {
-                    updateAttributeValues(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Add Attribute value successfully" });
-                    setTimeout(() => {
-                        hideOverlay();
-                    }, 1000)
+                    if (response) {
+                        updateAttributeValues(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Add Attribute value successfully" });
+                        setTimeout(() => {
+                            hideOverlay();
+                        }, 1000)
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });

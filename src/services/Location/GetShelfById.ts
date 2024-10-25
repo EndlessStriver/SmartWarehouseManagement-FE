@@ -3,7 +3,7 @@ import { checkTokenExpired } from "../../util/DecodeJWT";
 import Shelf from "../../interface/Entity/Shelf";
 import { ResponseError } from "../../interface/ResponseError";
 
-const GetShelfById = async (shelfId: String): Promise<Shelf> => {
+const GetShelfById = async (shelfId: String): Promise<Shelf | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -14,15 +14,15 @@ const GetShelfById = async (shelfId: String): Promise<Shelf> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/shelf/${shelfId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/shelf/${shelfId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

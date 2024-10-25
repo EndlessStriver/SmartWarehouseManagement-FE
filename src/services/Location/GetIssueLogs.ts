@@ -57,7 +57,7 @@ interface GetIssueLogsRequest {
     orderBy?: string;
 }
 
-const GetIssueLogs = async (data?: GetIssueLogsRequest): Promise<IncidentDataResponse> => {
+const GetIssueLogs = async (data?: GetIssueLogsRequest): Promise<IncidentDataResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');
@@ -68,16 +68,14 @@ const GetIssueLogs = async (data?: GetIssueLogsRequest): Promise<IncidentDataRes
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/incident-log?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || "DESC"}&orderBy=${data?.orderBy || "incidentDate"}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/incident-log?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || "DESC"}&orderBy=${data?.orderBy || "incidentDate"}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

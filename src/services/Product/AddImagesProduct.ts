@@ -1,6 +1,6 @@
 import axios from "axios";
-import {ResponseError} from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { ResponseError } from "../../interface/ResponseError";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const AddImagesProduct = async (productId: string, images: File[]): Promise<void> => {
     try {
@@ -13,24 +13,23 @@ const AddImagesProduct = async (productId: string, images: File[]): Promise<void
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const formData = new FormData();
+            images.forEach(image => {
+                formData.append('image', image);
+            });
+
+            await axios.put(`${HOST}/product-detail/images/${productId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
         }
-
-        const formData = new FormData();
-        images.forEach(image => {
-            formData.append('image', image);
-        });
-
-        await axios.put(`${HOST}/product-detail/images/${productId}`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
     } catch (error) {
         console.log(error);
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

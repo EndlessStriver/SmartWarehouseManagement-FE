@@ -13,20 +13,19 @@ const UpdateAvatarUser = async (avatar: File) => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const formData = new FormData();
+            formData.append('avatar', avatar);
+
+            const response = await axios.put(`${HOST}/account/update-avatar`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            return response.data.data;
         }
-
-        const formData = new FormData();
-        formData.append('avatar', avatar);
-
-        const response = await axios.put(`${HOST}/account/update-avatar`, formData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

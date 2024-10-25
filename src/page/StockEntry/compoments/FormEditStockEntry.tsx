@@ -91,28 +91,30 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         if (stockEntryId) {
             GetStockEntryById(stockEntryId)
                 .then((res) => {
-                    setCreateDate(getVietnamTime(new Date(res.receiveDate)));
-                    setStatusStockEntry(res.status);
-                    setDescription(res.description);
-                    setDescriptionDefault(res.description);
-                    setSupplierSelected({
-                        value: res.supplier.id,
-                        label: res.supplier.name
-                    });
-                    setProductItems(res.receiveItems.map((item) => ({
-                        id: item.id,
-                        productId: item.product.id,
-                        name: item.product.name,
-                        quantity: item.quantity,
-                        price: parseFloat(item.price)
-                    })));
-                    setProductItemsDefault(res.receiveItems.map((item) => ({
-                        id: item.id,
-                        productId: item.product.id,
-                        name: item.product.name,
-                        quantity: item.quantity,
-                        price: parseFloat(item.price)
-                    })));
+                    if (res) {
+                        setCreateDate(getVietnamTime(new Date(res.receiveDate)));
+                        setStatusStockEntry(res.status);
+                        setDescription(res.description);
+                        setDescriptionDefault(res.description);
+                        setSupplierSelected({
+                            value: res.supplier.id,
+                            label: res.supplier.name
+                        });
+                        setProductItems(res.receiveItems.map((item) => ({
+                            id: item.id,
+                            productId: item.product.id,
+                            name: item.product.name,
+                            quantity: item.quantity,
+                            price: parseFloat(item.price)
+                        })));
+                        setProductItemsDefault(res.receiveItems.map((item) => ({
+                            id: item.id,
+                            productId: item.product.id,
+                            name: item.product.name,
+                            quantity: item.quantity,
+                            price: parseFloat(item.price)
+                        })));
+                    }
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 })
@@ -124,10 +126,12 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             setLoadingSuppliers(true);
             GetSuppliersByName(supplierName)
                 .then((res) => {
-                    setSuppliers(res.map((supplier) => ({
-                        value: supplier.id,
-                        label: supplier.name,
-                    })));
+                    if (res) {
+                        setSuppliers(res.map((supplier) => ({
+                            value: supplier.id,
+                            label: supplier.name,
+                        })));
+                    }
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 }).finally(() => {
@@ -143,13 +147,15 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             setLoadingProducts(true);
             GetProductsBySupplier(supplierSelected.value)
                 .then((res) => {
-                    setProducts(res.data);
-                    setPagination({
-                        totalPage: res.totalPage,
-                        limit: res.limit,
-                        offset: res.offset,
-                        totalElementOfPage: res.totalElementOfPage
-                    });
+                    if (res) {
+                        setProducts(res.data);
+                        setPagination({
+                            totalPage: res.totalPage,
+                            limit: res.limit,
+                            offset: res.offset,
+                            totalElementOfPage: res.totalElementOfPage
+                        });
+                    }
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 }).finally(() => {
@@ -163,13 +169,15 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             setLoadingProducts(true);
             GetProductsBySupplier(supplierSelected.value, { offset: pagination.offset })
                 .then((res) => {
-                    setProducts(res.data);
-                    setPagination({
-                        totalPage: res.totalPage,
-                        limit: res.limit,
-                        offset: res.offset,
-                        totalElementOfPage: res.totalElementOfPage
-                    });
+                    if (res) {
+                        setProducts(res.data);
+                        setPagination({
+                            totalPage: res.totalPage,
+                            limit: res.limit,
+                            offset: res.offset,
+                            totalElementOfPage: res.totalElementOfPage
+                        });
+                    }
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 }).finally(() => {
@@ -189,9 +197,11 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         if (supplierSelected) {
             GetSupplierById(supplierSelected.value)
                 .then((res) => {
-                    setAddress(res.address);
-                    setPhoneNumber(res.phone);
-                    // setProductItems([]);
+                    if (res) {
+                        setAddress(res.address);
+                        setPhoneNumber(res.phone);
+                        // setProductItems([]);
+                    }
                 }).catch((err) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                 })
@@ -277,7 +287,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     />
                 </td>
                 <td style={{ minWidth: "150px" }}>
-                    ${isNaN(product.quantity * product.price) ? 0 : (product.quantity * product.price).toFixed(2)}
+                    {isNaN(product.quantity * product.price) ? 0 : Number(product.quantity * product.price).toLocaleString()} $
                 </td>
                 <td>
                     <button
@@ -364,13 +374,15 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 handleClose();
                 return GetStockEntries()
             }).then((res) => {
-                updateStockEntry(res.data);
-                updatePagination({
-                    totalPage: res.totalPage,
-                    limit: res.limit,
-                    offset: res.offset,
-                    totalElementOfPage: res.totalElementOfPage
-                });
+                if (res) {
+                    updateStockEntry(res.data);
+                    updatePagination({
+                        totalPage: res.totalPage,
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage
+                    });
+                }
             }).catch((err) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             }).finally(() => {
@@ -387,37 +399,41 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     price: parseFloat(item.price.toFixed(2))
                 }))
             }).then((res) => {
-                setDescription(res.description);
-                setDescriptionDefault(res.description);
-                setSupplierSelected({
-                    value: res.supplier.id,
-                    label: res.supplier.name
-                });
-                setProductItems(res.receiveItems.map((item) => ({
-                    id: item.id,
-                    productId: item.product.id,
-                    name: item.product.name,
-                    quantity: item.quantity,
-                    price: parseFloat(item.price)
-                })));
-                setProductItemsDefault(res.receiveItems.map((item) => ({
-                    id: item.id,
-                    productId: item.product.id,
-                    name: item.product.name,
-                    quantity: item.quantity,
-                    price: parseFloat(item.price)
-                })));
-                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update stock entry successfully." });
-                handleClose();
-                return GetStockEntries()
+                if (res) {
+                    setDescription(res.description);
+                    setDescriptionDefault(res.description);
+                    setSupplierSelected({
+                        value: res.supplier.id,
+                        label: res.supplier.name
+                    });
+                    setProductItems(res.receiveItems.map((item) => ({
+                        id: item.id,
+                        productId: item.product.id,
+                        name: item.product.name,
+                        quantity: item.quantity,
+                        price: parseFloat(item.price)
+                    })));
+                    setProductItemsDefault(res.receiveItems.map((item) => ({
+                        id: item.id,
+                        productId: item.product.id,
+                        name: item.product.name,
+                        quantity: item.quantity,
+                        price: parseFloat(item.price)
+                    })));
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update stock entry successfully." });
+                    handleClose();
+                    return GetStockEntries()
+                }
             }).then((res) => {
-                updateStockEntry(res.data);
-                updatePagination({
-                    totalPage: res.totalPage,
-                    limit: res.limit,
-                    offset: res.offset,
-                    totalElementOfPage: res.totalElementOfPage
-                });
+                if (res) {
+                    updateStockEntry(res.data);
+                    updatePagination({
+                        totalPage: res.totalPage,
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage
+                    });
+                }
             }).catch((err) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             }).finally(() => {

@@ -1,9 +1,8 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const DeleteProductById = async (productId: string): Promise<void> => {
-
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -14,17 +13,16 @@ const DeleteProductById = async (productId: string): Promise<void> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            await axios.delete(`${HOST}/products/${productId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         }
-
-        await axios.delete(`${HOST}/products/${productId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

@@ -49,15 +49,17 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
             }).then(() => {
                 return GetShelfs();
             }).then((response) => {
-                props.updateShelfList(response.data);
-                props.updatePage({
-                    limit: Number(response.limit),
-                    offset: Number(response.offset),
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                });
-                props.onClose();
-                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Shelf created successfully" });
+                if (response) {
+                    props.updateShelfList(response.data);
+                    props.updatePage({
+                        limit: Number(response.limit),
+                        offset: Number(response.offset),
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    });
+                    props.onClose();
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Shelf created successfully" });
+                }
             }).catch((error) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             }).finally(() => {

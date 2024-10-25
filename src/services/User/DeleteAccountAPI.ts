@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const DeleteAccountAPI = async (userId: string) => {
     try {
@@ -13,17 +13,16 @@ const DeleteAccountAPI = async (userId: string) => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            await axios.put(`${HOST}/account/ad/delete/${userId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
         }
-
-        await axios.put(`${HOST}/account/ad/delete/${userId}`, {}, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

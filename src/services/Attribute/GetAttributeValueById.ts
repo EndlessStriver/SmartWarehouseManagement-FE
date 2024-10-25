@@ -2,9 +2,9 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
 import AttributeDetailType from "../../interface/AttributeDetail";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
-const GetAttributeValueById = async (id: number, attributeValueId: string): Promise<AttributeDetailType> => {
+const GetAttributeValueById = async (id: number, attributeValueId: string): Promise<AttributeDetailType | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -16,21 +16,21 @@ const GetAttributeValueById = async (id: number, attributeValueId: string): Prom
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            if (returnNameAttribute(id) === "") throw new Error("Attribute is not found")
+
+            const response = await axios.get(`${HOST}/${returnNameAttribute(id)}/${attributeValueId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            return response.data.data;
         }
-
-        if (returnNameAttribute(id) === "") throw new Error("Attribute is not found")
-
-        const response = await axios.get(`${HOST}/${returnNameAttribute(id)}/${attributeValueId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
 
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
@@ -40,8 +40,8 @@ const GetAttributeValueById = async (id: number, attributeValueId: string): Prom
         } else {
             throw new Error("An unexpected error occurred.");
         }
-
     }
+    return undefined;
 }
 
 export default GetAttributeValueById;

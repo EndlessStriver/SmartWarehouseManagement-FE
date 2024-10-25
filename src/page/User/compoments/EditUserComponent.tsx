@@ -78,7 +78,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         setIsLoading(true);
         GetRolesAPI()
             .then((response) => {
-                setRoles(response);
+                if (response) setRoles(response);
             }).catch((err) => {
                 console.error(err.message);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
@@ -91,14 +91,16 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         if (userId) {
             GetAccountById(userId)
                 .then((response) => {
-                    setFormData({
-                        ...response,
-                        roleName: response.role.name,
-                    });
-                    setDataDefault({
-                        ...response,
-                        roleName: response.role.name,
-                    });
+                    if (response) {
+                        setFormData({
+                            ...response,
+                            roleName: response.role.name,
+                        });
+                        setDataDefault({
+                            ...response,
+                            roleName: response.role.name,
+                        });
+                    }
                 }).catch((err) => {
                     console.error(err.message);
                     dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
@@ -289,43 +291,47 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
             if (userId) {
                 UpdateAccountAPI(userId, formartDataUpate())
                     .then((response) => {
-                        setDataDefault({
-                            fullName: response.fullName,
-                            dateOfBirth: response.dateOfBirth,
-                            address: response.address,
-                            email: response.email,
-                            avatar: response.avatar,
-                            gender: response.gender,
-                            phoneNumber: response.phoneNumber,
-                            position: response.position,
-                            roleName: response.role.name,
-                            username: response.username,
-                        });
-                        setFormData({
-                            fullName: response.fullName,
-                            dateOfBirth: response.dateOfBirth,
-                            address: response.address,
-                            email: response.email,
-                            avatar: response.avatar,
-                            confirmPassword: "",
-                            password: "",
-                            gender: response.gender,
-                            phoneNumber: response.phoneNumber,
-                            position: response.position,
-                            roleName: response.role.name,
-                            username: response.username,
-                        });
-                        return GetAccountsAPI();
+                        if (response) {
+                            setDataDefault({
+                                fullName: response.fullName,
+                                dateOfBirth: response.dateOfBirth,
+                                address: response.address,
+                                email: response.email,
+                                avatar: response.avatar,
+                                gender: response.gender,
+                                phoneNumber: response.phoneNumber,
+                                position: response.position,
+                                roleName: response.role.name,
+                                username: response.username,
+                            });
+                            setFormData({
+                                fullName: response.fullName,
+                                dateOfBirth: response.dateOfBirth,
+                                address: response.address,
+                                email: response.email,
+                                avatar: response.avatar,
+                                confirmPassword: "",
+                                password: "",
+                                gender: response.gender,
+                                phoneNumber: response.phoneNumber,
+                                position: response.position,
+                                roleName: response.role.name,
+                                username: response.username,
+                            });
+                            return GetAccountsAPI();
+                        }
                     }).then((response) => {
-                        updateUsers(response.data);
-                        updatePagination({
-                            totalPage: response.totalPage,
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage
-                        })
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update user successfully!" });
-                        setEditUser(false);
+                        if (response) {
+                            updateUsers(response.data);
+                            updatePagination({
+                                totalPage: response.totalPage,
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage
+                            })
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update user successfully!" });
+                            setEditUser(false);
+                        }
                     }).catch((err) => {
                         dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                     }).finally(() => {
@@ -337,17 +343,19 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                     .then(() => {
                         return GetAccountsAPI();
                     }).then((response) => {
-                        updateUsers(response.data);
-                        updatePagination({
-                            totalPage: response.totalPage,
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage
-                        })
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create user successfully!" });
-                        setTimeout(() => {
-                            hideOverlay();
-                        }, 1000);
+                        if (response) {
+                            updateUsers(response.data);
+                            updatePagination({
+                                totalPage: response.totalPage,
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage
+                            })
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create user successfully!" });
+                            setTimeout(() => {
+                                hideOverlay();
+                            }, 1000);
+                        }
                     }).catch((err) => {
                         dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                     }).finally(() => {

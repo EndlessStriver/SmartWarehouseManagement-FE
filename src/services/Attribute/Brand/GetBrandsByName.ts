@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
-import {checkTokenExpired} from "../../../util/DecodeJWT";
+import { checkTokenExpired } from "../../../util/DecodeJWT";
 
 interface Brand {
     id: string;
@@ -8,8 +8,7 @@ interface Brand {
     description: string;
 }
 
-const GetBrandsByName = async (name: string): Promise<Brand[]> => {
-
+const GetBrandsByName = async (name: string): Promise<Brand[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -20,18 +19,17 @@ const GetBrandsByName = async (name: string): Promise<Brand[]> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/brands/name?name=${name}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/brands/name?name=${name}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
@@ -42,6 +40,8 @@ const GetBrandsByName = async (name: string): Promise<Brand[]> => {
             throw new Error("An unexpected error occurred.");
         }
     }
+
+    return undefined;
 }
 
 export default GetBrandsByName;

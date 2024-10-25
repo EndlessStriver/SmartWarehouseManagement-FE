@@ -5,7 +5,7 @@ import DeleteSupplierById from "../../../services/Supplier/DeleteSupplierById";
 import GetSuppliers from "../../../services/Supplier/GetSuppliers";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
-import {useDispatchMessage} from "../../../Context/ContextMessage";
+import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 
 interface ModelConfirmDeleteSupplierProps {
@@ -26,18 +26,20 @@ const ModelConfirmDeleteSupplier: React.FC<ModelConfirmDeleteSupplierProps> = ({
             .then(() => {
                 return GetSuppliers();
             }).then((response) => {
-                updateSuppliers(response.data);
-                updatePagination({
-                    totalPage: response.totalPage,
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalElementOfPage: response.totalElementOfPage
-                });
-                closeModelConfirmDelete();
-                dispatch({type: ActionTypeEnum.SUCCESS, message: "Delete supplier successfully"});
+                if (response) {
+                    updateSuppliers(response.data);
+                    updatePagination({
+                        totalPage: response.totalPage,
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalElementOfPage: response.totalElementOfPage
+                    });
+                    closeModelConfirmDelete();
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete supplier successfully" });
+                }
             }).catch((error) => {
                 console.error(error);
-                dispatch({type: ActionTypeEnum.ERROR, message: error.message});
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             }).finally(() => {
                 setIsLoading(false);
             })

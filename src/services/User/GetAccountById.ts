@@ -1,9 +1,9 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Account } from "../../interface/Account";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
-const GetAccountById = async (userId: string): Promise<Account> => {
+const GetAccountById = async (userId: string): Promise<Account | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -14,20 +14,19 @@ const GetAccountById = async (userId: string): Promise<Account> => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/account/ad/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/account/ad/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return response.data.data;
-
     } catch (error) {
         console.log(error);
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

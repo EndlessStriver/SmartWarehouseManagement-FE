@@ -17,7 +17,7 @@ interface GetProductBySupplierRequestPage {
     orderBy?: string
 }
 
-const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<ProductHeaderResponse> => {
+const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<ProductHeaderResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -28,16 +28,14 @@ const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProduc
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=${pageRequest?.limit || 5}&offset=${pageRequest?.offset || 1}&order=${pageRequest?.order || "ASC"}&orderBy=${pageRequest?.orderBy || "name"}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            return response.data.data;
         }
-
-        const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=${pageRequest?.limit || 5}&offset=${pageRequest?.offset || 1}&order=${pageRequest?.order || "ASC"}&orderBy=${pageRequest?.orderBy || "name"}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

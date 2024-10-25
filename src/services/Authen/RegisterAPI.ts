@@ -18,15 +18,14 @@ const RegisterAPI = async (data: DataTypeCreateUserAdmin | null): Promise<void> 
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            const response = await axios.post(`${HOST}/auth/register`, data, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            return response.data.data;
         }
-
-        const response = await axios.post(`${HOST}/auth/register`, data, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
-        return response.data.data;
-
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

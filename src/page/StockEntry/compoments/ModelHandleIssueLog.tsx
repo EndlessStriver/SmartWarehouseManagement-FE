@@ -24,8 +24,10 @@ const ModelHandleIssueLog: React.FC<ModelHandleIssueLogProps> = (props) => {
     React.useEffect(() => {
         GetIssueLogById(props.issueLogId)
             .then((data) => {
-                setIssueLog(data);
-                setActionTaken(data.actionTaken || "");
+                if (data) {
+                    setIssueLog(data);
+                    setActionTaken(data.actionTaken || "");
+                }
             })
             .catch((error) => {
                 console.error(error);

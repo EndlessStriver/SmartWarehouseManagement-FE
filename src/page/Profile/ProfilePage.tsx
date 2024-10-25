@@ -125,16 +125,18 @@ const ProfilePage: React.FC = () => {
         setloading(true);
         UpdateProfileUser(dataUpdate)
             .then((responseProfile) => {
-                setProfile({
-                    ...responseProfile,
-                    role: responseProfile.role.name
-                });
-                setProfileDefault({
-                    ...responseProfile,
-                    role: responseProfile.role.name
-                });
-                localStorage.setItem("profile", JSON.stringify(responseProfile));
-                dispatch({ message: "Update profile successfully!", type: ActionTypeEnum.SUCCESS });
+                if (responseProfile) {
+                    setProfile({
+                        ...responseProfile,
+                        role: responseProfile.role.name
+                    });
+                    setProfileDefault({
+                        ...responseProfile,
+                        role: responseProfile.role.name
+                    });
+                    localStorage.setItem("profile", JSON.stringify(responseProfile));
+                    dispatch({ message: "Update profile successfully!", type: ActionTypeEnum.SUCCESS });
+                }
             }).catch((error) => {
                 dispatch({ message: error.message, type: ActionTypeEnum.ERROR });
             }).finally(() => {

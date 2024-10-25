@@ -18,7 +18,6 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
     React.useEffect(() => {
         GetLocationDetailsByCode(props.locationCode)
             .then((response) => {
-                console.log(response)
                 setLocationDetail(response)
             }).catch((error) => {
                 console.error(error)
@@ -85,7 +84,7 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                     <Col>
                         <div>
                             <span className="fw-semibold">Quantity: </span>
-                            {locationDetail?.skus?.productDetails[0]?.quantity || "No information yet!"}
+                            {locationDetail?.quantity || "No information yet!"}
                         </div>
                         <div>
                             <span className="fw-semibold">Product Code: </span>

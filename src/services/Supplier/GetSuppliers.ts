@@ -2,7 +2,7 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import Supplier from "../../interface/Entity/Supplier";
 import Order from "../../enum/Order";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface GetSuppliersResponse {
     data: Supplier[];
@@ -25,7 +25,7 @@ interface GetSuppliersProps {
     orderBy?: OrderBy;
 }
 
-const GetSuppliers = async (data?: GetSuppliersProps): Promise<GetSuppliersResponse> => {
+const GetSuppliers = async (data?: GetSuppliersProps): Promise<GetSuppliersResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -36,17 +36,18 @@ const GetSuppliers = async (data?: GetSuppliersProps): Promise<GetSuppliersRespo
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
-        }
-        const response = await axios.get(`${HOST}/suppliers?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=${data?.orderBy || OrderBy.Name}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        } else {
+            const response = await axios.get(`${HOST}/suppliers?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=${data?.orderBy || OrderBy.Name}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        return response.data.data;
+            return response.data.data;
+        }
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

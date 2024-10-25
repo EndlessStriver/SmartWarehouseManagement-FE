@@ -21,8 +21,6 @@ interface IReceiving {
 }
 
 const UpdateReceiveCheck = async (id: string, data: IReceiving) => {
-    console.log(id);
-    // console.log(data);
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -33,13 +31,13 @@ const UpdateReceiveCheck = async (id: string, data: IReceiving) => {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
+        } else {
+            await axios.put(`${HOST}/receive-check/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         }
-
-        await axios.put(`${HOST}/receive-check/${id}`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
     } catch (error) {
         console.error(error);
         if (axios.isAxiosError(error) && error.response) {

@@ -33,13 +33,15 @@ const IssueLog: React.FC = () => {
     React.useEffect(() => {
         GetIssueLogs()
             .then((res) => {
-                setIssueLogs(res.data);
-                setPagination({
-                    limit: res.limit,
-                    offset: res.offset,
-                    totalElementOfPage: res.totalElementOfPage,
-                    totalPage: res.totalPage
-                })
+                if (res) {
+                    setIssueLogs(res.data);
+                    setPagination({
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage,
+                        totalPage: res.totalPage
+                    })
+                }
             }).catch((err) => {
                 console.error(err);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
@@ -49,13 +51,15 @@ const IssueLog: React.FC = () => {
     React.useEffect(() => {
         GetIssueLogs({ offset: pagination.offset })
             .then((res) => {
-                setIssueLogs(res.data);
-                setPagination({
-                    limit: res.limit,
-                    offset: res.offset,
-                    totalElementOfPage: res.totalElementOfPage,
-                    totalPage: res.totalPage
-                })
+                if (res) {
+                    setIssueLogs(res.data);
+                    setPagination({
+                        limit: res.limit,
+                        offset: res.offset,
+                        totalElementOfPage: res.totalElementOfPage,
+                        totalPage: res.totalPage
+                    })
+                }
             }).catch((err) => {
                 console.error(err);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message })

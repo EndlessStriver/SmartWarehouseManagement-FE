@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
-import {checkTokenExpired} from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const DeleteAttributeValue = async (id: number, attributeValueId: string): Promise<void> => {
 
@@ -15,22 +15,22 @@ const DeleteAttributeValue = async (id: number, attributeValueId: string): Promi
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
-        }
-
-        if (returnNameAttribute(id) === "") {
-            throw new Error("Attribute is not found");
-        }
-
-        const response = await axios.delete(`${HOST}/${returnNameAttribute(id)}/${attributeValueId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        } else {
+            if (returnNameAttribute(id) === "") {
+                throw new Error("Attribute is not found");
             }
-        });
 
-        return response.data.data;
+            const response = await axios.delete(`${HOST}/${returnNameAttribute(id)}/${attributeValueId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            return response.data.data;
+        }
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

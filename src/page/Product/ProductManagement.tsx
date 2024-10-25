@@ -44,13 +44,15 @@ export const ProductManagement: React.FC = () => {
         setIsLoading(true)
         GetProducts({ offset: page })
             .then((response) => {
-                setProducts(response.data)
-                setPagination({
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                })
+                if (response) {
+                    setProducts(response.data)
+                    setPagination({
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
@@ -63,13 +65,15 @@ export const ProductManagement: React.FC = () => {
         setIsLoading(true)
         GetProducts()
             .then((response) => {
-                setProducts(response.data)
-                setPagination({
-                    limit: response.limit,
-                    offset: response.offset,
-                    totalPage: response.totalPage,
-                    totalElementOfPage: response.totalElementOfPage
-                })
+                if (response) {
+                    setProducts(response.data)
+                    setPagination({
+                        limit: response.limit,
+                        offset: response.offset,
+                        totalPage: response.totalPage,
+                        totalElementOfPage: response.totalElementOfPage
+                    })
+                }
             }).catch((error) => {
                 console.error(error)
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
@@ -85,16 +89,18 @@ export const ProductManagement: React.FC = () => {
                 .then(() => {
                     return GetProducts();
                 }).then((response) => {
-                    updateProducts(response.data);
-                    updatePagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                    setShowModelConfirmDelete(false);
-                    setProductId("");
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete product successfully" });
+                    if (response) {
+                        updateProducts(response.data);
+                        updatePagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                        setShowModelConfirmDelete(false);
+                        setProductId("");
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete product successfully" });
+                    }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
