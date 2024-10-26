@@ -165,44 +165,26 @@ export const SupplierManagement: React.FC = () => {
         <div className={"position-relative w-100 h-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>Supplier Management</h2>
-                    <p className={"h6"}>Manage your suppliers here</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Nhà Cung Cấp</h2>
+                    <p className={"h6"}>Bạn có thể quản lý nhà cung cấp ở đây</p>
                 </div>
                 <div className="d-flex flex-row gap-5">
                     <Button onClick={() => {
                         setShowDetail(true)
-                    }} variant="info fw-bold text-light">+ NEW</Button>
-                </div>
-            </div>
-            <div className={"d-flex flex-row gap-5 mb-3 justify-content-end"}>
-                <div className={"d-flex flex-row gap-2"}>
-                    <div style={{ width: "150px" }}>
-                        <FormSelect>
-                            {
-                                TypeFind.map((type, index) => {
-                                    return <option key={index} value={type}>{type}</option>
-                                })
-                            }
-                        </FormSelect>
-                    </div>
-                    <FormControl type="text" placeholder="Search name..." style={{ width: "350px" }} />
-                    <Button onClick={() => {
-                    }}>
-                        <FontAwesomeIcon icon={faUndo} />
-                    </Button>
+                    }} variant="info fw-bold text-light">+ Tạo Mới</Button>
                 </div>
             </div>
             <Table striped hover bordered>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Phone</th>
-                        <th>Address</th>
+                        <th>Mã Nhà Cung Cấp</th>
+                        <th>Tên Nhà Cung Cấp</th>
+                        <th>Mô Tả</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Địa Chỉ</th>
                         <th>Email</th>
-                        <th>Action</th>
+                        <th>Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>

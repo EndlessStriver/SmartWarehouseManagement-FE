@@ -266,7 +266,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">{`${supplierId ? "Edit" : "New"}`} Supplier</h2>
+                        <h2 className="fw-bold mb-0">{`${supplierId ? "Chỉnh Sửa Thông Tin" : "Tạo Mới"}`} Nhà Cung Cấp</h2>
                     </div>
                     {supplierId && isEditing ? (
                         <div className="d-flex flex-row gap-2">
@@ -276,7 +276,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                 className="btn btn-primary d-flex align-items-center"
                             >
                                 <FontAwesomeIcon icon={faSave} className="me-2" />
-                                {isSaving ? "Saving..." : "Save"}
+                                {isSaving ? "Đang lưu..." : "Lưu"}
                             </button>
                             <button
                                 disabled={isSaving || isLoading}
@@ -286,7 +286,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                 }}
                                 className="btn btn-secondary"
                             >
-                                Cancel
+                                Hủy
                             </button>
                         </div>
                     ) : supplierId && (
@@ -295,17 +295,17 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                             onClick={() => setIsEditing(true)}
                             className="btn btn-danger fw-bold d-flex align-items-center"
                         >
-                            <FontAwesomeIcon icon={faEdit} className="me-2" /> Edit
+                            <FontAwesomeIcon icon={faEdit} className="me-2" /> Chỉnh Sửa
                         </button>
                     )}
                 </div>
                 <Row className="p-4">
                     <Col md={6}>
                         <div className="p-3 gap-3 rounded mb-1">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Basic Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông Tin Cơ Bản</h5>
                             <Row>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Supplier Name</Form.Label>
+                                    <Form.Label>Tên Nhà Cung Cấp</Form.Label>
                                     <Form.Control
                                         className="py-3"
                                         type="text"
@@ -314,12 +314,12 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                         onChange={handleChange}
                                         disabled={supplierId !== "" && !isEditing}
                                         required
-                                        placeholder='Enter supplier name'
+                                        placeholder='Nhập tên nhà cung cấp...'
                                     />
                                 </Form.Group>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Phone</Form.Label>
+                                        <Form.Label>Số điện thoại</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="tel"
@@ -328,7 +328,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter phone number'
+                                            placeholder='Nhập số điện thoại...'
                                         />
                                     </Form.Group>
                                 </Col>
@@ -343,12 +343,12 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter email'
+                                            placeholder='Nhập email...'
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Address</Form.Label>
+                                    <Form.Label>Địa chỉ</Form.Label>
                                     <Form.Control
                                         className="py-3"
                                         type="text"
@@ -357,7 +357,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                         onChange={handleChange}
                                         disabled={supplierId !== "" && !isEditing}
                                         required
-                                        placeholder='Enter address'
+                                        placeholder='Nhập địa chỉ...'
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
@@ -370,17 +370,17 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                         onChange={handleChange}
                                         disabled={supplierId !== "" && !isEditing}
                                         required
-                                        placeholder='Enter website'
+                                        placeholder='Nhập website...'
                                     />
                                 </Form.Group>
                             </Row>
                         </div>
                         <div className="p-3 gap-3 rounded mb-1">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Contact Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông Tin Liên Lạc</h5>
                             <Row>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Contact Person</Form.Label>
+                                        <Form.Label>Tên người đại diện</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
@@ -389,13 +389,13 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter contact person'
+                                            placeholder='Nhập tên người đại diện...'
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Supplier Code</Form.Label>
+                                        <Form.Label>Mã nhà cung cấp</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
@@ -404,7 +404,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter supplier code'
+                                            placeholder='Nhập mã nhà cung cấp...'
                                         />
                                     </Form.Group>
                                 </Col>
@@ -413,9 +413,9 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                     </Col>
                     <Col md={6} className="rounded">
                         <div className="p-3 gap-3 rounded mb-1">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Location Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông Tin Vị Trí</h5>
                             <Form.Group className="mb-3">
-                                <Form.Label>Location</Form.Label>
+                                <Form.Label>Vị trí</Form.Label>
                                 <Form.Control
                                     className="py-3"
                                     type="text"
@@ -424,16 +424,16 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                     onChange={handleChange}
                                     disabled={supplierId !== "" && !isEditing}
                                     required
-                                    placeholder='Enter location'
+                                    placeholder='Nhập vị trí...'
                                 />
                             </Form.Group>
                         </div>
                         <div className="p-3 gap-3 rounded mb-1">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Status Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Trạng Thái Nhà Cung Cấp</h5>
                             <Row>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Status</Form.Label>
+                                        <Form.Label>Trạng thái</Form.Label>
                                         <Form.Select
                                             className="py-3"
                                             value={formData.status + ""}
@@ -449,7 +449,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                 </Col>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Is Active</Form.Label>
+                                        <Form.Label>Kích hoạt</Form.Label>
                                         <Form.Select
                                             className="py-3"
                                             value={formData.isActive + ""}
@@ -458,19 +458,19 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             disabled={supplierId !== "" && !isEditing}
                                             required
                                         >
-                                            <option value="true">Active</option>
-                                            <option value="false">Disable</option>
+                                            <option value="true">Kích Hoạt</option>
+                                            <option value="false">Vô Hiệu</option>
                                         </Form.Select>
                                     </Form.Group>
                                 </Col>
                             </Row>
                         </div>
                         <div className="p-3 gap-3 rounded mb-1">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Additional Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông Tin Khác</h5>
                             <Row>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Tax ID</Form.Label>
+                                        <Form.Label>Mã TAX</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
@@ -479,13 +479,13 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter tax id'
+                                            placeholder='Nhập mã tax...'
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Col md={6}>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Notes</Form.Label>
+                                        <Form.Label>Ghi chú</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
@@ -494,19 +494,19 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                             onChange={handleChange}
                                             disabled={supplierId !== "" && !isEditing}
                                             required
-                                            placeholder='Enter notes'
+                                            placeholder='Nhập ghi chú...'
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Description</Form.Label>
+                                    <Form.Label>Mô tả</Form.Label>
                                     <textarea
                                         className="form-control p-3"
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
                                         disabled={supplierId !== "" && !isEditing}
-                                        placeholder="Enter description"
+                                        placeholder="Nhập mô tả..."
                                         rows={3}
                                     />
                                 </Form.Group>
@@ -518,7 +518,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                     disabled={isSaving || (supplierId !== "")}
                                     variant="primary"
                                     className='form-control fw-bold py-3'>
-                                    {isSaving ? "Creating..." : "Create"}
+                                    {isSaving ? "Đang tạo..." : "Tạo Mới"}
                                 </Button>
                             }
                         </div>
