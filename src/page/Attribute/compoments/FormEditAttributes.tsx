@@ -81,7 +81,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                             offset: response.offset,
                             totalElementOfPage: response.totalElementOfPage
                         });
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Attribute value successfully" });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật giá trị thuộc tính thành công" });
                         setEditAttributeValue(false);
                     }
                 }).catch((error) => {
@@ -103,7 +103,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                             offset: response.offset,
                             totalElementOfPage: response.totalElementOfPage
                         });
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Add Attribute value successfully" });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Thêm giá trị thuộc tính thành công" });
                         setTimeout(() => {
                             hideOverlay();
                         }, 1000)
@@ -119,15 +119,15 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
 
     const validate1 = (): boolean => {
         if (!formData.name) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Name is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên" });
             return false;
         }
         if (!formData.description) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Description is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả" });
             return false;
         }
         if (!formData.sizeCode) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Code is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mã code" });
             return false;
         }
         return true;

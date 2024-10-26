@@ -81,7 +81,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         });
                         setAttributeValueId("");
                         setShowModelConfirmDelete(false);
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete attribute value successfully" });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa thành công" });
                     }
                 }).catch((error) => {
                     console.error(error);
@@ -90,7 +90,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                     setIsLoadingDelete(false);
                 })
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Attribute value delete failed" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa thất bại" });
         }
     }
 
@@ -218,7 +218,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         <h2 className="mb-0 fw-bold">{getAttributeName(attributeId)}</h2>
                     </div>
                     <div className="d-flex flex-row gap-3">
-                        <Button onClick={handleAddAttributeValue} variant="info text-light fw-bold">NEW +</Button>
+                        <Button onClick={handleAddAttributeValue} variant="info text-light fw-bold">+ Tạo Mới</Button>
                     </div>
                 </div>
                 <Table hover striped bordered>
