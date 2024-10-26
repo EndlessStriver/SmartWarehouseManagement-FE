@@ -133,55 +133,55 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
 
     const validate1 = (): boolean => {
         if (!formData.fullName) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Fullname is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập họ và tên" });
             return false;
         }
         if (!formData.dateOfBirth) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Date of birth is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập ngày sinh" });
             return false;
         }
         if (!formData.gender) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Gender is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn giới tính" });
             return false;
         }
         if (!formData.roleName) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Role is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn quyền hạn" });
             return false;
         }
         if (!formData.email) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Email is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập email" });
             return false;
         }
         if (!formData.phoneNumber) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Phone number is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập số điện thoại" });
             return false;
         }
         if (!formData.position) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Position is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chức vự" });
             return false;
         }
         if (!formData.address) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Address is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập địa chỉ" });
             return false;
         }
         if (!formData.username && !userId) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Username is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên tài khoản" });
             return false;
         }
         if (!formData.roleName) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Role is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn quyền hạn" });
             return false;
         }
         if (!formData.password && !userId) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Password is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mật khẩu" });
             return false;
         }
         if (!formData.confirmPassword && !userId) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Confirm password is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng xác nhận mật khẩu" });
             return false;
         }
         if (formData.password !== formData.confirmPassword && !userId) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Password and confirm password not match" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Mật khẩu xác nhận không chính xác" });
             return false;
         }
         return true;
@@ -212,6 +212,14 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         if (checkUsername && !userId) {
             dispatch({ type: ActionTypeEnum.ERROR, message: checkUsername });
             return false;
+        }
+        if (formData.dateOfBirth) {
+            const currentDate = new Date();
+            const dateOfBirth = new Date(formData.dateOfBirth);
+            if (dateOfBirth > currentDate) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày sinh không được vượt quá ngày hiện tại." });
+                return false;
+            }
         }
         return true;
     }
@@ -257,16 +265,16 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
 
     const formartDataRegister = (): DataTypeCreateUserAdmin | null => {
         try {
-            if (!formData.email) throw new Error("Email is required");
-            if (!formData.password) throw new Error("Password is required");
-            if (!formData.fullName) throw new Error("Fullname is required");
-            if (!formData.phoneNumber) throw new Error("Phone number is required");
-            if (!formData.roleName) throw new Error("Role is required");
-            if (!formData.position) throw new Error("Position is required");
-            if (!formData.address) throw new Error("Address is required");
-            if (!formData.dateOfBirth) throw new Error("Date of birth is required");
-            if (!formData.gender) throw new Error("Gender is required");
-            if (!formData.username) throw new Error("Username is required");
+            if (!formData.email) throw new Error("Vui lòng nhập email");
+            if (!formData.password) throw new Error("Vui lòng nhập mật khẩu");
+            if (!formData.fullName) throw new Error("Vui lòng nhập họ và tên");
+            if (!formData.phoneNumber) throw new Error("Vui lòng nhập số điện thoại");
+            if (!formData.roleName) throw new Error("Vui lòng chọn quyền hạn");
+            if (!formData.position) throw new Error("Vui lòng nhập chức vụ");
+            if (!formData.address) throw new Error("Vui lòng nhập địa chỉ");
+            if (!formData.dateOfBirth) throw new Error("Vui lòng nhập ngày sinh");
+            if (!formData.gender) throw new Error("Vui lòng chọn giới tính");
+            if (!formData.username) throw new Error("Vui lòng nhập tên tài khoản");
             return {
                 email: formData.email,
                 password: formData.password,
@@ -329,7 +337,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                 offset: response.offset,
                                 totalElementOfPage: response.totalElementOfPage
                             })
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update user successfully!" });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật người dùng thành công!" });
                             setEditUser(false);
                         }
                     }).catch((err) => {
@@ -351,7 +359,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                 offset: response.offset,
                                 totalElementOfPage: response.totalElementOfPage
                             })
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create user successfully!" });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo người dùng thành công!" });
                             setTimeout(() => {
                                 hideOverlay();
                             }, 1000);
