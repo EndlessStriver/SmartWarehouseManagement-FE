@@ -152,21 +152,21 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
             <div className="rounded p-4 shadow" style={{ width: "800px" }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h2 className="fw-bold mb-0">
-                        {`${attributeDetailId ? "Edit" : "Add"} Value`}
+                        {`${attributeDetailId ? "Chỉnh Sửa" : "Thêm Mới"}`}
                     </h2>
                     <CloseButton onClick={() => hideOverlay()} />
                 </div>
 
                 <div className="border rounded shadow-sm p-4 mb-4">
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                        <span className="fw-semibold h6">Attribute Value Information</span>
+                        <span className="fw-semibold h6">Thông tin</span>
                         {attributeDetailId && (
                             <button
                                 className="btn btn-danger btn-sm"
                                 disabled={editAttributeValue}
                                 onClick={() => setEditAttributeValue(true)}
                             >
-                                <FontAwesomeIcon icon={faEdit} className="me-1" /> Edit
+                                <FontAwesomeIcon icon={faEdit} className="me-1" /> Chỉnh sửa
                             </button>
                         )}
                     </div>
@@ -174,7 +174,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Name</Form.Label>
+                                <Form.Label>Tên</Form.Label>
                                 <Form.Control
                                     className="p-3"
                                     type="text"
@@ -182,13 +182,13 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                                     name="name"
                                     onChange={handleChange}
                                     disabled={!editAttributeValue && attributeDetailId !== ""}
-                                    placeholder="Enter name"
+                                    placeholder="Nhập tên..."
                                 />
                             </Form.Group>
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Code</Form.Label>
+                                <Form.Label>Mã Đại Diện</Form.Label>
                                 <Form.Control
                                     className="p-3"
                                     type="text"
@@ -196,21 +196,21 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                                     name="sizeCode"
                                     onChange={handleChange}
                                     disabled={!editAttributeValue && attributeDetailId !== ""}
-                                    placeholder="Enter code"
+                                    placeholder="Nhập mã đại diện..."
                                 />
                             </Form.Group>
                         </Col>
                     </Row>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Description</Form.Label>
+                        <Form.Label>Mô Tả</Form.Label>
                         <textarea
                             className="form-control p-3"
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
                             disabled={!editAttributeValue && attributeDetailId !== ""}
-                            placeholder="Enter description"
+                            placeholder="Nhập mô tả..."
                             rows={3}
                         />
                     </Form.Group>
@@ -221,7 +221,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                                 onClick={() => setEditAttributeValue(false)}
                                 disabled={loading}
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 className="btn btn-primary"
@@ -232,7 +232,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                                 }}
                                 disabled={loading}
                             >
-                                Save
+                                Lưu
                             </button>
                         </div>
                     )}
@@ -248,7 +248,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                             }}
                             disabled={loading || (attributeDetailId !== "")}
                         >
-                            Create
+                            Tạo
                         </Button>
                     )}
                 </div>

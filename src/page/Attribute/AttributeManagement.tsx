@@ -20,8 +20,8 @@ export const AttributeManagement: React.FC = () => {
         <div>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>Attribute Management</h2>
-                    <p className={"h6"}>Add, edit, or delete attributes</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Thuộc Tính Sản Phẩm</h2>
+                    <p className={"h6"}>Bạn có thể thêm, sửa, xóa thuộc tính sản phẩm</p>
                 </div>
             </div>
             <AttributeSquares editAttribute={handleEdit} />

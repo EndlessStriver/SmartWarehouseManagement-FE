@@ -13,9 +13,9 @@ import {
     faPalette,
     faPencilAlt, faRuler,
     faTag,
-    faTrash, faUndo
+    faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, FormControl, FormSelect, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
@@ -26,8 +26,6 @@ interface AttributeValueManagementProps {
     handleCancelEditAttribute: () => void;
     attributeId: number;
 }
-
-const TypeFind = ["Name", "Description", "Size Code"];
 
 export const AttributeValueManagement: React.FC<AttributeValueManagementProps> = ({ handleCancelEditAttribute, attributeId }) => {
 
@@ -141,35 +139,35 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                 return (
                     <div className={"d-flex flex-row align-items-center gap-3"}>
                         <FontAwesomeIcon icon={faPalette} />
-                        <span className="d-block">Color</span>
+                        <span className="d-block">Màu Sắc</span>
                     </div>
                 )
             case 2:
                 return (
                     <div className={"d-flex flex-row align-items-center gap-3"}>
                         <FontAwesomeIcon icon={faCubes} />
-                        <span className="d-block">Model</span>
+                        <span className="d-block">Mẫu Mã</span>
                     </div>
                 )
             case 3:
                 return (
                     <div className={"d-flex flex-row align-items-center gap-3"}>
                         <FontAwesomeIcon icon={faTag} />
-                        <span className="d-block">Brand</span>
+                        <span className="d-block">Thương Hiệu</span>
                     </div>
                 )
             case 4:
                 return (
                     <div className={"d-flex flex-row align-items-center gap-3"}>
                         <FontAwesomeIcon icon={faRuler} />
-                        <span className="d-block">Size</span>
+                        <span className="d-block">Kích cỡ</span>
                     </div>
                 )
             case 5:
                 return (
                     <div className={"d-flex flex-row align-items-center gap-3"}>
                         <FontAwesomeIcon icon={faList} />
-                        <span className="d-block">Category</span>
+                        <span className="d-block">Thể Loại</span>
                     </div>
                 )
             default:
@@ -223,32 +221,14 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         <Button onClick={handleAddAttributeValue} variant="info text-light fw-bold">NEW +</Button>
                     </div>
                 </div>
-                <div className={"d-flex flex-row gap-5 mb-3 justify-content-end"}>
-                    <div className={"d-flex flex-row gap-2"}>
-                        <div style={{ width: "150px" }}>
-                            <FormSelect>
-                                {
-                                    TypeFind.map((type, index) => {
-                                        return <option key={index} value={type}>{type}</option>
-                                    })
-                                }
-                            </FormSelect>
-                        </div>
-                        <FormControl type="text" placeholder="Search name..." style={{ width: "350px" }} />
-                        <Button onClick={() => {
-                        }}>
-                            <FontAwesomeIcon icon={faUndo} />
-                        </Button>
-                    </div>
-                </div>
                 <Table hover striped bordered>
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Action</th>
+                            <th>Mã</th>
+                            <th>Tên</th>
+                            <th>Mô Tả</th>
+                            <th>Hành Động</th>
                         </tr>
                     </thead>
                     <tbody>

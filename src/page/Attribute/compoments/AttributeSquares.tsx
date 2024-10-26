@@ -16,11 +16,11 @@ interface AttributeSquaresProps {
 
 const AttributeSquares: React.FC<AttributeSquaresProps> = ({ editAttribute }) => {
     const attributes: Attribute[] = [
-        { id: 1, name: 'Color', icon: faPalette },
-        { id: 2, name: 'Model', icon: faCubes },
-        { id: 3, name: 'Brand', icon: faTag },
-        { id: 4, name: 'Size', icon: faRuler },
-        { id: 5, name: 'Category', icon: faList },
+        { id: 1, name: 'Màu Sắc', icon: faPalette },
+        { id: 2, name: 'Mẫu Mã', icon: faCubes },
+        { id: 3, name: 'Thương Hiệu', icon: faTag },
+        { id: 4, name: 'Kích Cỡ', icon: faRuler },
+        { id: 5, name: 'Thể Loại', icon: faList },
     ];
 
     return (
