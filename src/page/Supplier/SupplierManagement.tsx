@@ -92,7 +92,7 @@ export const SupplierManagement: React.FC = () => {
                         });
                         setShowConfirmDelete(false);
                         setSupplierId("");
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete supplier successfully" });
+                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa nhà cung cấp thành công" });
                     }
                 }).catch((error) => {
                     console.error(error);
@@ -101,7 +101,7 @@ export const SupplierManagement: React.FC = () => {
                     setIsLoadingDelete(false);
                 })
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Supplier delete failed" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa nhà cung cấp thất bại" });
         }
     }
 
@@ -199,7 +199,7 @@ export const SupplierManagement: React.FC = () => {
             {
                 showConfirmDelete &&
                 <ModelConfirmDelete
-                    message={"Are you sure delete this supplier?"}
+                    message={"Bạn có chắc chắn muốn xóa nhà cung cấp này?"}
                     onConfirm={handelDeleteSupplier}
                     onClose={() => {
                         setShowConfirmDelete(false);

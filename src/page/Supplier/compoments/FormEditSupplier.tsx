@@ -63,47 +63,47 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
 
     const validate1 = () => {
         if (!formData.name) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Name is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên nhà cung cấp" });
             return true;
         }
         if (!formData.phone) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Phone is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập số điện thoại" });
             return true;
         }
         if (!formData.email) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Email is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập email" });
             return true;
         }
         if (!formData.address) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Address is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập địa chỉ" });
             return true;
         }
         if (!formData.website) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Website is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập website" });
             return true;
         }
         if (!formData.contactPerson) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Contact person is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập người đại diện" });
             return true;
         }
         if (!formData.supplierCode) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Supplier code is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng Nhập mã nhà cung cấp" });
             return true;
         }
         if (!formData.location) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Location is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập vị trí" });
             return true;
         }
         if (!formData.taxId) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Tax id is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tax" });
             return true;
         }
         if (!formData.notes) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Notes is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập ghi chú" });
             return true;
         }
         if (!formData.description) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Description is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả" });
             return true;
         }
         return false;
@@ -182,7 +182,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                 totalElementOfPage: response.totalElementOfPage,
                                 totalPage: response.totalPage
                             });
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update Supplier successfully" });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật nhà cung cấp thành công" });
                             setDataDefault(formData);
                             setIsEditing(false);
                         }
@@ -219,7 +219,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                                 totalElementOfPage: response.totalElementOfPage,
                                 totalPage: response.totalPage
                             });
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create Supplier successfully" });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo nhà cung cấp thành công" });
                             setTimeout(() => {
                                 hideOverlay();
                             }, 1000);
