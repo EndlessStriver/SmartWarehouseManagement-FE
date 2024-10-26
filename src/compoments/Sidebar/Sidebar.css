@@ -78,6 +78,7 @@
 .sidebar-submenu {
     display: none;
     padding-left: 20px;
+    margin-left: 30px;
 }
 
 .show-submenu {
