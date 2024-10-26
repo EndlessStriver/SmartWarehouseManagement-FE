@@ -71,9 +71,8 @@ export const SKUManagement: React.FC = () => {
             <tr key={sku.skuCode}>
                 <td>{index + 1}</td>
                 <td>{sku.skuCode}</td>
-                <td>{sku.batchCode}</td>
-                <td>{sku.weight}</td>
-                <td>{sku.dimension}</td>
+                <td>{Number(sku.weight).toLocaleString()} (g)</td>
+                <td>{sku.dimension} (cm)</td>
                 <td style={{ maxWidth: "400px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {sku.description}
                 </td>
@@ -84,18 +83,17 @@ export const SKUManagement: React.FC = () => {
     return (
         <div>
             <div className={"mb-4"}>
-                <h1 className="h2 fw-bold">SKU Management</h1>
-                <p className="h6">Manage your SKU codes here</p>
+                <h1 className="h2 fw-bold">Quản Lý Mã SKU</h1>
+                <p className="h6">Bạn có thể quản lý mã SKU ở đây</p>
             </div>
             <Table hover bordered striped>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>SKU Code</th>
-                        <th>Batch Code</th>
-                        <th>Weight</th>
-                        <th>Dimension</th>
-                        <th>Description</th>
+                        <th>Mã SKU</th>
+                        <th>Khối Lượng</th>
+                        <th>Kích Thước</th>
+                        <th>Mô Tả</th>
                     </tr>
                 </thead>
                 <tbody>
