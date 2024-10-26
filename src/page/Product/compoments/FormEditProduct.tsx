@@ -528,7 +528,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">{`${productId ? "Edit Product" : "New Product"}`}</h2>
+                        <h2 className="fw-bold mb-0">{`${productId ? "Chỉnh Sửa Sản Phẩm" : "Tạo Mới Sản Phẩm"}`}</h2>
                     </div>
                     {
                         productId ?
@@ -541,7 +541,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                             handleSubmit()
                                         }}
                                         disabled={!CheckDataChange()}
-                                    >Save</Button>
+                                    >Lưu</Button>
                                     <Button
                                         variant="secondary"
                                         className="fw-semibold"
@@ -553,7 +553,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                             }));
                                             setImages([]);
                                         }}
-                                    >Cancel</Button>
+                                    >Hủy</Button>
                                 </div>
                                 :
                                 <Button
@@ -562,24 +562,24 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     onClick={() => setIsEdit(true)}
                                 >
                                     <FontAwesomeIcon icon={faEdit} className={"me-2"} />
-                                    Edit
+                                    Chỉnh Sửa
                                 </Button>
                             :
                             <Button
                                 variant="primary"
                                 className="fw-semibold"
                                 onClick={handleSubmit}
-                            >Create</Button>
+                            >Tạo</Button>
                     }
                 </div>
                 <Row className="px-4">
                     <Col md={6} className="p-3">
-                        <h5 className="fw-semibold border-bottom pb-2 mb-3">Product Details</h5>
+                        <h5 className="fw-semibold border-bottom pb-2 mb-3">Chi Tiết Sản Phẩm</h5>
                         <Form.Group className="mb-3">
-                            <Form.Label>Product Name</Form.Label>
+                            <Form.Label>Tên Sản Phẩm</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Enter product name"
+                                placeholder="Nhâp tên sản phẩm..."
                                 className="py-3"
                                 name="name"
                                 onChange={handleChangeInput}
@@ -590,10 +590,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <div className="d-flex flex-column">
-                                <Form.Label>Description</Form.Label>
+                                <Form.Label>Mô Tả</Form.Label>
                                 <textarea
                                     className="form-control py-3"
-                                    placeholder="Enter description"
+                                    placeholder="Nhập mô tả sản phẩm..."
                                     cols={3}
                                     name="description"
                                     onChange={handleChangeInput}
@@ -606,7 +606,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Unit</Form.Label>
+                                    <Form.Label>Đơn Vị Tính</Form.Label>
                                     <Form.Select
                                         className="py-3"
                                         name="unit"
@@ -615,7 +615,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         value={formData.unit}
                                         disabled={productId !== "" && !isEdit}
                                     >
-                                        <option value={""}>Select unit...</option>
+                                        <option value={""}>Chọn đơn vị tính...</option>
                                         {Utils.map((unit) => (
                                             <option key={unit} value={unit}>{unit}</option>
                                         ))}
@@ -624,10 +624,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Weight</Form.Label>
+                                    <Form.Label>Trọng Lượng</Form.Label>
                                     <Form.Control
                                         type="number"
-                                        placeholder="Enter weight"
+                                        placeholder="Nhập trọng lượng..."
                                         className="py-3"
                                         name="weight"
                                         onChange={handleChangeInput}
@@ -639,10 +639,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             </Col>
                         </Row>
                         <Form.Group className="mb-3">
-                            <Form.Label>Product Code</Form.Label>
+                            <Form.Label>Mã Sản Phẩm</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Enter product code"
+                                placeholder="Nhập mã sản phẩm..."
                                 className="py-3"
                                 name="productCode"
                                 onChange={handleChangeInput}
@@ -652,11 +652,12 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Demension</Form.Label>
+                            <Form.Label>Kích Thước</Form.Label>
                             <div className="d-flex flex-row gap-3 align-items-center">
                                 <Form.Control
                                     type="number"
-                                    placeholder="Enter Lenght"
+                                    min={0}
+                                    placeholder="Nhập chiều dài..."
                                     className="py-3"
                                     name="length"
                                     onChange={handleChangeInput}
@@ -667,7 +668,8 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 <span>X</span>
                                 <Form.Control
                                     type="number"
-                                    placeholder="Enter Width"
+                                    placeholder="Nhập chiều rộng..."
+                                    min={0}
                                     className="py-3"
                                     name="width"
                                     onChange={handleChangeInput}
@@ -678,7 +680,8 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 <span>X</span>
                                 <Form.Control
                                     type="number"
-                                    placeholder="Enter Height"
+                                    placeholder="Nhập chiều cao..."
+                                    min={0}
                                     className="py-3"
                                     name="height"
                                     onChange={handleChangeInput}
@@ -691,12 +694,12 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                     </Col>
                     <Col md={6}>
                         <Row className="p-3">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Product Attributes</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thuộc Tính Sản Phẩm</h5>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Color</Form.Label>
+                                    <Form.Label>Màu sắc</Form.Label>
                                     <Select
-                                        placeholder="Enter name color"
+                                        placeholder="Nhâp màu sản phẩm..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -713,9 +716,9 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Model</Form.Label>
+                                    <Form.Label>Mẫu mã</Form.Label>
                                     <Select
-                                        placeholder="Enter name model"
+                                        placeholder="Nhập mẫu sản phẩm..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -734,9 +737,9 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Branch</Form.Label>
+                                    <Form.Label>Thượng Hiệu</Form.Label>
                                     <Select
-                                        placeholder="Enter name branch"
+                                        placeholder="Nhập tên thương hiệu..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -753,9 +756,9 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Size</Form.Label>
+                                    <Form.Label>Kích cỡ</Form.Label>
                                     <Select
-                                        placeholder="Enter name size"
+                                        placeholder="Nhập kích cỡ..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -774,12 +777,12 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             </Col>
                         </Row>
                         <Row className="p-3">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Classification And Supplier</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Phân Loại Và Nhà Cung Cấp</h5>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Category</Form.Label>
+                                    <Form.Label>Loại sản phẩm</Form.Label>
                                     <Select
-                                        placeholder="Enter name category"
+                                        placeholder="Nhập loại sản phẩm..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -798,9 +801,9 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Supplier</Form.Label>
+                                    <Form.Label>Nhà cung cấp</Form.Label>
                                     <Select
-                                        placeholder="Enter name supplier"
+                                        placeholder="Nhập tên nhà cung cấp..."
                                         isClearable
                                         styles={{
                                             control: (provided) => ({
@@ -824,7 +827,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                     <div className="border-bottom pb-2 mb-3 d-flex justify-content-between">
                         <h5 className="fw-semibold d-flex align-items-center">
                             <FontAwesomeIcon icon={faImages} className="me-2" />
-                            Images
+                            Danh Sách Ảnh
                         </h5>
                         <Button
                             variant="outline-primary"
@@ -833,7 +836,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 uploadRef.current?.click()
                             }}
                             disabled={productId !== "" && !isEdit}
-                        >+ Add Images</Button>
+                        >+ Thêm Ảnh</Button>
                     </div>
                     <Form.Group className="mb-3">
                         <Form.Control
@@ -877,7 +880,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 />
                                 {
                                     checkImageNew(image.key) &&
-                                    <span className="badge text-bg-danger position-absolute top-0 start-0">New</span>
+                                    <span className="badge text-bg-danger position-absolute top-0 start-0">Ảnh mới</span>
                                 }
                             </div>
                         ))}
@@ -887,7 +890,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         <div
                             className="d-flex flex-column align-items-center justify-content-center gap-2 text-secondary">
                             <FontAwesomeIcon icon={faImage} size="3x" />
-                            <span>No images</span>
+                            <span>Không Có Hình Ảnh!</span>
                         </div>
                     }
                     {
@@ -897,7 +900,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 onClick={handleAddNewImage}
                                 className={"btn btn-primary"}
                             >
-                                Upload
+                                Đăng tải
                             </div>
                             <div
                                 onClick={() => {
@@ -908,7 +911,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 }}
                                 className={"btn btn-secondary"}
                             >
-                                Cancel
+                                Hủy
                             </div>
                         </div>
                     }

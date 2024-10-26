@@ -150,40 +150,22 @@ export const ProductManagement: React.FC = () => {
         <div className={"position-relative h-100 w-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>Product Management</h2>
-                    <p className={"h6"}>Manage your products here</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Sản Phẩm</h2>
+                    <p className={"h6"}>Bạn có thể quản lý các danh mục sản phẩm ở đây</p>
                 </div>
                 <div className="d-flex flex-row gap-3">
-                    <Button onClick={() => setShowFormEdit(true)} variant="info text-light fw-bold">+ NEW</Button>
-                </div>
-            </div>
-            <div className={"d-flex flex-row gap-5 mb-3 justify-content-end"}>
-                <div className={"d-flex flex-row gap-2"}>
-                    <div style={{ width: "150px" }}>
-                        <FormSelect>
-                            {
-                                TypeFind.map((type, index) => {
-                                    return <option key={index} value={type}>{type}</option>
-                                })
-                            }
-                        </FormSelect>
-                    </div>
-                    <FormControl type="text" placeholder="Search name..." style={{ width: "350px" }} />
-                    <Button onClick={() => {
-                    }}>
-                        <FontAwesomeIcon icon={faUndo} />
-                    </Button>
+                    <Button onClick={() => setShowFormEdit(true)} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
             </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Code</th>
-                        <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Unit</th>
-                        <th>Actions</th>
+                        <th>Mã Sản Phẩm</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Mô Tả</th>
+                        <th>Đơn Vị Tính</th>
+                        <th>Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>

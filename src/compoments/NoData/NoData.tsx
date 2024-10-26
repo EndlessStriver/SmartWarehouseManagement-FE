@@ -12,7 +12,7 @@ export const NoData: React.FC<NoDataProps> = (props) => {
     <div className={`no-data-container ${props.className}`}>
       <div className={`d-flex flex-column justify-content-center align-items-center gap-3 text-secondary`}>
         <FontAwesomeIcon icon={faBoxOpen} size={"2x"} />
-        <p>NO DATA</p>
+        <p>KHÔNG CÓ DỮ LIỆU!</p>
       </div>
     </div>
   );
