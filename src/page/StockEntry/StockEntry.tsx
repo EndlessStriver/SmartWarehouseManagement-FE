@@ -145,25 +145,25 @@ const StockEntry: React.FC = () => {
         <div className={"w-100 h-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>Stock Entry Management</h2>
-                    <p className={"h6"}>Manage stock entry and their status</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Nhập Kho</h2>
+                    <p className={"h6"}>Bạn có thể quản lý nhập kho ở đây</p>
                 </div>
                 <div className="d-flex flex-row gap-3">
                     <Button onClick={() => {
                         setShowFormEdit(true);
-                    }} variant="info text-light fw-bold">+ NEW</Button>
+                    }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
             </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Receive Code</th>
-                        <th>Receive By</th>
-                        <th>Receive Date</th>
-                        <th>Status</th>
-                        <th>Total Amount</th>
-                        <th>Action</th>
+                        <th>Mã Phiếu Nhập Kho</th>
+                        <th>Tạo Bởi</th>
+                        <th>Ngày Tạo</th>
+                        <th>Trạng Thái</th>
+                        <th>Tổng Tiền</th>
+                        <th>Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>

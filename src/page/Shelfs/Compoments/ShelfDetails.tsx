@@ -83,13 +83,13 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
             >
                 <div>
                     <div className="h4">{location.locationCode}</div>
-                    <div className="h6">Used {((location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
+                    <div className="h6">Đã sử dụng {((location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
                 </div>
                 {
                     location.occupied ?
-                        <Badge className="position-absolute top-0 end-0" bg="danger">Occupied</Badge>
+                        <Badge className="position-absolute top-0 end-0" bg="danger">Đang sử dụng</Badge>
                         :
-                        <Badge className="position-absolute top-0 end-0" bg="primary">Unoccupied</Badge>
+                        <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
                 }
             </div>
         )

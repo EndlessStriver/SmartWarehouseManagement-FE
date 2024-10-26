@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faLocationArrow } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faBoxes } from '@fortawesome/free-solid-svg-icons';
 import { SidebarItem } from "./compoments/SidebarItem";
 import { SidebarNav } from "./compoments/SidebarNav";
 import { SidebarLogo } from "./compoments/SidebarLogo";
@@ -16,38 +16,37 @@ export const Sidebar: React.FC = () => {
                 <SidebarItem
                     href={"/"}
                     icon={<FontAwesomeIcon icon={faTachometerAlt} />}
-                    label={"Dashboard"}
+                    label={"Bảng điều khiển"}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faWarehouse} />}
-                    label={"Inventory"}
+                    label={"Quản lý kho"}
                     subItems={
                         [
-                            { href: "/stock-entry", lable: "Stock Entry" },
-                            { href: "/issue-log", lable: "Issue Log" },
-                            { href: "/inventory-tracking", lable: "Inventory Tracking" },
+                            { href: "/stock-entry", lable: "Nhập Kho" },
+                            { href: "/inventory-tracking", lable: "Hàng Tồn Kho" },
                         ]
                     }
                 />
                 <SidebarItem
-                    icon={<FontAwesomeIcon icon={faLocationArrow} />}
-                    label={"Location"}
-                    href={"/location"}
+                    icon={<FontAwesomeIcon icon={faBoxes} />}
+                    label={"Kệ hàng"}
+                    href={"/shelfs"}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faBox} />}
-                    label={"Product"}
+                    label={"Sản phẩm"}
                     subItems={
                         [
-                            { href: "/Product-management", lable: "Manage Product" },
-                            { href: "/management-Attribute", lable: "Manage Attributes" },
+                            { href: "/Product-management", lable: "Danh mục sản phẩm" },
+                            { href: "/management-Attribute", lable: "Thuộc tính sản phẩm" },
                         ]
                     }
                 />
                 <SidebarItem
                     href={"/management-Supplier"}
                     icon={<FontAwesomeIcon icon={faTruck} />}
-                    label={"Supplier"}
+                    label={"Nhà cung cấp"}
                 />
                 <SidebarItem
                     href={"/management-SKU"}
@@ -57,7 +56,7 @@ export const Sidebar: React.FC = () => {
                 <SidebarItem
                     href={"/management-user"}
                     icon={<FontAwesomeIcon icon={faUser} />}
-                    label={"User"}
+                    label={"Người dùng"}
                 />
             </SidebarNav>
         </div>

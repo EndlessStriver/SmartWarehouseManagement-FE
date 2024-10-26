@@ -38,9 +38,9 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                     <div>
                         {
                             locationDetail?.occupied ?
-                                <Badge bg="danger">Occupied</Badge>
+                                <Badge bg="danger">Đang sử dụng</Badge>
                                 :
-                                <Badge bg="primary">Unoccupied</Badge>
+                                <Badge bg="primary">Đang trống</Badge>
                         }
                     </div>
                 </div>

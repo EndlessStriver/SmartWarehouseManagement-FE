@@ -17,7 +17,7 @@ import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete
 import DeleteShelf from "../../services/Location/DeleteShelf";
 import './css/StorageManagementPage.css'
 
-const LocationPage: React.FC = () => {
+const ShelfsPage: React.FC = () => {
 
     const dispatch = useDispatchMessage();
     const [shelfId, setShelfId] = React.useState<string>('')
@@ -136,8 +136,6 @@ const LocationPage: React.FC = () => {
                     }}
                 />
                 <h4 className="fw-bold">{shelf.name}</h4>
-                <h6>MaxColumns: {shelf.maxColumns}</h6>
-                <h6>MaxRows: {shelf.maxLevels}</h6>
                 <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
                     {shelf.typeShelf}
                 </Badge>
@@ -157,13 +155,13 @@ const LocationPage: React.FC = () => {
         <div className={"position-relative h-100 w-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>Shelf Management</h2>
-                    <p className={"h6"}>Manager your shelf here</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Kệ</h2>
+                    <p className={"h6"}>Bạn có thể quản lý kệ của bạn ở đây</p>
                 </div>
                 <div>
                     <Button onClick={() => {
                         setShowModelCreateShelf(true)
-                    }} variant="info text-light fw-bold">+ NEW</Button>
+                    }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
             </div>
             <div className="d-flex justify-content-center">
@@ -211,7 +209,7 @@ const LocationPage: React.FC = () => {
             {
                 showModelConfirmDelete &&
                 <ModelConfirmDelete
-                    message="Are you sure you want to delete this shelf?"
+                    message="Bạn có chắc muốn xóa kệ này?"
                     onClose={() => {
                         setShowModelConfirmDelete(false)
                         setShelfId('')
@@ -225,4 +223,4 @@ const LocationPage: React.FC = () => {
 }
 
 
-export default LocationPage;
+export default ShelfsPage;

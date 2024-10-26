@@ -72,55 +72,54 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
         <OverLay>
             <div className="d-flex justify-content-center align-items-center bg-white rounded" style={{ width: "600px" }}>
                 <div className="d-flex flex-column gap-3 p-4 w-100">
-                    <h2 className="h2 fw-bold">Create Shelf</h2>
+                    <h2 className="h2 fw-bold">Tạo Mới Kệ</h2>
                     <div>
-                        <label htmlFor="shelfName" className="form-label">Shelf Name</label>
+                        <label htmlFor="shelfName" className="form-label">Tên kệ</label>
                         <input
                             type="text" className="form-control p-3"
                             onChange={(e) => setShelfName(e.target.value)}
-                            placeholder="Enter shelf name"
+                            placeholder="Nhập tên kệ..."
                             value={shelfName}
                         />
                     </div>
                     <div>
-                        <label htmlFor="maxColumn" className="form-label">Max Column</label>
+                        <label htmlFor="maxColumn" className="form-label">Số cột</label>
                         <input
                             type="number" className="form-control p-3"
                             onChange={(e) => setMaxColumn(parseInt(e.target.value))}
-                            placeholder="Enter max column"
+                            placeholder="Nhập số cột..."
                             value={maxColumn}
                         />
                     </div>
                     <div>
-                        <label htmlFor="maxLevel" className="form-label">Max Level</label>
+                        <label htmlFor="maxLevel" className="form-label">Số tầng</label>
                         <input type="number" className="form-control p-3"
                             onChange={(e) => setMaxLevel(parseInt(e.target.value))}
-                            placeholder="Enter max level"
+                            placeholder="Nhập số tầng..."
                             value={maxLevel}
                         />
                     </div>
                     <div>
-                        <label htmlFor="typeShelf" className="form-label">Type Shelf</label>
+                        <label htmlFor="typeShelf" className="form-label">Loại kệ</label>
                         <select className="form-select p-3"
                             onChange={(e) => setTypeShelf(e.target.value)}
                             value={typeShelf}
                         >
-                            <option value="">Choose a select...</option>
-                            <option value="NORMAL">NORMAL</option>
-                            <option value="COOLER">COOLER</option>
-                            <option value="DAMAGED">DAMAGED</option>
+                            <option value="">Chọn loại kệ...</option>
+                            <option value="NORMAL">Bình Thường</option>
+                            <option value="DAMAGED">Chứa Hàng Hư</option>
                         </select>
                     </div>
                     <div className="d-flex justify-content-end gap-2">
                         <button
                             className="btn btn-outline-secondary"
                             onClick={() => props.onClose()}
-                        >Cancel</button>
+                        >Hủy</button>
                         <button className="btn btn-primary"
                             onClick={() => handleCreateShelf()}
                             disabled={isLoading || shelfName === '' || maxColumn === 0 || maxLevel === 0 || typeShelf === ''}
                         >
-                            {isLoading ? "Creating..." : "Create"}
+                            {isLoading ? "Đang tạo..." : "Tạo"}
                         </button>
                     </div>
                 </div>

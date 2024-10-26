@@ -18,9 +18,8 @@ import ErrorPage from "./page/Error/ErrorPage";
 import SessionExpiredPage from "./page/SessionExpired/SessionExpiredPage";
 import StockEntry from "./page/StockEntry/StockEntry";
 import ProfilePage from './page/Profile/ProfilePage';
-import LocationPage from './page/Location/StorageManagementPage';
-import IssueLog from './page/StockEntry/IssueLog';
 import InventoryTracking from './page/StockEntry/InventoryTracking';
+import ShelfsPage from './page/Shelfs/StorageManagementPage';
 
 const router = createBrowserRouter([
     {
@@ -60,10 +59,6 @@ const router = createBrowserRouter([
                 element: <StockEntry />,
             },
             {
-                path: "issue-log",
-                element: <IssueLog />,
-            },
-            {
                 path: "inventory-tracking",
                 element: <InventoryTracking />,
             },
@@ -72,8 +67,8 @@ const router = createBrowserRouter([
                 element: <ProfilePage />,
             },
             {
-                path: "location",
-                element: <LocationPage />,
+                path: "shelfs",
+                element: <ShelfsPage />,
             }
         ]
     },
