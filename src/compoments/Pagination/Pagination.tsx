@@ -34,7 +34,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                 }}
                 disabled={isBackDisabled}
             >
-                Back
+                Trang trước
             </button>
             {pages.map((page) => (
                 <button
@@ -52,7 +52,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
                 }}
                 disabled={isNextDisabled}
             >
-                Next
+                Trang sau
             </button>
         </div>
     );

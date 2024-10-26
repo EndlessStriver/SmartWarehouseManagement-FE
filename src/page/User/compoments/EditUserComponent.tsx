@@ -376,7 +376,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">{userId ? "Edit User" : "New User"}</h2>
+                        <h2 className="fw-bold mb-0">{userId ? "Chỉnh Sửa Thông Tin Người Dùng" : "Tạo Mới Người Dùng"}</h2>
                     </div>
                     {
                         userId &&
@@ -388,7 +388,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                     className="btn btn-primary d-flex align-items-center"
                                 >
                                     <FontAwesomeIcon icon={faSave} className="me-2" />
-                                    Save
+                                    Lưu
                                 </button>
                                 <button
                                     disabled={isLoadingSubmit}
@@ -398,7 +398,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                     }}
                                     className="btn btn-secondary"
                                 >
-                                    Cancel
+                                    Hủy
                                 </button>
                             </div>
                         ) : userId && (
@@ -407,7 +407,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                 onClick={() => setEditUser(true)}
                                 className="btn btn-danger fw-bold d-flex align-items-center"
                             >
-                                <FontAwesomeIcon icon={faEdit} className="me-2" /> Edit
+                                <FontAwesomeIcon icon={faEdit} className="me-2" /> Chỉnh Sửa
                             </button>
                         )
                     }
@@ -452,22 +452,22 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             }
                             <Col>
                                 <Row>
-                                    <h5 className="fw-semibold border-bottom pb-2 mb-3">Basic Information</h5>
+                                    <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông tin cơ bản</h5>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Full Name</Form.Label>
+                                        <Form.Label>Họ và tên</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
                                             value={formData.fullName}
                                             name="fullName"
-                                            placeholder="Enter full name"
+                                            placeholder="Nhập họ và tên..."
                                             onChange={handleChangeInput}
                                             disabled={userId !== "" && !editUser}
                                         />
                                     </Form.Group>
                                     <Col>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Date of Birth</Form.Label>
+                                            <Form.Label>Ngày sinh</Form.Label>
                                             <Form.Control
                                                 className="py-3"
                                                 type="date"
@@ -480,7 +480,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                     </Col>
                                     <Col>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Gender</Form.Label>
+                                            <Form.Label>Giới tính</Form.Label>
                                             <Form.Select
                                                 value={formData.gender}
                                                 onChange={handleChangeInput}
@@ -488,7 +488,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                                 disabled={userId !== "" && !editUser}
                                                 className="py-3"
                                             >
-                                                <option value={""}>Choose...</option>
+                                                <option value={""}>Chọn giới tính...</option>
                                                 {gender.map((item, index) => (
                                                     <option key={index} value={item}>{item}</option>
                                                 ))}
@@ -499,7 +499,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             </Col>
                         </Row>
                         <div className="p-3">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Personal Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông tin cá nhân</h5>
                             <Row>
                                 <Col>
                                     <Form.Group className="mb-3">
@@ -511,13 +511,13 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                             name="email"
                                             onChange={handleChangeInput}
                                             disabled={userId !== "" && !editUser}
-                                            placeholder="Enter email"
+                                            placeholder="Nhập email..."
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Phone Number</Form.Label>
+                                        <Form.Label>Số điện thoại</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
@@ -525,13 +525,13 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                             name="phoneNumber"
                                             onChange={handleChangeInput}
                                             disabled={userId !== "" && !editUser}
-                                            placeholder="Enter phone number"
+                                            placeholder="Nhập số điện thoại..."
                                         />
                                     </Form.Group>
                                 </Col>
                             </Row>
                             <Form.Group className="mb-3">
-                                <Form.Label>Position</Form.Label>
+                                <Form.Label>Chức vụ</Form.Label>
                                 <Form.Control
                                     className="py-3"
                                     type="text"
@@ -539,11 +539,11 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                     name="position"
                                     onChange={handleChangeInput}
                                     disabled={userId !== "" && !editUser}
-                                    placeholder="Enter position"
+                                    placeholder="Nhập chức vụ..."
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>Address</Form.Label>
+                                <Form.Label>Địa chỉ</Form.Label>
                                 <Form.Control
                                     className="py-3"
                                     type="text"
@@ -551,32 +551,32 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                     name="address"
                                     onChange={handleChangeInput}
                                     disabled={userId !== "" && !editUser}
-                                    placeholder="Enter address"
+                                    placeholder="Nhập địa chỉ..."
                                 />
                             </Form.Group>
                         </div>
                     </Col>
                     <Col md={6}>
                         <div className="p-3">
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Account Information</h5>
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông tin tài khoản</h5>
                             <Row>
                                 <Col>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Username</Form.Label>
+                                        <Form.Label>Tên tài khoản</Form.Label>
                                         <Form.Control
                                             className="py-3"
                                             type="text"
                                             value={formData.username}
                                             name="username"
                                             disabled={userId !== ""}
-                                            placeholder="Enter username"
+                                            placeholder="Nhập tên tài khoản..."
                                             onChange={handleChangeInput}
                                         />
                                     </Form.Group>
                                 </Col>
                                 <Col>
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Role</Form.Label>
+                                        <Form.Label>Quyền hạn</Form.Label>
                                         <Form.Select
                                             value={formData.roleName}
                                             name="roleName"
@@ -584,7 +584,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                             disabled={userId !== "" && !editUser}
                                             className="py-3"
                                         >
-                                            <option value={""}>Choose...</option>
+                                            <option value={""}>Chọn quyền hạn...</option>
                                             {roles.map((item, index) => (
                                                 <option key={index} value={item.name}>{item.name}</option>
                                             ))}
@@ -595,7 +595,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             {
                                 userId ? (
                                     <Form.Group className="mb-3">
-                                        <Form.Label>Password</Form.Label>
+                                        <Form.Label>Mật khẩu</Form.Label>
                                         <InputGroup>
                                             <Form.Control
                                                 className="py-3"
@@ -610,7 +610,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                                     disabled={!editUser}
                                                     onClick={() => setChangePassword(true)}
                                                 >
-                                                    Change Password
+                                                    Đổi mật khẩu
                                                 </button>
                                             </InputGroup.Text>
                                         </InputGroup>
@@ -618,7 +618,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                 ) : (
                                     <>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Password</Form.Label>
+                                            <Form.Label>Mật khẩu</Form.Label>
                                             <InputGroup>
                                                 <Form.Control
                                                     className="py-3"
@@ -626,13 +626,13 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                                     value={formData.password}
                                                     name="password"
                                                     disabled={userId !== ""}
-                                                    placeholder="Enter password"
+                                                    placeholder="Nhập mật khẩu..."
                                                     onChange={handleChangeInput}
                                                 />
                                             </InputGroup>
                                         </Form.Group>
                                         <Form.Group className="mb-3">
-                                            <Form.Label>Confirm Password</Form.Label>
+                                            <Form.Label>Xác nhận mật khẩu</Form.Label>
                                             <InputGroup>
                                                 <Form.Control
                                                     className="py-3"
@@ -640,7 +640,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                                     value={formData.confirmPassword}
                                                     name="confirmPassword"
                                                     disabled={userId !== ""}
-                                                    placeholder="Enter confirm password"
+                                                    placeholder="Nhập lại mật khẩu..."
                                                     onChange={handleChangeInput}
                                                 />
                                             </InputGroup>

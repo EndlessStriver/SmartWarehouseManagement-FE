@@ -25,6 +25,7 @@ export const Sidebar: React.FC = () => {
                         [
                             { href: "/stock-entry", lable: "Stock Entry" },
                             { href: "/issue-log", lable: "Issue Log" },
+                            { href: "/inventory-tracking", lable: "Inventory Tracking" },
                         ]
                     }
                 />

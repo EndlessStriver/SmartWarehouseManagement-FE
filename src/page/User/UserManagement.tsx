@@ -176,43 +176,25 @@ export const UserManagement: React.FC = () => {
         <div className={"w-100 h-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 className={"h2 fw-bold"}>User Account Management</h2>
-                    <p className={"h6"}>Manage user accounts and their status</p>
+                    <h2 className={"h2 fw-bold"}>Quản Lý Người Dùng</h2>
+                    <p className={"h6"}>Bạn có thể quản lý các thông tin người dùng ở đây</p>
                 </div>
                 <div>
                     <Button onClick={() => {
                         setShowOverlayModelUser(true);
-                    }} variant="info text-light fw-bold">+ NEW</Button>
-                </div>
-            </div>
-            <div className={"d-flex flex-row gap-5 mb-3 justify-content-end"}>
-                <div className={"d-flex flex-row gap-2"}>
-                    <div style={{ width: "150px" }}>
-                        <FormSelect>
-                            {
-                                TypeFind.map((type, index) => {
-                                    return <option key={index} value={type}>{type}</option>
-                                })
-                            }
-                        </FormSelect>
-                    </div>
-                    <FormControl type="text" placeholder="Search name..." style={{ width: "350px" }} />
-                    <Button onClick={() => {
-                    }}>
-                        <FontAwesomeIcon icon={faUndo} />
-                    </Button>
+                    }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
             </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Username</th>
-                        <th>FullName</th>
+                        <th>Tên Tài Khoản</th>
+                        <th>Họ Và Tên</th>
                         <th>Email</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Actions</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Quyền Hạn</th>
+                        <th>Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -241,7 +223,7 @@ export const UserManagement: React.FC = () => {
             {
                 showOverlayModelDelete &&
                 <ModelConfirmDelete
-                    message={"Are you sure delete this user ?"}
+                    message={"Bạn có chắc muốn xóa người dùng này?"}
                     onConfirm={handleDeleteAccount}
                     onClose={handleHideOverlayModelDelete}
                     loading={isLoadingDelete}

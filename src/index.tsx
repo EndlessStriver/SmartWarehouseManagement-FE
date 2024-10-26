@@ -20,6 +20,7 @@ import StockEntry from "./page/StockEntry/StockEntry";
 import ProfilePage from './page/Profile/ProfilePage';
 import LocationPage from './page/Location/StorageManagementPage';
 import IssueLog from './page/StockEntry/IssueLog';
+import InventoryTracking from './page/StockEntry/InventoryTracking';
 
 const router = createBrowserRouter([
     {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
             {
                 path: "issue-log",
                 element: <IssueLog />,
+            },
+            {
+                path: "inventory-tracking",
+                element: <InventoryTracking />,
             },
             {
                 path: "profile",
