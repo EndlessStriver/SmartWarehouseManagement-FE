@@ -155,59 +155,59 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
 
     const validate1 = (): boolean => {
         if (formData.name === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Name is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên sản phẩm" });
             return true;
         }
         if (formData.description === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Description is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả" });
             return true;
         }
         if (formData.unit === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Unit is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính" });
             return true;
         }
         if (formData.weight === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Weight is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập trọng lượng" });
             return true;
         }
         if (formData.productCode === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Product code is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mã sản phẩm" });
             return true;
         }
         if (formData.length === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Length is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều dài" });
             return true;
         }
         if (formData.width === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Width is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều rộng" });
             return true;
         }
         if (formData.height === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Height is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều cao" });
             return true;
         }
         if (formData.color === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Color is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn màu sắc" });
             return true;
         }
         if (formData.branch === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Branch is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn thương hiệu" });
             return true;
         }
         if (formData.model === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Model is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn mẫu mã" });
             return true;
         }
         if (formData.size === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Size is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn kích cỡ" });
             return true;
         }
         if (formData.category === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Category is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn loại sản phẩm" });
             return true;
         }
         if (formData.supplier === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Supplier is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn nhà cung cấp" });
             return true;
         }
         return false;
@@ -391,7 +391,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         if (!productId) {
             CreateProduct(formatDataCreate())
                 .then(() => {
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create product success" });
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo sản phẩm thành công" });
                     setTimeout(() => {
                         handleClose();
                     }, 1000);
@@ -405,7 +405,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         } else {
             const dataUpdate = formatDataUpdate();
             if (Object.keys(dataUpdate).length === 0) {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "No data change" });
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Không có dữ liệu thay đổi" });
                 setLoading(false);
             } else {
                 UpdateProductByProductId(productId, dataUpdate)
@@ -413,7 +413,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         if (response) {
                             setFormData(FormatDataGet(response));
                             setDataDefault(FormatDataGet(response));
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update product success" });
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật sản phẩm thành công" });
                             setIsEdit(false);
                         }
                     })
@@ -433,7 +433,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         if (files !== null) {
             for (let i = 0; i < files.length; i++) {
                 if (files[i].size > maxFileSize) {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: "Your file is more than 10MB" });
+                    dispatch({ type: ActionTypeEnum.ERROR, message: "File của bạn lớn hơn 10Mb" });
                     break;
                 } else {
                     const keyRandom = crypto.randomUUID().toString();
@@ -467,7 +467,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         setLoading(false);
                     })
             } else {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Image not found" });
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Không tìm thấy ảnh" });
             }
         } else {
             const newImages = images.filter((image) => image.key !== key);
@@ -504,7 +504,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                 .then(() => {
                     setReload(!reload);
                     setImages([]);
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Add image success" });
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Thêm ảnh thành công" });
                 })
                 .catch((error) => {
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -513,7 +513,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                     setLoading(false);
                 });
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "No image to add" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Không có ảnh để thêm" });
         }
     };
 
@@ -923,7 +923,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
             {
                 showModelConfirmDeleteImage &&
                 <ModelConfirmDelete
-                    message={"Are you sure delete this image"}
+                    message={"Bạn có chắc chắn muốn xóa ảnh này?"}
                     onConfirm={handleConfirmDeleteImage}
                     onClose={() => {
                         setShowModelConfirmDeleteImage(false)
