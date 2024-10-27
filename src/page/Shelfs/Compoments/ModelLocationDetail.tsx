@@ -27,75 +27,88 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
 
     return (
         <OverLay>
-            <div className="position-relative bg-light rounded p-5" style={{ width: "800px" }}>
+            <div className="position-relative bg-light rounded p-4" style={{ width: "1000px" }}>
                 <CloseButton
                     onClick={() => props.onClose()}
                     className="position-absolute bg-light"
                     style={{ top: "15px", right: "15px" }}
                 />
                 <div className="d-flex flex-row align-items-center gap-3">
-                    <div className="h4 mb-1">Location Detail: {locationDetail?.locationCode}</div>
-                    <div>
-                        {
-                            locationDetail?.occupied ?
-                                <Badge bg="danger">Đang sử dụng</Badge>
-                                :
-                                <Badge bg="primary">Đang trống</Badge>
-                        }
-                    </div>
+                    <h2 className="fw-bold">Thông Tin Vị Trí:</h2>
                 </div>
-                <Row className="mb-3">
+                <Row className="mb-2">
                     <Col>
                         <div>
-                            <span className="fw-semibold">Max Capacity: </span>
-                            {Number(locationDetail?.maxCapacity).toLocaleString()} cm2
+                            <span className="fw-semibold">Tên vị trí: </span>
+                            {locationDetail?.locationCode || "Chưa có thông tin!"}
                         </div>
                     </Col>
                     <Col>
                         <div>
-                            <span className="fw-semibold">Current Capacity: </span>
-                            {Number(locationDetail?.currentCapacity).toLocaleString()} cm2
+                            <span className="fw-semibold">Trạng thái: </span>
+                            {
+                                locationDetail?.occupied ?
+                                    <Badge bg="danger">Đang sử dụng</Badge>
+                                    :
+                                    <Badge bg="primary">Đang trống</Badge>
+                            }
                         </div>
                     </Col>
                 </Row>
-                <h4>Product Information:</h4>
-                <Row>
-                    <div className="my-2 d-flex justify-content-center">
+                <Row className="mb-2">
+                    <Col>
+                        <div>
+                            <span className="fw-semibold">Không gian tối đa: </span>
+                            {Number(locationDetail?.maxCapacity).toLocaleString()} cm3
+                        </div>
+                    </Col>
+                    <Col>
+                        <div>
+                            <span className="fw-semibold">Không gian đã sử dụng: </span>
+                            {Number(locationDetail?.currentCapacity).toLocaleString()} cm3
+                        </div>
+                    </Col>
+                </Row>
+                <h5 className="fw-bold">Thông Tin Sản Phẩm:</h5>
+                <div className="d-flex flex-row gap-3 justify-content-between align-items-center">
+                    <div className="my-2 d-flex justify-content-center" style={{ flex: 1 }}>
                         <Image src={locationDetail?.skus?.productDetails[0]?.product.img || "/images/default-product-img.png"} thumbnail style={{
-                            width: "450px",
+                            width: "150px",
                             height: "auto",
                             objectFit: "cover"
                         }} />
                     </div>
-                    <Col>
-                        <div>
-                            <span className="fw-semibold">SKU Code: </span>
-                            {locationDetail?.skus?.skuCode || "No information yet!"}
-                        </div>
-                        <div>
-                            <span className="fw-semibold">Product Name: </span>
-                            {locationDetail?.skus?.productDetails[0]?.product?.name || "No information yet!"}
-                        </div>
-                        <div>
-                            <span className="fw-semibold">Weight: </span>
-                            {(locationDetail?.skus?.weight || "No information yet!") + " (g)"}
-                        </div>
-                    </Col>
-                    <Col>
-                        <div>
-                            <span className="fw-semibold">Quantity: </span>
-                            {locationDetail?.quantity || "No information yet!"}
-                        </div>
-                        <div>
-                            <span className="fw-semibold">Product Code: </span>
-                            {locationDetail?.skus?.productDetails[0]?.product?.productCode || "No information yet!"}
-                        </div>
-                        <div>
-                            <span className="fw-semibold">Dimension: </span>
-                            {(locationDetail?.skus?.dimension || "No information yet!") + " (cm)"}
-                        </div>
-                    </Col>
-                </Row>
+                    <Row style={{ flex: 3 }}>
+                        <Col>
+                            <div>
+                                <span className="fw-semibold">Mã SKU: </span>
+                                {locationDetail?.skus?.skuCode || "Chưa có thông tin!"}
+                            </div>
+                            <div>
+                                <span className="fw-semibold">Tên sản phẩm: </span>
+                                {locationDetail?.skus?.productDetails[0]?.product?.name || "Chưa có thông tin!"}
+                            </div>
+                            <div>
+                                <span className="fw-semibold">Trọng lượng: </span>
+                                {(locationDetail?.skus?.weight || "Chưa có thông tin!") + " (g)"}
+                            </div>
+                        </Col>
+                        <Col>
+                            <div>
+                                <span className="fw-semibold">Số lượng: </span>
+                                {locationDetail?.quantity || "Chưa có thông tin!"}
+                            </div>
+                            <div>
+                                <span className="fw-semibold">Mã sản phẩm: </span>
+                                {locationDetail?.skus?.productDetails[0]?.product?.productCode || "No information!"}
+                            </div>
+                            <div>
+                                <span className="fw-semibold">kích thước: </span>
+                                {(locationDetail?.skus?.dimension || "Chưa có thông tin!") + " (cm)"}
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
             </div>
         </OverLay>
     );

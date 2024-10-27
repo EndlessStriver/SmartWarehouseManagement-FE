@@ -31,22 +31,24 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     React.useEffect(() => {
         GetLocationByShelfIdt(props.shelfId)
             .then((response) => {
-                if (response) setLocations(response)
-            }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                if (response) setLocations(response);
             })
+            .catch((error) => {
+                console.error(error);
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+            });
     }, [dispatch, props.shelfId]);
 
     React.useEffect(() => {
         if (props.shelfId) {
             GetShelfById(props.shelfId)
                 .then((response) => {
-                    if (response) setShelf(response)
-                }).catch((error) => {
-                    console.error(error)
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                    if (response) setShelf(response);
                 })
+                .catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                });
         }
     }, [dispatch, props.shelfId]);
 
@@ -124,19 +126,24 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     });
 
     const renderGrid = [];
-    for (let i = 0; i < (shelf?.maxLevels || 0); i++) {
+    for (let i = (shelf?.maxLevels || 0); i > 0; i--) {
         renderGrid.push(
             <React.Fragment key={`row-${i}`}>
-                {renderLocation.slice(i * (shelf?.maxColumns || 0), (i + 1) * (shelf?.maxColumns || 0))}
+                {renderLocation.reverse().slice((i - 1) * (shelf?.maxColumns || 0), i * (shelf?.maxColumns || 0))}
             </React.Fragment>
         );
         renderGrid.push(
             <div
                 key={`empty-row-${i}`}
-                style={{ gridColumn: `1 / span ${shelf?.maxColumns}`, height: "70px" }}
+                style={{
+                    gridColumn: `1 / span ${shelf?.maxColumns}`,
+                    height: "70px",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                }}
                 className="d-flex justify-content-center align-items-center shadow bg-primary text-light rounded"
             >
-                <h1>Tầng {i + 1}</h1>
+                <h1>Tầng {i}</h1>
             </div>
         );
     }
