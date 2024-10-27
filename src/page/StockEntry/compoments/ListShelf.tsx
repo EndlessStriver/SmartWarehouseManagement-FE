@@ -5,11 +5,12 @@ import PaginationType from "../../../interface/Pagination";
 import GetShelfs from "../../../services/Location/GetShelfs";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { Badge, CloseButton } from "react-bootstrap";
 import Pagination from "../../../compoments/Pagination/Pagination";
 import ListLocation from "./ListLocation";
+import GetShelfByCategoryName from "../../../services/Location/GetShelfsByCategoryName";
+import { NoData } from "../../../compoments/NoData/NoData";
+import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 
 interface ListShelfProps {
     onClose: () => void
@@ -33,7 +34,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
 
     React.useEffect(() => {
         setIsLoading(true)
-        GetShelfs()
+        GetShelfByCategoryName({ shelfName: "NORMAL" })
             .then((response) => {
                 if (response) {
                     setShelfs(response.data)
@@ -81,21 +82,49 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
         return shelfs.map((shelf: Shelf, index: number) => {
             return (
                 <div
-                    onClick={() => {
-                        setShowListLocation(true)
-                        setShelfId(shelf.id)
-                    }}
                     className="d-flex gap-1 flex-column justify-content-center align-items-center shadow btn btn-light position-relative"
                     key={index}
                     style={{ height: "250px" }}
                 >
-                    <h4 className="fw-bold">{shelf.name}</h4>
-                    <h6>MaxColumns: {shelf.maxColumns}</h6>
-                    <h6>MaxRows: {shelf.maxLevels}</h6>
-                    <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
-                        {shelf.typeShelf}
-                    </Badge>
-                    <FontAwesomeIcon icon={faEye} />
+                    <div className="d-flex w-100">
+                        <div style={{ flex: 1 }} className="text-end">Tên kệ: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">{shelf.name}</div>
+                    </div>
+                    <div className="d-flex w-100">
+                        <div style={{ flex: 1 }} className="text-end">Loại kệ: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
+                            <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
+                                {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
+                            </Badge>
+                        </div>
+                    </div>
+                    <div className="d-flex w-100">
+                        <div style={{ flex: 1 }} className="text-end">Còn trống: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
+                            {(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%
+                        </div>
+                    </div>
+                    <div className="d-flex w-100">
+                        <div style={{ flex: 1 }} className="text-end">Loại hàng: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
+                            <span>{shelf.category?.name || ""}</span>
+                        </div>
+                    </div>
+                    <div className="d-flex w-100">
+                        <div style={{ flex: 1 }} className="text-end">Vị trí trống: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
+                            <span>{shelf.totalColumns - shelf.currentColumnsUsed}</span>
+                        </div>
+                    </div>
+                    <div
+                        className="btn btn-link"
+                        onClick={() => {
+                            setShowListLocation(true)
+                            setShelfId(shelf.id)
+                        }}
+                    >
+                        Chi tiết
+                    </div>
                 </div>
             )
         })
@@ -113,18 +142,29 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 style={{ top: "15px", right: "15px" }}
             />
             <div>
-                <div
-                    className="bg-light rounded"
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(5, 250px)",
-                        gridTemplateRows: "repeat(2, 250px)",
-                        gap: "10px",
-                        padding: "10px"
-                    }}
-                >
-                    {renderShelfs()}
-                </div>
+                {
+                    shelfs.length > 0 ?
+                        (
+                            <div
+                                className="bg-light rounded"
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(5, 250px)",
+                                    gridTemplateRows: "repeat(2, 250px)",
+                                    gap: "10px",
+                                    padding: "10px"
+                                }}
+                            >
+                                {renderShelfs()}
+                            </div>
+                        ) : (
+                            <>
+                                {
+                                    isLoading ? <SpinnerLoading /> : <NoData />
+                                }
+                            </>
+                        )
+                }
                 {
                     shelfs.length > 0 &&
                     <Pagination

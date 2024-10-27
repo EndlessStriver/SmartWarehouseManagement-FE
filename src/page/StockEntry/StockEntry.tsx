@@ -93,7 +93,6 @@ const StockEntry: React.FC = () => {
                 <td>{stockEntry.receiveBy}</td>
                 <td>{new Date(stockEntry.receiveDate).toLocaleDateString()}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
-                <td>{Number(stockEntry.totalAmount).toLocaleString()}$</td>
                 <td>
                     <div className="d-flex flex-row gap-2">
                         {
@@ -163,7 +162,6 @@ const StockEntry: React.FC = () => {
                         <th>Tạo Bởi</th>
                         <th>Ngày Tạo</th>
                         <th>Trạng Thái</th>
-                        <th>Tổng Tiền</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>
@@ -200,7 +198,7 @@ const StockEntry: React.FC = () => {
             {
                 showModelConfirmDelete &&
                 <ModelConfirmDelete
-                    message="Are you sure want to delete this stock entry?"
+                    message="Bạn có chắc chắn muốn xóa phiếu nhập kho này?"
                     onClose={() => {
                         setShowModelConfirmDelete(false)
                         setStockEntryId("");

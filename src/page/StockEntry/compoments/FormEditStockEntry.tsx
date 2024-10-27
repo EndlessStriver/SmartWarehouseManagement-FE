@@ -37,7 +37,7 @@ interface ProductItem {
     productId: string;
     name: string;
     quantity: number;
-    price: number;
+    unit: string;
 }
 
 const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, stockEntryId, updatePagination, updateStockEntry }) => {
@@ -51,6 +51,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const [loadingSuppliers, setLoadingSuppliers] = React.useState(false);
 
     const [createDate, setCreateDate] = React.useState("");
+    const [createDateDefault, setCreateDateDefault] = React.useState("");
     const [address, setAddress] = React.useState("");
     const [phoneNumber, setPhoneNumber] = React.useState("");
     const [descriptionDefault, setDescriptionDefault] = React.useState("");
@@ -92,6 +93,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 .then((res) => {
                     if (res) {
                         setCreateDate(getVietnamTime(new Date(res.receiveDate)));
+                        setCreateDateDefault(getVietnamTime(new Date(res.receiveDate)));
                         setStatusStockEntry(res.status);
                         setDescription(res.description);
                         setDescriptionDefault(res.description);
@@ -104,14 +106,14 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                             productId: item.product.id,
                             name: item.product.name,
                             quantity: item.quantity,
-                            price: parseFloat(item.price)
+                            unit: item.unit,
                         })));
                         setProductItemsDefault(res.receiveItems.map((item) => ({
                             id: item.id,
                             productId: item.product.id,
                             name: item.product.name,
                             quantity: item.quantity,
-                            price: parseFloat(item.price)
+                            unit: item.unit,
                         })));
                     }
                 }).catch((err) => {
@@ -227,7 +229,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     productId: productId,
                     name: product.name,
                     quantity: 1,
-                    price: 1
+                    unit: ""
                 }]
             })
         }
@@ -263,8 +265,30 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                     />
                 </td>
-                <td style={{ textAlign: "center" }}>
-                    <span>Unit</span>
+                <td style={{ verticalAlign: "middle", textAlign: "center", width: "180px" }}>
+                    <select
+                        className="form-select"
+                        value={product.unit}
+                        onChange={(e) => {
+                            setProductItems(productItems.map((item) => {
+                                if (item.productId === product.productId) {
+                                    return {
+                                        ...item,
+                                        unit: e.target.value
+                                    };
+                                }
+                                return item;
+                            }));
+                        }}
+                    >
+                        <option value="">Đơn vị tính...</option>
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="l">l</option>
+                        <option value="ml">ml</option>
+                        <option value="box">hộp</option>
+                        <option value="carton">thùng</option>
+                    </select>
                 </td>
                 <td style={{ textAlign: "center" }}>
                     <button
@@ -287,8 +311,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 <td style={{ textAlign: "center" }}>
                     <img src={product.img || "https://via.placeholder.com/50"}
                         style={{
-                            width: "100px",
-                            height: "100px",
+                            width: "80px",
+                            height: "80px",
                             objectFit: "cover",
                             borderRadius: "5px",
                             marginLeft: "auto",
@@ -329,11 +353,10 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             return;
         }
 
-        if (productItems.some((item) => item.quantity === 0 || item.price === 0 || isNaN(item.quantity) || isNaN(item.price))) {
+        if (productItems.some((item) => item.quantity === 0 || isNaN(item.quantity))) {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Số lượng sản phẩm phải lớn hơn 0" });
             return;
         }
-
         const currentDate = new Date();
         const creationDate = new Date(createDate);
         if (creationDate > currentDate) {
@@ -351,7 +374,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 receiveItems: productItems.map((item) => ({
                     productId: item.productId,
                     quantity: item.quantity,
-                    price: parseFloat(item.price.toFixed(2))
+                    unit: item.unit
                 }))
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu nhập kho thành công" });
@@ -380,7 +403,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     id: item.id || "",
                     productId: item.productId,
                     quantity: parseInt(item.quantity.toFixed(0)),
-                    price: parseFloat(item.price.toFixed(2))
+                    unit: item.unit
                 }))
             }).then((res) => {
                 if (res) {
@@ -395,14 +418,14 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        price: parseFloat(item.price)
+                        unit: item.unit,
                     })));
                     setProductItemsDefault(res.receiveItems.map((item) => ({
                         id: item.id,
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        price: parseFloat(item.price)
+                        unit: item.unit,
                     })));
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
                     handleClose();
@@ -432,6 +455,9 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             return true;
         }
         if (productItemsDefault.length !== productItems.length) {
+            return true;
+        }
+        if (createDateDefault !== createDate) {
             return true;
         }
         for (let i = 0; i < productItemsDefault.length; i++) {
@@ -586,8 +612,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 </Row>
                 <div className="d-flex flex-row gap-3 px-3">
                     <div className="w-100">
-                        <div className="d-flex flex-row justify-content-between mb-2">
-                            <h4 className="fw-bold">Chọn Sản Phẩm</h4>
+                        <div className="d-flex flex-row justify-content-between align-items-center mb-2">
+                            <h5 className="fw-bold">Chọn Sản Phẩm</h5>
                             <div className="d-flex flex-row gap-1">
                                 <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
                                 <button className="btn btn-primary ms-2">
@@ -628,7 +654,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         }
                     </div>
                     <div className="w-100">
-                        <h4 className="fw-bold mb-3">Danh Sách Sản Phẩm</h4>
+                        <h5 className="fw-bold mb-4">Danh Sách Sản Phẩm</h5>
                         <Table striped bordered hover responsive>
                             <thead>
                                 <tr style={{ textAlign: "center" }}>

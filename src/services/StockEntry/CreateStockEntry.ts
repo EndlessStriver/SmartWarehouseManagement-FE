@@ -12,7 +12,7 @@ interface CreateStockEntryProps {
 interface ReceiveItem {
     productId: string;
     quantity: number;
-    price: number;
+    unit: string;
 }
 
 const CreateStockEntry = async (data: CreateStockEntryProps): Promise<void> => {

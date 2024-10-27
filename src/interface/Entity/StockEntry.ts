@@ -7,8 +7,7 @@ export interface ReceiveItem {
     update_at: string;
     isDeleted: boolean;
     quantity: number;
-    price: string;
-    totalAmount: string;
+    unit: string;
     product: ProductHeader;
 }
 
@@ -21,7 +20,6 @@ interface StockEntry {
     receiveBy: string;
     status: string;
     description: string;
-    totalAmount: string;
     receiveCode: string;
     supplier: Supplier;
     receiveItems: ReceiveItem[];

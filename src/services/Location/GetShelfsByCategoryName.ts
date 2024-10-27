@@ -1,17 +1,27 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import Shelf from "../../interface/Entity/Shelf";
 import { ResponseError } from "../../interface/ResponseError";
-import { Incident } from "./GetIssueLogs";
 
-interface HandleIssueLogRequest {
-    status: "COMPLETED" | "CANCELLED";
-    actionTaken: string;
+export interface GetShelfByCategoryNameResponse {
+    data: Shelf[];
+    totalPage: number;
+    limit: number;
+    offset: number;
+    totalElementOfPage: number;
 }
 
-const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): Promise<Incident | undefined> => {
+interface GetShelfByCategoryNameProps {
+    shelfName: string;
+    offset?: number;
+    limit?: number;
+    orderBy?: string;
+    order?: "ASC" | "DESC";
+}
 
+const GetShelfByCategoryName = async (data: GetShelfByCategoryNameProps): Promise<GetShelfByCategoryNameResponse | undefined> => {
     try {
-        const HOST = process.env.REACT_APP_HOST_BE
+        const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -21,12 +31,11 @@ const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): 
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.put(`${HOST}/incident-log/${issueLogId}`, data, {
+            const response = await axios.get(`${HOST}/shelf/category?name=${data.shelfName}&limit=${data?.limit || 10}&offset=${data?.limit || 1}&order=${data.order || "ASC"}&orderBy=${data.orderBy || "name"}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
-
             return response.data.data;
         }
     } catch (error) {
@@ -45,4 +54,4 @@ const HandleIssueLog = async (issueLogId: string, data: HandleIssueLogRequest): 
     }
 }
 
-export default HandleIssueLog;
+export default GetShelfByCategoryName;

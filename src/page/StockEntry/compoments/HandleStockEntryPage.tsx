@@ -1,11 +1,10 @@
-import { Button, CloseButton, Table } from "react-bootstrap"
+import { Button, CloseButton, Col, Row, Table } from "react-bootstrap"
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import GetProfile from "../../../util/GetProfile"
 import React from "react"
-import ViewStockEntry from "./ViewStockEntry"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faEye, faMapMarkerAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
+import { faMapMarkerAlt, faTrash } from "@fortawesome/free-solid-svg-icons"
 import ListProductStockEntry from "./ListProductStockEntry"
 import { NoData } from "../../../compoments/NoData/NoData"
 import ListShelf from "./ListShelf"
@@ -20,22 +19,16 @@ interface HandleStockEntryPageProps {
     reload: () => void
 }
 
-interface IncidentLog {
-    description: string,
-    reportBy: string,
-    actionTaken: string
-}
-
-interface ProductCheck {
+export interface ProductCheck {
     id: string
     productName: string
     quantity: number
+    unit: string
     productStatus: string
     location: {
         id: string
         name: string
     } | null
-    incidentLog: IncidentLog | null
 }
 
 enum ItemStatus {
@@ -50,12 +43,12 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const dispatch = useDispatchMessage();
     const profile = GetProfile();
     const [currentIndex, setCurrentIndex] = React.useState<number>(-1);
-    const [showViewStockEntry, setShowViewStockEntry] = React.useState<boolean>(false);
     const [showListProductStockEntry, setShowListProductStockEntry] = React.useState<boolean>(false);
     const [showListShelf, setShowListShelf] = React.useState<boolean>(false);
     const [createDate, setCreateDate] = React.useState<string>("");
     const [productChecks, setProductChecks] = React.useState<ProductCheck[]>([]);
     const [stockEntry, setStockEntry] = React.useState<StockEntry>();
+    const [categoryName, setCategoryName] = React.useState<string>("");
 
     React.useEffect(() => {
         const now = new Date();
@@ -90,17 +83,17 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const validateProductCheck = () => {
         for (let i = 0; i < productChecks.length; i++) {
             if (productChecks[i].productStatus === "") {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Please select product status" });
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn trạng thái sản phẩm" });
                 return false;
             }
 
             if (productChecks[i].productStatus !== "MISSING" && productChecks[i].location === null) {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Please select location" });
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn vị trí sản phẩm" });
                 return false;
             }
 
             if (productChecks[i].quantity <= 0 || isNaN(productChecks[i].quantity)) {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Quantity must be greater than 0" });
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Số lượng phải lớn hơn 0" });
                 return false;
             }
         }
@@ -112,7 +105,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
             for (let j = 0; j < productChecks.length; j++) {
                 if (productChecks[i].location?.id === null || productChecks[j].location?.id === null) continue;
                 if (i !== j && productChecks[i].location?.id === productChecks[j].location?.id) {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: "Location must be unique" });
+                    dispatch({ type: ActionTypeEnum.ERROR, message: "Vị trí phải là duy nhất" });
                     return false;
                 }
             }
@@ -139,7 +132,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
             CreateCheckStockEntry(dataSubmit)
                 .then(() => {
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create check stock entry successfully" });
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xử lý phiếu nhập kho thành công" });
                     props.reload();
                     props.onClose();
                 })
@@ -159,35 +152,30 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     onClick={props.onClose}
                 />
                 <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="fw-bold">Handle Stock Entry</h2>
-                    <div className="d-flex gap-3">
-                        <Button variant="info" className="text-light" onClick={() => setShowViewStockEntry(true)}>
-                            <FontAwesomeIcon icon={faEye} className="me-2" /> Stock Entry
-                        </Button>
-                        <Button
-                            variant="primary"
-                            className="text-light"
-                            onClick={() => handleSubmit()}
-                            disabled={productChecks.length === 0}
-                        >
-                            Create
-                        </Button>
-                    </div>
+                    <h2 className="fw-bold">Xử lý phiếu nhập kho</h2>
+                    <Button
+                        variant="primary"
+                        className="text-light fw-bold"
+                        onClick={() => handleSubmit()}
+                        disabled={productChecks.length === 0}
+                    >
+                        Xác nhận
+                    </Button>
                 </div>
                 <div className="d-flex flex-row gap-3 w-100 mb-3">
                     <div className="w-100">
-                        <label>Goods Inspector</label>
+                        <label>Nhân viên kiểm tra</label>
                         <input
                             type="text"
                             className="form-control p-3"
-                            placeholder="Enter goods inspector"
+                            placeholder="Nhập tên nhân viên kiểm tra..."
                             value={profile?.fullName}
                             readOnly
                             disabled
                         />
                     </div>
                     <div className="w-100">
-                        <label>Create Date</label>
+                        <label>Ngày tạo</label>
                         <input
                             type="datetime-local"
                             className="form-control p-3"
@@ -196,21 +184,73 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                         />
                     </div>
                 </div>
+                <div className="shadow p-4 rounded mb-2">
+                    <h5 className="fw-semibold">Thông Tin Phiếu Nhập Kho</h5>
+                    <Row>
+                        <Col>
+                            <h6>
+                                <span className="fw-bold">Mã phiếu nhập: </span>
+                                <span className="ms-3">{stockEntry?.receiveCode}</span>
+                            </h6>
+                        </Col>
+                        <Col>
+                            <h6>
+                                <span className="fw-bold">Ngày lập: </span>
+                                <span className="ms-3">{stockEntry?.receiveDate}</span>
+                            </h6>
+                        </Col>
+                    </Row>
+                    <h6>
+                        <span className="fw-bold">Nhà cung cấp: </span>
+                        <span className="ms-3">{stockEntry?.supplier.name}</span>
+                    </h6>
+                    <h6>
+                        <span className="fw-bold">Mô tả: </span>
+                        <span className="ms-3">{stockEntry?.description}</span>
+                    </h6>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn vị tính</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                stockEntry?.receiveItems.map((receiveItem, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{receiveItem.product.name}</td>
+                                        <td>{receiveItem.quantity}</td>
+                                        <td>
+                                            {
+                                                receiveItem.unit === "box" ? "Hộp" : (receiveItem.unit === "carton" ? "Thùng" : receiveItem.unit)
+                                            }
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </Table>
+                </div>
                 <div>
-                    <div className="d-flex flex-row justify-content-end align-items-center p-2">
+                    <div className="d-flex flex-row justify-content-end align-items-center py-2">
                         <Button onClick={() => {
                             setShowListProductStockEntry(true);
-                        }} variant="danger" className="text-light">Add Product Check</Button>
+                        }} variant="primary" className="text-light">Thêm sản phẩm kiểm tra</Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Product Status</th>
-                                <th>Location</th>
-                                <th>Action</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn vị tính</th>
+                                <th>Trạng thái sản phẩm</th>
+                                <th>Vị trí</th>
+                                <th>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -232,6 +272,9 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                             />
                                         </td>
                                         <td>
+                                            {productCheck.unit === "box" ? "Hộp" : (productCheck.unit === "carton" ? "Thùng" : productCheck.unit)}
+                                        </td>
+                                        <td>
                                             <select
                                                 className="form-select"
                                                 value={productCheck.productStatus}
@@ -241,11 +284,9 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                     setProductChecks(newProductChecks);
                                                 }}
                                             >
-                                                <option value="">-- Select a status --</option>
-                                                <option value="NORMAL">NORMAL</option>
-                                                <option value="DAMAGED">DAMAGED</option>
-                                                <option value="MISSING">MISSING</option>
-                                                <option value="SURPLUS">SURPLUS</option>
+                                                <option value="">Chọn trạng thái sản phẩm...</option>
+                                                <option value="NORMAL">Bình thường</option>
+                                                <option value="DAMAGED">Bị hư hại</option>
                                             </select>
                                         </td>
                                         <td className="d-flex gap-2">
@@ -306,21 +347,12 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 </div>
             </div>
             {
-                showViewStockEntry &&
-                <ViewStockEntry
-                    stockEntryId={props.stockEntryId}
-                    onClose={() => {
-                        setShowViewStockEntry(false);
-                    }}
-                />
-            }
-            {
                 showListProductStockEntry &&
                 <ListProductStockEntry
                     onClose={() => {
                         setShowListProductStockEntry(false);
                     }}
-                    stockEntryId={props.stockEntryId}
+                    stockEntry={stockEntry as StockEntry}
                     addProductCheck={handleAddProductCheck}
                 />
             }

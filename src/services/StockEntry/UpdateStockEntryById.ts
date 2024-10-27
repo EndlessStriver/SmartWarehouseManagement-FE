@@ -6,7 +6,7 @@ interface ReceiveItem {
     id: string;
     productId: string;
     quantity: number;
-    price: number;
+    unit: string;
 }
 
 interface UpdateStockEntryByIdTypeDataUpdate {
