@@ -81,15 +81,15 @@ const Login: React.FC = () => {
             <Row>
                 <Col style={{ width: "550px" }}>
                     <div className="login-box shadow-lg p-4 rounded bg-white">
-                        <h2 className="text-center mb-4 fw-bold">Login</h2>
+                        <h2 className="text-center mb-4 fw-bold">Đăng Nhập</h2>
                         {globalError && <p className="text-danger text-center">{globalError}</p>}
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Username</Form.Label>
+                                <Form.Label>Tên tài khoản</Form.Label>
                                 <Form.Control
                                     className="py-3"
                                     type="text"
-                                    placeholder="Enter your username"
+                                    placeholder="Nhập tên tài khoản..."
                                     name="username"
                                     value={formData.username}
                                     onChange={handleInputChange}
@@ -102,11 +102,11 @@ const Login: React.FC = () => {
                             </Form.Group>
 
                             <Form.Group className="mb-4">
-                                <Form.Label>Password</Form.Label>
+                                <Form.Label>Mật khẩu</Form.Label>
                                 <Form.Control
                                     className="py-3"
                                     type="password"
-                                    placeholder="Enter your password"
+                                    placeholder="Nhập mật khẩu..."
                                     name="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
@@ -124,7 +124,7 @@ const Login: React.FC = () => {
                                 type="submit"
                                 disabled={loading}
                             >
-                                {loading ? 'Loading...' : 'Login'}
+                                {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                             </Button>
                         </Form>
                     </div>

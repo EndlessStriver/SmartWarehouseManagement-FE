@@ -6,6 +6,9 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import PaginationType from "../../../interface/Pagination";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfs from "../../../services/Location/GetShelfs";
+import OptionType from "../../../interface/OptionType";
+import Select from 'react-select';
+import GetCategoriesByName from "../../../services/Attribute/Category/GetCategoriesByName";
 
 interface ModelCreateShelfProps {
     onClose: () => void;
@@ -20,19 +23,26 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
     const [maxColumn, setMaxColumn] = React.useState(0);
     const [maxLevel, setMaxLevel] = React.useState(0);
     const [typeShelf, setTypeShelf] = React.useState('');
+    const [categories, setCategories] = React.useState<OptionType[]>([]);
+    const [categoryName, setCategoryName] = React.useState('');
+    const [categorySelect, setCategorySelect] = React.useState<OptionType | null>(null);
     const [isLoading, setIsLoading] = React.useState(false);
 
     const validateForm = () => {
         if (shelfName.trim() === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Shelf name is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên kệ" });
             return false;
         }
         if (maxColumn <= 0 || maxLevel <= 0) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Max column and max level must be greater than 0" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Số cột và số hàng phải lớn hơn 0" });
             return false;
         }
         if (typeShelf === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Shelf type is required" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập loại kệ" });
+            return false;
+        }
+        if (!categorySelect) {
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập loại hàng" });
             return false;
         }
         return true;
@@ -45,7 +55,8 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                 name: shelfName,
                 maxColumns: Number(maxColumn),
                 maxLevels: Number(maxLevel),
-                typeShelf: typeShelf
+                typeShelf: typeShelf,
+                categoryId: categorySelect?.value || ''
             }).then(() => {
                 return GetShelfs();
             }).then((response) => {
@@ -58,7 +69,7 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                         totalElementOfPage: response.totalElementOfPage
                     });
                     props.onClose();
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Shelf created successfully" });
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo kệ thành công" });
                 }
             }).catch((error) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -67,6 +78,26 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
             })
         }
     }
+
+    React.useEffect(() => {
+        const id = setTimeout(() => {
+            GetCategoriesByName(categoryName)
+                .then((response) => {
+                    if (response) {
+                        setCategories(response.map((cate) => {
+                            return {
+                                value: cate.id,
+                                label: cate.name
+                            }
+                        }))
+                    }
+                }).catch((error) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                })
+        }, 500)
+
+        return () => clearTimeout(id)
+    }, [dispatch, categoryName])
 
     return (
         <OverLay>
@@ -100,7 +131,24 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="typeShelf" className="form-label">Loại kệ</label>
+                        <label className="form-label">Loại hàng</label>
+                        <Select
+                            placeholder="Nhập loại sản phẩm..."
+                            isClearable
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    padding: "0.5rem 0px",
+                                }),
+                            }}
+                            onInputChange={setCategoryName}
+                            onChange={(value) => setCategorySelect(value)}
+                            options={categories}
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="form-label">Loại kệ</label>
                         <select className="form-select p-3"
                             onChange={(e) => setTypeShelf(e.target.value)}
                             value={typeShelf}

@@ -10,8 +10,6 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import ShelfDetails from "./Compoments/ShelfDetails";
 import { Badge, Button, CloseButton } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
 import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteShelf from "../../services/Location/DeleteShelf";
@@ -108,7 +106,7 @@ const ShelfsPage: React.FC = () => {
                         totalPage: res.totalPage,
                         totalElementOfPage: res.totalElementOfPage
                     })
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete shelf success" })
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa kệ thành công" })
                     setShelfId('')
                     setShowModelConfirmDelete(false)
                 }
@@ -135,17 +133,34 @@ const ShelfsPage: React.FC = () => {
                         setShowModelConfirmDelete(true)
                     }}
                 />
-                <h4 className="fw-bold">{shelf.name}</h4>
-                <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
-                    {shelf.typeShelf}
-                </Badge>
+                <h6>
+                    Tên kệ: &nbsp;
+                    <span className="fw-bold">
+                        {shelf.name}
+                    </span>
+                </h6>
+                <h6>
+                    Loại kệ: &nbsp;
+                    <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
+                        {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
+                    </Badge>
+                </h6>
+                <h6>
+                    Còn trống: &nbsp;
+                    <span>{(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%</span>
+                </h6>
+                <h6>
+                    Loại hàng: &nbsp;
+                    <span>{shelf.category?.name || ""}</span>
+                </h6>
                 <div
+                    className="btn btn-link"
                     onClick={() => {
                         setShelfId(shelf.id)
                         setShowShelfDetails(true)
                     }}
                 >
-                    <FontAwesomeIcon icon={faEye} />
+                    Chi tiết
                 </div>
             </div>
         )

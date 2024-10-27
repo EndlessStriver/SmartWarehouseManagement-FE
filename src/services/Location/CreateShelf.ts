@@ -7,6 +7,7 @@ interface CreateShelfProps {
     maxColumns: number;
     maxLevels: number;
     typeShelf: string;
+    categoryId: string;
 }
 
 const CreateShelf = async (data: CreateShelfProps) => {
