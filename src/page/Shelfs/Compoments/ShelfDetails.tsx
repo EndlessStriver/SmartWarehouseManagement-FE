@@ -129,7 +129,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     for (let i = (shelf?.maxLevels || 0); i > 0; i--) {
         renderGrid.push(
             <React.Fragment key={`row-${i}`}>
-                {renderLocation.reverse().slice((i - 1) * (shelf?.maxColumns || 0), i * (shelf?.maxColumns || 0))}
+                {renderLocation.slice((i - 1) * (shelf?.maxColumns || 0), i * (shelf?.maxColumns || 0))}
             </React.Fragment>
         );
         renderGrid.push(

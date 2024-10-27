@@ -133,26 +133,36 @@ const ShelfsPage: React.FC = () => {
                         setShowModelConfirmDelete(true)
                     }}
                 />
-                <h6>
-                    Tên kệ: &nbsp;
-                    <span className="fw-bold">
-                        {shelf.name}
-                    </span>
-                </h6>
-                <h6>
-                    Loại kệ: &nbsp;
-                    <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
-                        {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
-                    </Badge>
-                </h6>
-                <h6>
-                    Còn trống: &nbsp;
-                    <span>{(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%</span>
-                </h6>
-                <h6>
-                    Loại hàng: &nbsp;
-                    <span>{shelf.category?.name || ""}</span>
-                </h6>
+                <div className="d-flex w-100">
+                    <div style={{ flex: 1 }} className="text-end">Tên kệ: &nbsp;</div>
+                    <div style={{ flex: 1 }} className="fw-bold text-start">{shelf.name}</div>
+                </div>
+                <div className="d-flex w-100">
+                    <div style={{ flex: 1 }} className="text-end">Loại kệ: &nbsp;</div>
+                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                        <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
+                            {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
+                        </Badge>
+                    </div>
+                </div>
+                <div className="d-flex w-100">
+                    <div style={{ flex: 1 }} className="text-end">Còn trống: &nbsp;</div>
+                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                        {(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%
+                    </div>
+                </div>
+                <div className="d-flex w-100">
+                    <div style={{ flex: 1 }} className="text-end">Loại hàng: &nbsp;</div>
+                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                        <span>{shelf.category?.name || ""}</span>
+                    </div>
+                </div>
+                <div className="d-flex w-100">
+                    <div style={{ flex: 1 }} className="text-end">Vị trí trống: &nbsp;</div>
+                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                        <span>{shelf.totalColumns - shelf.currentColumnsUsed}</span>
+                    </div>
+                </div>
                 <div
                     className="btn btn-link"
                     onClick={() => {

@@ -14,6 +14,7 @@ import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
+import { NoData } from "../../compoments/NoData/NoData";
 
 const StockEntry: React.FC = () => {
 
@@ -61,7 +62,7 @@ const StockEntry: React.FC = () => {
         setLoadingDelete(true);
         RemoveStockEntry(id)
             .then(() => {
-                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete stock entry successfully" });
+                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa phiếu nhập kho thành công" });
                 setStockEntry(stockEntry.filter(item => item.id !== id));
                 setStockEntryId("");
             }).catch((err) => {
@@ -173,8 +174,13 @@ const StockEntry: React.FC = () => {
                 </tbody>
             </Table>
             {
-                stockEntry.length > 0 && <Pagination currentPage={pagination?.offset} totalPages={pagination?.totalPage}
-                    onPageChange={handleChangePage} />
+                stockEntry.length > 0 ?
+                    <Pagination
+                        currentPage={pagination?.offset}
+                        totalPages={pagination?.totalPage}
+                        onPageChange={handleChangePage}
+                    />
+                    : <NoData />
             }
             {
                 isLoading && <SpinnerLoading />

@@ -117,7 +117,6 @@ export const ProductManagement: React.FC = () => {
                 <td>{product.productCode}</td>
                 <td>{product.name}</td>
                 <td>{product.description}</td>
-                <td>{product.unit}</td>
                 <td>
                     <div className='d-flex gap-2'>
                         <Button
@@ -162,7 +161,6 @@ export const ProductManagement: React.FC = () => {
                         <th>Mã Sản Phẩm</th>
                         <th>Tên Sản Phẩm</th>
                         <th>Mô Tả</th>
-                        <th>Đơn Vị Tính</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>

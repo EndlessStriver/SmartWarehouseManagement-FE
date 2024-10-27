@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faEye, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faEye, faPlus, faSave, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import Select from "react-select";
@@ -60,7 +60,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const [productItemsDefault, setProductItemsDefault] = React.useState<ProductItem[]>([]);
     const [productItems, setProductItems] = React.useState<ProductItem[]>([]);
     const [loadingProducts, setLoadingProducts] = React.useState(false);
-    const [showProductList, setShowProductList] = React.useState(true);
     const [pagination, setPagination] = React.useState<PaginationType>({
         totalPage: 1,
         limit: 5,
@@ -240,7 +239,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
 
     const listProductItems = () => {
         return productItems.map((product, index) => (
-            <tr key={product.id} className={"text-center"}>
+            <tr key={product.id}>
                 <td>{index + 1}</td>
                 <td>{product.name}</td>
                 <td style={{ verticalAlign: "middle" }}>
@@ -248,7 +247,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         type="number"
                         value={product.quantity}
                         min={0}
-                        style={{ width: "150px", margin: "0 auto" }}
+                        style={{ width: "100px", margin: "0 auto" }}
                         onChange={(e) => {
                             let value = parseFloat(e.target.value);
                             setProductItems(productItems.map((item) => {
@@ -264,32 +263,10 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                     />
                 </td>
-                <td style={{ verticalAlign: "middle" }}>
-                    <Form.Control
-                        type="number"
-                        value={product.price}
-                        style={{ width: "150px", margin: "0 auto" }}
-                        step={0.01}
-                        min={0}
-                        onChange={(e) => {
-                            let value = parseFloat(e.target.value);
-                            setProductItems(productItems.map((item) => {
-                                if (item.productId === product.productId) {
-                                    return {
-                                        ...item,
-                                        price: value
-                                    };
-                                }
-                                return item;
-                            }));
-                        }}
-                        disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
-                    />
+                <td style={{ textAlign: "center" }}>
+                    <span>Unit</span>
                 </td>
-                <td style={{ minWidth: "150px" }}>
-                    {isNaN(product.quantity * product.price) ? 0 : Number(product.quantity * product.price).toLocaleString()} $
-                </td>
-                <td>
+                <td style={{ textAlign: "center" }}>
                     <button
                         disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                         onClick={() => { handleDeleteItem(product.productId) }}
@@ -305,9 +282,9 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
 
     const listProducts = () => {
         return products.map((product, index) => (
-            <tr key={product.id} className={"text-center"} style={{ verticalAlign: "middle" }}>
+            <tr key={product.id} style={{ verticalAlign: "middle" }}>
                 <td>{index + 1}</td>
-                <td>
+                <td style={{ textAlign: "center" }}>
                     <img src={product.img || "https://via.placeholder.com/50"}
                         style={{
                             width: "100px",
@@ -321,7 +298,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     />
                 </td>
                 <td>{product.name}</td>
-                <td>
+                <td style={{ textAlign: "center" }}>
                     {
                         productItems.find((item) => item.productId === product.id) ? (
                             <span className={"badge bg-success py-2"}>Added</span>
@@ -343,17 +320,24 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const handleSubmit = () => {
 
         if (supplierSelected === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Please select a supplier." });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn nhà cung cấp" });
             return;
         }
 
         if (productItems.length === 0) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Please select a product." });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn sản phẩm" });
             return;
         }
 
         if (productItems.some((item) => item.quantity === 0 || item.price === 0 || isNaN(item.quantity) || isNaN(item.price))) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Quantity and price must be greater than 0." });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Số lượng sản phẩm phải lớn hơn 0" });
+            return;
+        }
+
+        const currentDate = new Date();
+        const creationDate = new Date(createDate);
+        if (creationDate > currentDate) {
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày tạo không được vượt quá ngày hiện tại." });
             return;
         }
 
@@ -370,7 +354,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     price: parseFloat(item.price.toFixed(2))
                 }))
             }).then(() => {
-                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Create stock entry successfully." });
+                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu nhập kho thành công" });
                 handleClose();
                 return GetStockEntries()
             }).then((res) => {
@@ -420,7 +404,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         quantity: item.quantity,
                         price: parseFloat(item.price)
                     })));
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Update stock entry successfully." });
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
                     handleClose();
                     return GetStockEntries()
                 }
@@ -450,13 +434,11 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         if (productItemsDefault.length !== productItems.length) {
             return true;
         }
-
         for (let i = 0; i < productItemsDefault.length; i++) {
             if (!deepEqual(productItemsDefault[i], productItems[i])) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -473,7 +455,9 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">Stock Entry</h2>
+                        <h2 className="fw-bold mb-0">
+                            {stockEntryId === "" ? "Tạo Phiếu Nhập Kho" : "Cập Nhật Phiếu Nhập Kho"}
+                        </h2>
                     </div>
                     <div>
                         {
@@ -485,7 +469,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                     variant="primary"
                                     className="px-4"
                                 >
-                                    Create
+                                    Tạo
                                 </Button>
                             ) : (
                                 statusStockEntry === "PENDING" ? (
@@ -498,7 +482,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                             className="px-4"
                                             disabled={!handleCheckChangeData()}
                                         >
-                                            <FontAwesomeIcon icon={faSave} className="me-2" /> Save
+                                            <FontAwesomeIcon icon={faSave} className="me-2" /> Lưu
                                         </Button>
                                     </div>
                                 ) : (
@@ -510,7 +494,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                         className="px-4"
                                     >
                                         <FontAwesomeIcon icon={faEye} className="me-2" />
-                                        Check
+                                        Kiểm tra
                                     </Button>
                                 )
                             )
@@ -520,10 +504,10 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 <Row className={"p-3"}>
                     <Col>
                         <FormGroup>
-                            <Form.Label>Employee Name</Form.Label>
+                            <Form.Label>Nhân viên tạo</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Enter employee name"
+                                placeholder="Nhập tên nhân viên"
                                 value={profile?.fullName || ""}
                                 className={"form-control py-3"}
                                 disabled={true}
@@ -532,7 +516,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     </Col>
                     <Col>
                         <FormGroup>
-                            <Form.Label>Create Date</Form.Label>
+                            <Form.Label>Ngày tạo</Form.Label>
                             <Form.Control
                                 disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                                 type="datetime-local"
@@ -546,9 +530,9 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 <Row className={"p-3"}>
                     <Col>
                         <FormGroup>
-                            <Form.Label>Supplier Name</Form.Label>
+                            <Form.Label>Nhà cung cấp</Form.Label>
                             <Select
-                                placeholder="Enter name supplier"
+                                placeholder="Nhập tên nhà cung cấp..."
                                 isClearable
                                 styles={{
                                     control: (provided) => ({
@@ -568,10 +552,10 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     </Col>
                     <Col>
                         <FormGroup>
-                            <Form.Label>Phone Number</Form.Label>
+                            <Form.Label>Số điện thoại</Form.Label>
                             <Form.Control
                                 type="phone"
-                                placeholder="Phone number supplier"
+                                placeholder="Nhập số điện thoại..."
                                 className={"form-control py-3"}
                                 disabled
                                 value={phoneNumber}
@@ -579,115 +563,93 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         </FormGroup>
                     </Col>
                     <FormGroup className={"mt-3"}>
-                        <Form.Label>Address</Form.Label>
+                        <Form.Label>Địa chỉ nhà cung cấp</Form.Label>
                         <Form.Control
                             type="phone"
-                            placeholder="Phone number supplier"
+                            placeholder="Nhâp địa chỉ nhà cung cấp..."
                             className={"form-control py-3"}
                             disabled
                             value={address}
                         />
                     </FormGroup>
                     <FormGroup className={"mt-3"}>
-                        <Form.Label>Description</Form.Label>
+                        <Form.Label>Mô tả</Form.Label>
                         <textarea
                             className={"form-control py-3"}
-                            placeholder="Enter description..."
-                            rows={4}
+                            placeholder="Nhập mô tả..."
+                            rows={3}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                         />
                     </FormGroup>
                 </Row>
-                <Row className={"p-3"}>
-                    <div>
-                        <div className="d-flex justify-content-around w-100 gap-2">
-
-                        </div>
-                        <div className={"border p-2"} style={{ flex: 1 }}>
-                            <div className={"mb-3"}>
-                                <div className="d-flex justify-content-around gap-2">
-                                    <Button
-                                        onClick={() => setShowProductList(true)}
-                                        variant={`${showProductList ? "primary" : "outline-primary"}`}
-                                        className={"w-100 p-2"}
-                                    >
-                                        Supplier Product List
-                                    </Button>
-                                    <Button
-                                        onClick={() => setShowProductList(false)}
-                                        variant={`${!showProductList ? "primary" : "outline-primary"}`}
-                                        className={"w-100 p-2"}
-                                    >
-                                        Stock Entry Items
-                                    </Button>
-                                </div>
+                <div className="d-flex flex-row gap-3 px-3">
+                    <div className="w-100">
+                        <div className="d-flex flex-row justify-content-between mb-2">
+                            <h4 className="fw-bold">Chọn Sản Phẩm</h4>
+                            <div className="d-flex flex-row gap-1">
+                                <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
+                                <button className="btn btn-primary ms-2">
+                                    <FontAwesomeIcon icon={faSearch} />
+                                </button>
                             </div>
-                            {
-                                showProductList ? (
-                                    <>
-                                        <input type="search" placeholder="Search product..." className="form-control mb-3" />
-                                        <Table striped bordered hover responsive>
-                                            <thead>
-                                                <tr style={{ textAlign: "center" }}>
-                                                    <th>#</th>
-                                                    <th>Image</th>
-                                                    <th>Product Name</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {listProducts()}
-                                            </tbody>
-                                        </Table>
-                                        {
-                                            products.length === 0 && !loadingProducts && (
-                                                <NoData />
-                                            )
-                                        }
-                                        {
-                                            loadingProducts && (
-                                                <SpinnerLoading />
-                                            )
-                                        }
-                                        {
-                                            products.length > 0 &&
-                                            <Pagination
-                                                currentPage={pagination?.offset}
-                                                totalPages={pagination?.totalPage}
-                                                onPageChange={handleChangePage}
-                                            />
-                                        }
-                                    </>
-                                ) : (
-                                    <>
-                                        <Table striped bordered hover responsive>
-                                            <thead>
-                                                <tr style={{ textAlign: "center" }}>
-                                                    <th>#</th>
-                                                    <th>Product Name</th>
-                                                    <th>Quantity</th>
-                                                    <th>Price</th>
-                                                    <th>Total</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {listProductItems()}
-                                            </tbody>
-                                        </Table>
-                                        {
-                                            productItems.length === 0 && !loadingProducts && (
-                                                <NoData />
-                                            )
-                                        }
-                                    </>
-                                )
-                            }
                         </div>
+                        <Table striped bordered hover responsive>
+                            <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                    <th>#</th>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {listProducts()}
+                            </tbody>
+                        </Table>
+                        {
+                            products.length === 0 && !loadingProducts && (
+                                <NoData />
+                            )
+                        }
+                        {
+                            loadingProducts && (
+                                <SpinnerLoading />
+                            )
+                        }
+                        {
+                            products.length > 0 &&
+                            <Pagination
+                                currentPage={pagination?.offset}
+                                totalPages={pagination?.totalPage}
+                                onPageChange={handleChangePage}
+                            />
+                        }
                     </div>
-                </Row>
+                    <div className="w-100">
+                        <h4 className="fw-bold mb-3">Danh Sách Sản Phẩm</h4>
+                        <Table striped bordered hover responsive>
+                            <thead>
+                                <tr style={{ textAlign: "center" }}>
+                                    <th>#</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn vị tính</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {listProductItems()}
+                            </tbody>
+                        </Table>
+                        {
+                            productItems.length === 0 && !loadingProducts && (
+                                <NoData />
+                            )
+                        }
+                    </div>
+                </div>
                 {
                     loadingSubmit &&
                     <SpinnerLoadingOverLayer />

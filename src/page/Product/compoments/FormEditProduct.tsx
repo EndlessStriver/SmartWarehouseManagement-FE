@@ -34,7 +34,6 @@ interface FormEditProductProps {
 interface FormDataType {
     name: string;
     description: string;
-    unit: string;
     weight: string;
     productCode: string;
     length: string;
@@ -57,8 +56,6 @@ interface TypeImageUpload {
     key: string,
     file: File
 }
-
-const Utils: string[] = ["kg", "g", "l", "ml", "unit", "box", "carton"];
 
 const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClose }) => {
 
@@ -91,7 +88,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     const [dataDefault, setDataDefault] = React.useState<FormDataType>({
         name: "",
         description: "",
-        unit: "",
         weight: "",
         productCode: "",
         length: "",
@@ -107,7 +103,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     const [formData, setFormData] = React.useState<FormDataType>({
         name: "",
         description: "",
-        unit: "",
         weight: "",
         productCode: "",
         length: "",
@@ -132,7 +127,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         return {
             name: data.name,
             description: data.description,
-            unit: data.unit,
             weight: data.productDetails!.sku.weight.toString(),
             productCode: data.productCode,
             length: data.productDetails!.sku.dimension.split("x")[0],
@@ -160,10 +154,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         }
         if (formData.description === "") {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả" });
-            return true;
-        }
-        if (formData.unit === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính" });
             return true;
         }
         if (formData.weight === "") {
@@ -338,7 +328,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     const formatDataCreate = (): DataTypeCreateProductAdmin => {
         return {
             name: formData.name,
-            unit: formData.unit,
             categoryId: formData.category!.value,
             description: formData.description,
             productCode: formData.productCode,
@@ -357,7 +346,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
 
         const dataUpdate: DataTypeUpdateProductAdmin = {
             name: formData.name,
-            unit: formData.unit,
             categoryId: formData.category!.value,
             description: formData.description,
             productCode: formData.productCode,
@@ -371,7 +359,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         }
 
         if (formData.name === dataDefault.name) delete dataUpdate.name;
-        if (formData.unit === dataDefault.unit) delete dataUpdate.unit;
         if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
         if (formData.description === dataDefault.description) delete dataUpdate.description;
         if (formData.productCode === dataDefault.productCode) delete dataUpdate.productCode;
@@ -606,20 +593,17 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Đơn Vị Tính</Form.Label>
-                                    <Form.Select
+                                    <Form.Label>Mã Sản Phẩm</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Nhập mã sản phẩm..."
                                         className="py-3"
-                                        name="unit"
+                                        name="productCode"
                                         onChange={handleChangeInput}
                                         required
-                                        value={formData.unit}
+                                        value={formData.productCode}
                                         disabled={productId !== "" && !isEdit}
-                                    >
-                                        <option value={""}>Chọn đơn vị tính...</option>
-                                        {Utils.map((unit) => (
-                                            <option key={unit} value={unit}>{unit}</option>
-                                        ))}
-                                    </Form.Select>
+                                    />
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
@@ -638,19 +622,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 </Form.Group>
                             </Col>
                         </Row>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Mã Sản Phẩm</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Nhập mã sản phẩm..."
-                                className="py-3"
-                                name="productCode"
-                                onChange={handleChangeInput}
-                                required
-                                value={formData.productCode}
-                                disabled={productId !== "" && !isEdit}
-                            />
-                        </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Kích Thước</Form.Label>
                             <div className="d-flex flex-row gap-3 align-items-center">
@@ -894,7 +865,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         </div>
                     }
                     {
-                        handleCheckImageChangeData() && images.length > 0 &&
+                        handleCheckImageChangeData() && images.length > 0 && productId &&
                         <div className={"d-flex justify-content-end gap-2"}>
                             <div
                                 onClick={handleAddNewImage}

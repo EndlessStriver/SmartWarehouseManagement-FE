@@ -1,7 +1,6 @@
 export default interface DataTypeCreateProductAdmin {
     image: File[],
     name: string,
-    unit: string,
     categoryId: string,
     description: string,
     productCode: string,
