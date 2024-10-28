@@ -1,6 +1,18 @@
 import ProductHeader from "./ProductHeader";
 import Supplier from "./Supplier";
 
+interface SKU {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    skuCode: string;
+    batchCode: string;
+    weight: string;
+    dimension: string;
+    description: string;
+}
+
 export interface ReceiveItem {
     id: string;
     create_at: string;
@@ -9,6 +21,7 @@ export interface ReceiveItem {
     quantity: number;
     unit: string;
     product: ProductHeader;
+    sku: SKU
 }
 
 interface StockEntry {

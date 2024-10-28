@@ -20,6 +20,7 @@ import StockEntry from "./page/StockEntry/StockEntry";
 import ProfilePage from './page/Profile/ProfilePage';
 import InventoryTracking from './page/StockEntry/InventoryTracking';
 import ShelfsPage from './page/Shelfs/StorageManagementPage';
+import ExportProduct from './page/StockEntry/ExportProduct';
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             {
                 path: "stock-entry",
                 element: <StockEntry />,
+            },
+            {
+                path: "export-product",
+                element: <ExportProduct />,
             },
             {
                 path: "inventory-tracking",

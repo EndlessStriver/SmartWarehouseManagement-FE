@@ -12,7 +12,7 @@ export interface GetShelfByCategoryNameResponse {
 }
 
 interface GetShelfByCategoryNameProps {
-    shelfName: string;
+    categoryName: string;
     offset?: number;
     limit?: number;
     orderBy?: string;
@@ -31,7 +31,7 @@ const GetShelfByCategoryName = async (data: GetShelfByCategoryNameProps): Promis
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/shelf/category?name=${data.shelfName}&limit=${data?.limit || 10}&offset=${data?.limit || 1}&order=${data.order || "ASC"}&orderBy=${data.orderBy || "name"}`, {
+            const response = await axios.get(`${HOST}/shelf/category?name=${data.categoryName}&limit=${data?.limit || 10}&offset=${data?.limit || 1}&order=${data.order || "ASC"}&orderBy=${data.orderBy || "name"}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

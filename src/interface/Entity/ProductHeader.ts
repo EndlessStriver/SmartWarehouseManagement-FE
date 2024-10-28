@@ -1,3 +1,5 @@
+import Category from "./Category";
+
 export default interface ProductHeader {
     id: string;
     create_at: string;
@@ -8,4 +10,5 @@ export default interface ProductHeader {
     description: string;
     productCode: string;
     img: string;
+    category: Category;
 }

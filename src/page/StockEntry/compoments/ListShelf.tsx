@@ -5,7 +5,7 @@ import PaginationType from "../../../interface/Pagination";
 import GetShelfs from "../../../services/Location/GetShelfs";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
-import { Badge, CloseButton } from "react-bootstrap";
+import { Badge, CloseButton, Form } from "react-bootstrap";
 import Pagination from "../../../compoments/Pagination/Pagination";
 import ListLocation from "./ListLocation";
 import GetShelfByCategoryName from "../../../services/Location/GetShelfsByCategoryName";
@@ -14,8 +14,10 @@ import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 
 interface ListShelfProps {
     onClose: () => void
-    currentIndex: number;
-    handleSetLocation: (nameLocation: string, locationId: string, index: number) => void;
+    setLocation: (id: string, name: string) => void
+    categoryName: string
+    volume: number
+    quantity: number
 }
 
 const ListShelf: React.FC<ListShelfProps> = (props) => {
@@ -25,6 +27,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     const [shelfs, setShelfs] = React.useState<Shelf[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [showListLocation, setShowListLocation] = React.useState<boolean>(false);
+    const [getAllShelf, setGetAllShelf] = React.useState<boolean>(false);
     const [pagination, setPagination] = React.useState<PaginationType>({
         limit: 10,
         offset: 1,
@@ -33,30 +36,9 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     })
 
     React.useEffect(() => {
-        setIsLoading(true)
-        GetShelfByCategoryName({ shelfName: "NORMAL" })
-            .then((response) => {
-                if (response) {
-                    setShelfs(response.data)
-                    setPagination({
-                        limit: Number(response.limit),
-                        offset: Number(response.offset),
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    })
-                }
-            }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-            }).finally(() => {
-                setIsLoading(false)
-            })
-    }, [dispatch])
-
-    React.useEffect(() => {
-        const id = setTimeout(() => {
+        if (!getAllShelf) {
             setIsLoading(true)
-            GetShelfs({ offset: pagination.offset })
+            GetShelfByCategoryName({ categoryName: props.categoryName })
                 .then((response) => {
                     if (response) {
                         setShelfs(response.data)
@@ -73,10 +55,75 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 }).finally(() => {
                     setIsLoading(false)
                 })
-        }, 500)
+        } else {
+            setIsLoading(true)
+            GetShelfs()
+                .then((response) => {
+                    if (response) {
+                        setShelfs(response.data)
+                        setPagination({
+                            limit: Number(response.limit),
+                            offset: Number(response.offset),
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        })
+                    }
+                }).catch((error) => {
+                    console.error(error)
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                }).finally(() => {
+                    setIsLoading(false)
+                })
+        }
+    }, [dispatch, props.categoryName, getAllShelf])
 
+    React.useEffect(() => {
+        let id: NodeJS.Timeout | number;
+        if (getAllShelf) {
+            id = setTimeout(() => {
+                setIsLoading(true)
+                GetShelfs({ offset: pagination.offset })
+                    .then((response) => {
+                        if (response) {
+                            setShelfs(response.data)
+                            setPagination({
+                                limit: Number(response.limit),
+                                offset: Number(response.offset),
+                                totalPage: response.totalPage,
+                                totalElementOfPage: response.totalElementOfPage
+                            })
+                        }
+                    }).catch((error) => {
+                        console.error(error)
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                    }).finally(() => {
+                        setIsLoading(false)
+                    })
+            }, 500)
+        } else {
+            setIsLoading(true)
+            id = setTimeout(() => {
+                GetShelfByCategoryName({ categoryName: props.categoryName, offset: pagination.offset })
+                    .then((response) => {
+                        if (response) {
+                            setShelfs(response.data)
+                            setPagination({
+                                limit: Number(response.limit),
+                                offset: Number(response.offset),
+                                totalPage: response.totalPage,
+                                totalElementOfPage: response.totalElementOfPage
+                            })
+                        }
+                    }).catch((error) => {
+                        console.error(error)
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                    }).finally(() => {
+                        setIsLoading(false)
+                    })
+            }, 500)
+        }
         return () => clearTimeout(id)
-    }, [dispatch, pagination.offset])
+    }, [dispatch, pagination.offset, props.categoryName, getAllShelf])
 
     const renderShelfs = () => {
         return shelfs.map((shelf: Shelf, index: number) => {
@@ -141,29 +188,34 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 className="position-fixed bg-white"
                 style={{ top: "15px", right: "15px" }}
             />
-            <div>
+            <div className="bg-white d-flex flex-column justify-content-center align-items-center p-3 rounded position-relative" style={{ minWidth: "800px", minHeight: "300px" }}>
+                <Form.Check
+                    type="switch"
+                    label="Lấy tẩt cả kệ"
+                    className="position-absolute"
+                    style={{
+                        top: "15px",
+                        right: "15px",
+                    }}
+                    checked={getAllShelf}
+                    onChange={(e) => setGetAllShelf(e.target.checked)}
+                />
                 {
-                    shelfs.length > 0 ?
-                        (
-                            <div
-                                className="bg-light rounded"
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(5, 250px)",
-                                    gridTemplateRows: "repeat(2, 250px)",
-                                    gap: "10px",
-                                    padding: "10px"
-                                }}
-                            >
-                                {renderShelfs()}
-                            </div>
-                        ) : (
-                            <>
-                                {
-                                    isLoading ? <SpinnerLoading /> : <NoData />
-                                }
-                            </>
-                        )
+                    shelfs.length > 0 &&
+                    (
+                        <div
+                            className="bg-light rounded"
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(5, 250px)",
+                                gridTemplateRows: "repeat(2, 250px)",
+                                gap: "10px",
+                                padding: "10px"
+                            }}
+                        >
+                            {renderShelfs()}
+                        </div>
+                    )
                 }
                 {
                     shelfs.length > 0 &&
@@ -172,6 +224,14 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         totalPages={pagination.totalPage}
                         onPageChange={handleChangePage}
                     />
+                }
+                {
+                    isLoading &&
+                    <SpinnerLoading />
+                }
+                {
+                    shelfs.length === 0 &&
+                    <NoData lable="Không tìm thấy kệ chứa phù hợp" />
                 }
             </div>
             {
@@ -186,8 +246,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         setShowListLocation(false)
                         props.onClose()
                     }}
-                    currentIndex={props.currentIndex}
-                    handleSetLocation={props.handleSetLocation}
+                    addLocation={props.setLocation}
                 />
             }
         </OverLay>

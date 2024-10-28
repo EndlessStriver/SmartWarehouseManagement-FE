@@ -613,7 +613,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 <div className="d-flex flex-row gap-3 px-3">
                     <div className="w-100">
                         <div className="d-flex flex-row justify-content-between align-items-center mb-2">
-                            <h5 className="fw-bold">Chọn Sản Phẩm</h5>
+                            <h5 className="fw-semibold">Danh Sách Sản Phẩm</h5>
                             <div className="d-flex flex-row gap-1">
                                 <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
                                 <button className="btn btn-primary ms-2">
@@ -654,7 +654,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         }
                     </div>
                     <div className="w-100">
-                        <h5 className="fw-bold mb-4">Danh Sách Sản Phẩm</h5>
+                        <h5 className="fw-semibold">Danh Sách Sản Phẩm Nhập Kho</h5>
                         <Table striped bordered hover responsive>
                             <thead>
                                 <tr style={{ textAlign: "center" }}>

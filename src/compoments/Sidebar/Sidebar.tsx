@@ -23,7 +23,8 @@ export const Sidebar: React.FC = () => {
                     label={"Quản lý kho"}
                     subItems={
                         [
-                            { href: "/stock-entry", lable: "Nhập Kho" },
+                            { href: "/stock-entry", lable: "Quản Lý Nhập Kho" },
+                            { href: "/export-product", lable: "Quản Lý Xuất Kho" },
                             { href: "/inventory-tracking", lable: "Hàng Tồn Kho" },
                         ]
                     }
