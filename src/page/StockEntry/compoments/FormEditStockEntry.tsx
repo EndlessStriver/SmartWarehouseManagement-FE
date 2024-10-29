@@ -87,40 +87,42 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         setCreateDate(e.target.value);
     };
 
-    // React.useEffect(() => {
-    //     if (stockEntryId) {
-    //         GetStockEntryById(stockEntryId)
-    //             .then((res) => {
-    //                 if (res) {
-    //                     setCreateDate(getVietnamTime(new Date(res.receiveDate)));
-    //                     setCreateDateDefault(getVietnamTime(new Date(res.receiveDate)));
-    //                     setStatusStockEntry(res.status);
-    //                     setDescription(res.description);
-    //                     setDescriptionDefault(res.description);
-    //                     setSupplierSelected({
-    //                         value: res.supplier.id,
-    //                         label: res.supplier.name
-    //                     });
-    //                     setProductItems(res.receiveItems.map((item) => ({
-    //                         id: item.id,
-    //                         productId: item.product.id,
-    //                         name: item.product.name,
-    //                         quantity: item.quantity,
-    //                         unit: item.unit,
-    //                     })));
-    //                     setProductItemsDefault(res.receiveItems.map((item) => ({
-    //                         id: item.id,
-    //                         productId: item.product.id,
-    //                         name: item.product.name,
-    //                         quantity: item.quantity,
-    //                         unit: item.unit,
-    //                     })));
-    //                 }
-    //             }).catch((err) => {
-    //                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
-    //             })
-    //     }
-    // }, [stockEntryId, dispatch])
+    React.useEffect(() => {
+        if (stockEntryId) {
+            GetStockEntryById(stockEntryId)
+                .then((res) => {
+                    if (res) {
+                        setCreateDate(getVietnamTime(new Date(res.receiveDate)));
+                        setCreateDateDefault(getVietnamTime(new Date(res.receiveDate)));
+                        setStatusStockEntry(res.status);
+                        setDescription(res.description);
+                        setDescriptionDefault(res.description);
+                        setSupplierSelected({
+                            value: res.supplier.id,
+                            label: res.supplier.name
+                        });
+                        setProductItems(res.receiveItems.map((item) => ({
+                            id: item.id,
+                            productId: item.product.id,
+                            name: item.product.name,
+                            quantity: item.quantity,
+                            unit: item.unit.id,
+                            skuId: item.sku.id
+                        })));
+                        setProductItemsDefault(res.receiveItems.map((item) => ({
+                            id: item.id,
+                            productId: item.product.id,
+                            name: item.product.name,
+                            quantity: item.quantity,
+                            unit: item.unit.id,
+                            skuId: item.sku.id
+                        })));
+                    }
+                }).catch((err) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                })
+        }
+    }, [stockEntryId, dispatch])
 
     React.useEffect(() => {
         const id = setTimeout(() => {
@@ -269,6 +271,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 </td>
                 <td style={{ verticalAlign: "middle", textAlign: "center", width: "180px" }}>
                     <select
+                        disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
                         className="form-select"
                         value={product.unit}
                         onChange={(e) => {
@@ -403,9 +406,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 description: description,
                 receiveItems: productItems.map((item) => ({
                     id: item.id || "",
-                    productId: item.productId,
                     quantity: parseInt(item.quantity.toFixed(0)),
-                    unit: item.unit
+                    unitId: item.unit,
                 }))
             }).then((res) => {
                 if (res) {
@@ -537,7 +539,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         <FormGroup>
                             <Form.Label>Ngày tạo</Form.Label>
                             <Form.Control
-                                disabled={statusStockEntry !== "" && statusStockEntry !== "PENDING"}
+                                disabled={statusStockEntry !== ""}
                                 type="datetime-local"
                                 value={createDate}
                                 className={"form-control py-3"}
@@ -608,10 +610,16 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         <div className="d-flex flex-row justify-content-between align-items-center mb-2">
                             <h5 className="fw-semibold">Danh Sách Sản Phẩm</h5>
                             <div className="d-flex flex-row gap-1">
-                                <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
-                                <button className="btn btn-primary ms-2">
-                                    <FontAwesomeIcon icon={faSearch} />
-                                </button>
+                                {
+                                    statusStockEntry === "PENDING" && (
+                                        <>
+                                            <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
+                                            <button className="btn btn-primary ms-2">
+                                                <FontAwesomeIcon icon={faSearch} />
+                                            </button>
+                                        </>
+                                    )
+                                }
                             </div>
                         </div>
                         <Table striped bordered hover responsive>

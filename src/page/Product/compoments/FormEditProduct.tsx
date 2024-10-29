@@ -33,10 +33,11 @@ interface FormEditProductProps {
 }
 
 interface FormDataType {
+    detailId: string;
     name: string;
     description: string;
     weight: string;
-    unit: string;
+    unitName: string;
     productCode: string;
     length: string;
     width: string;
@@ -88,11 +89,12 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
     const [suppliers, setSuppliers] = React.useState<OptionType[]>([]);
 
     const [dataDefault, setDataDefault] = React.useState<FormDataType>({
+        detailId: "",
         name: "",
         description: "",
         weight: "",
         productCode: "",
-        unit: "",
+        unitName: "",
         length: "",
         width: "",
         height: "",
@@ -104,10 +106,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         supplier: null,
     });
     const [formData, setFormData] = React.useState<FormDataType>({
+        detailId: "",
         name: "",
         description: "",
         weight: "",
-        unit: "",
+        unitName: "",
         productCode: "",
         length: "",
         width: "",
@@ -129,15 +132,19 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     const FormatDataGet = (data: Product): FormDataType => {
         return {
+            detailId: data.productDetails[0].id,
             name: data.name,
             description: data.description,
             weight: data.productDetails[0].sku[0].weight.toString(),
-            unit: data.units?.find(unit => unit.isBaseUnit)?.name || "",
+            unitName: data.units?.find(unit => unit.isBaseUnit)?.name || "",
             productCode: data.productCode,
             length: data.productDetails[0].sku[0].dimension.split("x")[0],
             width: data.productDetails[0].sku[0].dimension.split("x")[1],
             height: data.productDetails[0].sku[0].dimension.split("x")[2],
-            color: { value: data.productDetails[0].sku[0].color.id, label: data.productDetails[0].sku[0].color.name },
+            color: {
+                value: data.productDetails[0].sku[0].color.id,
+                label: data.productDetails[0].sku[0].color.name
+            },
             branch: {
                 value: data.productDetails[0].sku[0].brand.id,
                 label: data!.productDetails[0].sku[0].brand.name
@@ -165,7 +172,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập trọng lượng" });
             return true;
         }
-        if (formData.unit === "") {
+        if (formData.unitName === "") {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính cơ bản" });
             return true;
         }
@@ -340,7 +347,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             name: formData.name,
             categoryId: formData.category!.value,
             description: formData.description,
-            unitName: formData.unit,
+            unitName: formData.unitName,
             productCode: formData.productCode,
             supplierId: formData.supplier!.value,
             colorId: formData.color!.value,
@@ -356,20 +363,22 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
     const formatDataUpdate = (): DataTypeUpdateProductAdmin => {
 
         const dataUpdate: DataTypeUpdateProductAdmin = {
+            detailId: formData.detailId,
             name: formData.name,
             categoryId: formData.category!.value,
             description: formData.description,
             productCode: formData.productCode,
-            unitName: formData.unit,
             supplierId: formData.supplier!.value,
             colorId: formData.color!.value,
-            sizeId: formData.size!.value,
-            materialId: formData.model!.value,
             brandId: formData.branch!.value,
             dimension: `${formData.length}x${formData.width}x${formData.height}`,
             weight: Number(formData.weight),
+            unitName: formData.unitName,
+            sizeId: formData.size!.value,
+            materialId: formData.model!.value,
         }
 
+        if (formData.detailId === dataDefault.detailId) delete dataUpdate.name;
         if (formData.name === dataDefault.name) delete dataUpdate.name;
         if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
         if (formData.description === dataDefault.description) delete dataUpdate.description;
@@ -380,7 +389,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         if (DeepEqual(formData.model, dataDefault.model)) delete dataUpdate.materialId;
         if (formData.length === dataDefault.length && formData.width === dataDefault.width && formData.height === dataDefault.height) delete dataUpdate.dimension;
         if (formData.weight === dataDefault.weight) delete dataUpdate.weight;
-        if (formData.unit === dataDefault.unit) delete dataUpdate.unitName;
+        if (formData.unitName === dataDefault.unitName) delete dataUpdate.unitName;
 
         return dataUpdate;
     }
@@ -411,6 +420,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             } else {
                 UpdateProductByProductId(props.productId, dataUpdate)
                     .then((response) => {
+                        console.log(response)
                         if (response) {
                             setFormData(FormatDataGet(response));
                             setDataDefault(FormatDataGet(response));
@@ -419,6 +429,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         }
                     })
                     .catch((error) => {
+                        console.error(error);
                         dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                     })
                     .finally(() => {
@@ -622,7 +633,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Trọng Lượng (g)</Form.Label>
+                                    <Form.Label>Trọng Lượng (kg)</Form.Label>
                                     <Form.Control
                                         type="number"
                                         placeholder="Nhập trọng lượng..."
@@ -641,10 +652,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                     type="text"
                                     placeholder="Nhập tên đơn vị tính cơ bản..."
                                     className="py-3"
-                                    name="unit"
+                                    name="unitName"
                                     onChange={handleChangeInput}
                                     required
-                                    value={formData.unit}
+                                    value={formData.unitName}
                                     disabled={props.productId !== "" && !isEdit}
                                 />
                             </Form.Group>

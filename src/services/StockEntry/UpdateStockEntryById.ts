@@ -4,9 +4,8 @@ import StockEntry from "../../interface/Entity/StockEntry";
 
 interface ReceiveItem {
     id: string;
-    productId: string;
     quantity: number;
-    unit: string;
+    unitId: string;
 }
 
 interface UpdateStockEntryByIdTypeDataUpdate {
