@@ -1,7 +1,17 @@
 import axios from "axios";
+import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface ProductCategory {
+export interface Product {
+    id: string;
+    name: string;
+    description: string;
+    category: Category;
+    productDetails: ProductDetail[];
+    units: Unit[];
+}
+
+interface Category {
     id: string;
     create_at: string;
     update_at: string;
@@ -11,35 +21,22 @@ interface ProductCategory {
     categoryCode: string;
 }
 
-interface ProductImage {
-    url: string;
-    publicId: string;
-    isDeleted: boolean;
-}
-
-interface ProductSKU {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    skuCode: string;
-    batchCode: string;
-    weight: string;
-    dimension: string;
-    description: string;
-}
-
 interface ProductDetail {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
     quantity: number;
-    images: ProductImage[];
-    sku: ProductSKU[];
+    images: Image[];
 }
 
-interface ProductUnit {
+interface Image {
+    url: string;
+    publicId: string;
+    isDeleted: boolean;
+}
+
+interface Unit {
     id: string;
     create_at: string;
     update_at: string;
@@ -48,37 +45,9 @@ interface ProductUnit {
     isBaseUnit: boolean;
 }
 
-export interface Product {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    name: string;
-    description: string;
-    productCode: string;
-    img: string;
-    category: ProductCategory;
-    productDetails: ProductDetail[];
-    units: ProductUnit[];
-}
 
-interface PaginatedProductResponse {
-    data: Product[];
-    totalPage: number,
-    limit: number,
-    offset: number,
-    totalElementOfPage: number
-}
+const GetProductsByName = async (productName: string): Promise<Product[] | undefined> => {
 
-interface GetProductBySupplierRequestPage {
-    limit?: number;
-    offset?: number;
-    order?: string;
-    orderBy?: string;
-}
-
-
-const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<PaginatedProductResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -90,27 +59,27 @@ const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProduc
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=${pageRequest?.limit || 5}&offset=${pageRequest?.offset || 1}&order=${pageRequest?.order || "ASC"}&orderBy=${pageRequest?.orderBy || "name"}`, {
+            const response = await axios.get(`${HOST}/products/name?name=${productName || ""}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            })
+            });
             return response.data.data;
         }
     } catch (error) {
-        console.error(error);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
             }
-            const data = error.response.data;
+            const data = error.response.data as ResponseError;
             throw new Error(data.message || "An unexpected error occurred.");
         } else {
             throw new Error("An unexpected error occurred.");
         }
     }
+
 }
 
-export default GetProductsBySupplier;
+export default GetProductsByName;

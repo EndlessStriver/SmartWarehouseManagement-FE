@@ -8,6 +8,7 @@ import Pagination from "../../../compoments/Pagination/Pagination";
 import { NoData } from "../../../compoments/NoData/NoData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+    faBalanceScale,
     faChevronLeft,
     faCubes, faList,
     faPalette,
@@ -15,22 +16,29 @@ import {
     faTag,
     faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, Table } from "react-bootstrap";
+import { Badge, Button, Table } from "react-bootstrap";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import DeleteAttributeValue from "../../../services/Attribute/DeleteAttributeValue";
 import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDelete";
+import GetUnits, { Unit } from "../../../services/Attribute/Unit/GetUnits";
+import ModelAddUnit from "./ModelAddUnit";
 
 interface AttributeValueManagementProps {
     handleCancelEditAttribute: () => void;
     attributeId: number;
 }
 
+interface UnitBadgeProps {
+    isBaseUnit: boolean;
+}
+
 export const AttributeValueManagement: React.FC<AttributeValueManagementProps> = ({ handleCancelEditAttribute, attributeId }) => {
 
     const dispatch = useDispatchMessage();
     const [attributeValues, setAttributeValues] = React.useState<AttributeDetailType[]>([]);
+    const [units, setUnits] = React.useState<Unit[]>([]);
     const [attributeValueId, setAttributeValueId] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
     const [isLoadingDelete, setIsLoadingDelete] = React.useState(false);
@@ -42,55 +50,82 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         offset: 0,
         totalElementOfPage: 0
     });
+    const [reload, setReload] = React.useState<boolean>(false)
 
     React.useEffect(() => {
-        setIsLoading(true);
-        GetAttributeDetail({ id: attributeId, offset: pagination.offset })
-            .then((response) => {
-                if (response) {
-                    setAttributeValues(response.data);
-                    setPagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                }
-            }).catch((error) => {
-                console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-            }).finally(() => {
-                setIsLoading(false);
-            })
-    }, [attributeId, pagination.offset, dispatch]);
-
-    const handelDeleteAttributeValue = () => {
-        if (attributeValueId) {
-            setIsLoadingDelete(true);
-            DeleteAttributeValue(attributeId, attributeValueId)
-                .then(() => {
-                    return GetAttributeDetail({ id: attributeId });
-                }).then((response) => {
+        if (attributeId <= 5) {
+            setIsLoading(true);
+            GetAttributeDetail({ id: attributeId, offset: pagination.offset })
+                .then((response) => {
                     if (response) {
-                        updateAttributeValues(response.data);
-                        updatePagination({
+                        setAttributeValues(response.data);
+                        setPagination({
                             totalPage: response.totalPage,
                             limit: response.limit,
                             offset: response.offset,
                             totalElementOfPage: response.totalElementOfPage
                         });
-                        setAttributeValueId("");
-                        setShowModelConfirmDelete(false);
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa thành công" });
                     }
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 }).finally(() => {
-                    setIsLoadingDelete(false);
+                    setIsLoading(false);
                 })
+        }
+        if (attributeId === 6) {
+            setIsLoading(true);
+            GetUnits({ offset: pagination.offset })
+                .then((response) => {
+                    if (response) {
+                        setUnits(response.data);
+                        setPagination({
+                            totalPage: response.totalPage,
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalElementOfPage: response.totalElementOfPage
+                        })
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                }).finally(() => {
+                    setIsLoading(false);
+                })
+        }
+    }, [attributeId, pagination.offset, dispatch, reload]);
+
+    const handelDeleteAttributeValue = () => {
+        if (attributeId <= 5) {
+            if (attributeValueId) {
+                setIsLoadingDelete(true);
+                DeleteAttributeValue(attributeId, attributeValueId)
+                    .then(() => {
+                        return GetAttributeDetail({ id: attributeId });
+                    }).then((response) => {
+                        if (response) {
+                            updateAttributeValues(response.data);
+                            updatePagination({
+                                totalPage: response.totalPage,
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage
+                            });
+                            setAttributeValueId("");
+                            setShowModelConfirmDelete(false);
+                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa thành công" });
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    }).finally(() => {
+                        setIsLoadingDelete(false);
+                    })
+            } else {
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa thất bại" });
+            }
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa thất bại" });
+
         }
     }
 
@@ -170,6 +205,13 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         <span className="d-block">Thể Loại</span>
                     </div>
                 )
+            case 6:
+                return (
+                    <div className={"d-flex flex-row align-items-center gap-3"}>
+                        <FontAwesomeIcon icon={faBalanceScale} />
+                        <span className="d-block">Đơn Vị Tính</span>
+                    </div>
+                )
             default:
                 return "";
         }
@@ -204,6 +246,33 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         );
     });
 
+    const renderUnits = units.map((unit, index) => {
+        return (
+            <tr key={unit.id}>
+                <td>{index + 1}</td>
+                <td>{unit.name}</td>
+                <td>
+                    <Badge bg={unit.isBaseUnit ? "primary" : "secondary"}>
+                        {unit.isBaseUnit ? "Là đơn vị cơ bản" : "Là đơn vị quy đổi"}
+                    </Badge>
+                </td>
+                <td>
+
+                </td>
+                <td>
+                    <div className="d-flex flex-row gap-2">
+                        <Button
+                            onClick={() => handleDeleteAttributeValue(unit.id)}
+                            variant="danger"
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </Button>
+                    </div>
+                </td>
+            </tr>
+        );
+    });
+
     return (
         <OverLay className="disabled-padding">
             <div className="attribute-detail-management w-100 h-100 p-4 bg-light position-relative">
@@ -221,33 +290,58 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         <Button onClick={handleAddAttributeValue} variant="info text-light fw-bold">+ Tạo Mới</Button>
                     </div>
                 </div>
-                <Table hover striped bordered>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Mã</th>
-                            <th>Tên</th>
-                            <th>Mô Tả</th>
-                            <th>Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {renderAttributeValues}
-                    </tbody>
-                </Table>
+                {
+                    attributeId <= 5 ?
+                        (
+                            <Table hover striped bordered>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Mã</th>
+                                        <th>Tên</th>
+                                        <th>Mô Tả</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {renderAttributeValues}
+                                </tbody>
+                            </Table>
+                        )
+                        :
+                        (
+                            <Table hover striped bordered>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tên Đơn Vị</th>
+                                        <th>Là Đơn Vị Cơ Bản</th>
+                                        <th>Giá trị quy đổi</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {renderUnits}
+                                </tbody>
+                            </Table>
+                        )
+                }
                 {
                     attributeValues.length > 0 &&
                     <Pagination currentPage={pagination?.offset} totalPages={pagination?.totalPage}
                         onPageChange={handleChangePage} />
                 }
                 {
-                    (attributeValues.length === 0) && !isLoading && <NoData />
+                    attributeId <= 5 && (attributeValues.length === 0) && !isLoading && <NoData />
+                }
+                {
+                    attributeId > 5 && (units.length === 0) && !isLoading && <NoData />
                 }
                 {
                     isLoading && <SpinnerLoading />
                 }
                 {
-                    showEditAttributeValue &&
+                    showEditAttributeValue && attributeId <= 5 &&
                     <FormEditAttributes
                         attributeId={attributeId}
                         attributeDetailId={attributeValueId}
@@ -256,11 +350,18 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         updateAttributeValues={updateAttributeValues}
                     />
                 }
+                {
+                    showEditAttributeValue && attributeId === 6 &&
+                    <ModelAddUnit
+                        onClose={() => setShowEditAttributeValue(false)}
+                        reLoad={() => setReload(!reload)}
+                    />
+                }
             </div>
             {
                 showModelConfirmDelete &&
                 <ModelConfirmDelete
-                    message={"Are you sure delete this value ?"}
+                    message={"Bạn có chắc chắn muốn xóa giá trị này?"}
                     onConfirm={handelDeleteAttributeValue}
                     onClose={handleCancelModelConfirmDelete}
                     loading={isLoadingDelete} />

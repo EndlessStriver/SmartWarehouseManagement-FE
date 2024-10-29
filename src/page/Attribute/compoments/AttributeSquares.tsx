@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPalette, faTag, faRuler, faList, faCubes } from '@fortawesome/free-solid-svg-icons';
+import { faPalette, faTag, faRuler, faList, faCubes, faBalanceScale } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from "react-bootstrap";
 
@@ -21,6 +21,7 @@ const AttributeSquares: React.FC<AttributeSquaresProps> = ({ editAttribute }) =>
         { id: 3, name: 'Thương Hiệu', icon: faTag },
         { id: 4, name: 'Kích Cỡ', icon: faRuler },
         { id: 5, name: 'Thể Loại', icon: faList },
+        { id: 6, name: 'Đơn Vị Tính', icon: faBalanceScale },
     ];
 
     return (

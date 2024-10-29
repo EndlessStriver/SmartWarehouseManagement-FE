@@ -1,22 +1,15 @@
 import axios from "axios";
-import { checkTokenExpired } from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { ResponseError } from "../../../interface/ResponseError";
 
-interface CreateStockEntryProps {
-    receiveDate: string;
-    receiveBy: string;
-    description: string;
-    supplierId: string;
-    receiveItems: ReceiveItem[];
+interface interfaceData {
+    productId: string,
+    unitFromName: string,
+    toUnitId: string,
+    conversionFactor: number,
 }
 
-interface ReceiveItem {
-    productId: string;
-    quantity: number;
-    unitId: string;
-    skuId: string;
-}
-
-const CreateStockEntry = async (data: CreateStockEntryProps): Promise<void> => {
+const CreateUnit = async (data: interfaceData): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -28,26 +21,25 @@ const CreateStockEntry = async (data: CreateStockEntryProps): Promise<void> => {
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            return await axios.post(`${HOST}/receives`, data, {
+            await axios.post(`${HOST}/unit/conversion`, data, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
-            });
+            })
         }
     } catch (error) {
-        console.error(error);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An unexpected error occurred.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
     }
 }
 
-export default CreateStockEntry;
+export default CreateUnit;

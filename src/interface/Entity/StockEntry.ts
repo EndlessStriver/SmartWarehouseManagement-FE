@@ -1,4 +1,4 @@
-import ProductHeader from "./ProductHeader";
+import { Product } from "../../services/Product/GetProductsBySupplier";
 import Supplier from "./Supplier";
 
 interface SKU {
@@ -20,7 +20,7 @@ export interface ReceiveItem {
     isDeleted: boolean;
     quantity: number;
     unit: string;
-    product: ProductHeader;
+    product: Product;
     sku: SKU
 }
 

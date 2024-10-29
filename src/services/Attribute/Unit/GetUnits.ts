@@ -1,36 +1,30 @@
 import axios from "axios";
-import { ResponseError } from "../../interface/ResponseError";
-import Order from "../../enum/Order";
-import { checkTokenExpired } from "../../util/DecodeJWT";
+import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { ResponseError } from "../../../interface/ResponseError";
 
-interface Product {
+export interface Unit {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
     name: string;
-    description: string;
-    productCode: string;
-    img: string;
+    isBaseUnit: boolean;
 }
 
-export interface GetProductsResponse {
-    data: Product[],
-    totalPage: number,
-    limit: number,
-    offset: number
-    totalElementOfPage: number
+interface DataResponse {
+    data: Unit[];
+    totalPage: number;
+    limit: number;
+    offset: number;
+    totalElementOfPage: number;
 }
 
-interface GetProductsProps {
-    limit?: number,
-    offset?: number,
-    order?: Order,
-    orderBy?: string
+interface GetUnitsProps {
+    limit?: number;
+    offset?: number;
 }
 
-const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse | undefined> => {
-
+const GetUnits = async (data?: GetUnitsProps): Promise<DataResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -42,9 +36,9 @@ const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/products?limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data?.order || Order.ASC}&orderBy=name`, {
+            const response = await axios.get(`${HOST}/unit?limit=${data?.limit || 10}&offset=${data?.offset || 1}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             });
             return response.data.data;
@@ -62,7 +56,6 @@ const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse
             throw new Error("An unexpected error occurred.");
         }
     }
-
 }
 
-export default GetProducts;
+export default GetUnits;

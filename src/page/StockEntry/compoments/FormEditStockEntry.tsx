@@ -10,8 +10,7 @@ import GetSuppliersByName from "../../../services/Supplier/GetSuppliersByName";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import GetSupplierById from "../../../services/Supplier/GetSupplierById";
-import ProductHeader from "../../../interface/Entity/ProductHeader";
-import GetProductsBySupplier from "../../../services/Product/GetProductsBySupplier";
+import GetProductsBySupplier, { Product } from "../../../services/Product/GetProductsBySupplier";
 import { NoData } from "../../../compoments/NoData/NoData";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import CreateStockEntry from "../../../services/StockEntry/CreateStockEntry";
@@ -38,6 +37,7 @@ interface ProductItem {
     name: string;
     quantity: number;
     unit: string;
+    skuId: string;
 }
 
 const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, stockEntryId, updatePagination, updateStockEntry }) => {
@@ -57,7 +57,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     const [descriptionDefault, setDescriptionDefault] = React.useState("");
     const [description, setDescription] = React.useState("");
 
-    const [products, setProducts] = React.useState<ProductHeader[]>([]);
+    const [products, setProducts] = React.useState<Product[]>([]);
     const [productItemsDefault, setProductItemsDefault] = React.useState<ProductItem[]>([]);
     const [productItems, setProductItems] = React.useState<ProductItem[]>([]);
     const [loadingProducts, setLoadingProducts] = React.useState(false);
@@ -87,40 +87,40 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         setCreateDate(e.target.value);
     };
 
-    React.useEffect(() => {
-        if (stockEntryId) {
-            GetStockEntryById(stockEntryId)
-                .then((res) => {
-                    if (res) {
-                        setCreateDate(getVietnamTime(new Date(res.receiveDate)));
-                        setCreateDateDefault(getVietnamTime(new Date(res.receiveDate)));
-                        setStatusStockEntry(res.status);
-                        setDescription(res.description);
-                        setDescriptionDefault(res.description);
-                        setSupplierSelected({
-                            value: res.supplier.id,
-                            label: res.supplier.name
-                        });
-                        setProductItems(res.receiveItems.map((item) => ({
-                            id: item.id,
-                            productId: item.product.id,
-                            name: item.product.name,
-                            quantity: item.quantity,
-                            unit: item.unit,
-                        })));
-                        setProductItemsDefault(res.receiveItems.map((item) => ({
-                            id: item.id,
-                            productId: item.product.id,
-                            name: item.product.name,
-                            quantity: item.quantity,
-                            unit: item.unit,
-                        })));
-                    }
-                }).catch((err) => {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
-                })
-        }
-    }, [stockEntryId, dispatch])
+    // React.useEffect(() => {
+    //     if (stockEntryId) {
+    //         GetStockEntryById(stockEntryId)
+    //             .then((res) => {
+    //                 if (res) {
+    //                     setCreateDate(getVietnamTime(new Date(res.receiveDate)));
+    //                     setCreateDateDefault(getVietnamTime(new Date(res.receiveDate)));
+    //                     setStatusStockEntry(res.status);
+    //                     setDescription(res.description);
+    //                     setDescriptionDefault(res.description);
+    //                     setSupplierSelected({
+    //                         value: res.supplier.id,
+    //                         label: res.supplier.name
+    //                     });
+    //                     setProductItems(res.receiveItems.map((item) => ({
+    //                         id: item.id,
+    //                         productId: item.product.id,
+    //                         name: item.product.name,
+    //                         quantity: item.quantity,
+    //                         unit: item.unit,
+    //                     })));
+    //                     setProductItemsDefault(res.receiveItems.map((item) => ({
+    //                         id: item.id,
+    //                         productId: item.product.id,
+    //                         name: item.product.name,
+    //                         quantity: item.quantity,
+    //                         unit: item.unit,
+    //                     })));
+    //                 }
+    //             }).catch((err) => {
+    //                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+    //             })
+    //     }
+    // }, [stockEntryId, dispatch])
 
     React.useEffect(() => {
         const id = setTimeout(() => {
@@ -148,6 +148,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             setLoadingProducts(true);
             GetProductsBySupplier(supplierSelected.value)
                 .then((res) => {
+                    console.log(res);
                     if (res) {
                         setProducts(res.data);
                         setPagination({
@@ -229,7 +230,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     productId: productId,
                     name: product.name,
                     quantity: 1,
-                    unit: ""
+                    unit: "",
+                    skuId: product.productDetails[0].sku[0].id
                 }]
             })
         }
@@ -282,12 +284,11 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         }}
                     >
                         <option value="">Đơn vị tính...</option>
-                        <option value="kg">kg</option>
-                        <option value="g">g</option>
-                        <option value="l">l</option>
-                        <option value="ml">ml</option>
-                        <option value="box">hộp</option>
-                        <option value="carton">thùng</option>
+                        {
+                            products.find((item) => item.id === product.productId)?.units.map((unit) => (
+                                <option key={unit.id} value={unit.name}>{unit.name}</option>
+                            ))
+                        }
                     </select>
                 </td>
                 <td style={{ textAlign: "center" }}>
@@ -374,7 +375,8 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                 receiveItems: productItems.map((item) => ({
                     productId: item.productId,
                     quantity: item.quantity,
-                    unit: item.unit
+                    unitId: item.unit,
+                    skuId: item.skuId
                 }))
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu nhập kho thành công" });
@@ -419,6 +421,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         name: item.product.name,
                         quantity: item.quantity,
                         unit: item.unit,
+                        skuId: item.sku.id
                     })));
                     setProductItemsDefault(res.receiveItems.map((item) => ({
                         id: item.id,
@@ -426,6 +429,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         name: item.product.name,
                         quantity: item.quantity,
                         unit: item.unit,
+                        skuId: item.sku.id
                     })));
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
                     handleClose();
