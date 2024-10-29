@@ -39,7 +39,7 @@ interface ProductDetail {
     sku: ProductSKU[];
 }
 
-interface ProductUnit {
+export interface ProductUnit {
     id: string;
     create_at: string;
     update_at: string;

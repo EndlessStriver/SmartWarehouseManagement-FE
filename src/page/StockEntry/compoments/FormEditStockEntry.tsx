@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faEye, faPlus, faSave, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faPlus, faSave, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import Select from "react-select";
@@ -286,7 +286,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         <option value="">Đơn vị tính...</option>
                         {
                             products.find((item) => item.id === product.productId)?.units.map((unit) => (
-                                <option key={unit.id} value={unit.name}>{unit.name}</option>
+                                <option key={unit.id} value={unit.id}>{unit.name}</option>
                             ))
                         }
                     </select>
@@ -420,7 +420,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        unit: item.unit,
+                        unit: item.product.units[0].id,
                         skuId: item.sku.id
                     })));
                     setProductItemsDefault(res.receiveItems.map((item) => ({
@@ -428,7 +428,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        unit: item.unit,
+                        unit: item.product.units[0].id,
                         skuId: item.sku.id
                     })));
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
@@ -502,7 +502,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                     Tạo
                                 </Button>
                             ) : (
-                                statusStockEntry === "PENDING" ? (
+                                statusStockEntry === "PENDING" && (
                                     <div>
                                         <Button
                                             onClick={() => {
@@ -515,17 +515,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                                             <FontAwesomeIcon icon={faSave} className="me-2" /> Lưu
                                         </Button>
                                     </div>
-                                ) : (
-                                    <Button
-                                        onClick={() => {
-                                            setShowReceiveCheck(true);
-                                        }}
-                                        variant="info"
-                                        className="px-4"
-                                    >
-                                        <FontAwesomeIcon icon={faEye} className="me-2" />
-                                        Kiểm tra
-                                    </Button>
                                 )
                             )
                         }

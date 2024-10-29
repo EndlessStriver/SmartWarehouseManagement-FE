@@ -19,6 +19,8 @@ interface ListShelfProps {
     volume: number
     quantity: number
     productId: string
+    unitId: string
+    weight: number
 }
 
 const ListShelf: React.FC<ListShelfProps> = (props) => {
@@ -251,6 +253,8 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                     volume={props.volume}
                     quantity={props.quantity}
                     productId={props.productId}
+                    unitId={props.unitId}
+                    weight={props.weight}
                 />
             }
         </OverLay>

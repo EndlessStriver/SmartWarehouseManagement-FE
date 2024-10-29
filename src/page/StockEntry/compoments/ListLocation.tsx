@@ -8,12 +8,15 @@ import Location from "../../../interface/Entity/Location";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
 import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
+import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 
 interface ListLocationProps {
     shelfId: string;
     volume: number
     quantity: number
     productId: string
+    unitId: string
+    weight: number
     addLocation: (id: string, name: string) => void;
     close: () => void;
     closeAll: () => void;
@@ -32,6 +35,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     const [startY, setStartY] = React.useState(0);
     const [scrollLeft, setScrollLeft] = React.useState(0);
     const [scrollTop, setScrollTop] = React.useState(0);
+    const [valueConvert, setValueConvert] = React.useState(0);
 
     React.useEffect(() => {
         GetLocationByShelfIdt(props.shelfId)
@@ -55,6 +59,19 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 });
         }
     }, [dispatch, props.shelfId]);
+
+    React.useEffect(() => {
+        ConvertUnit(props.unitId, props.quantity)
+            .then((response) => {
+                if (response) {
+                    setValueConvert(response)
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+            });
+    }, [dispatch, props.quantity, props.unitId]);
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (scrollContainerRef.current) {
@@ -93,19 +110,22 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     };
 
     const checkLocationIsNotOk = (location: Location): boolean => {
-        if ((location.maxCapacity / props.volume) < props.quantity) {
+        if (returnValueCountIsUsed(location) < props.quantity) {
             return true;
         }
         return false
+    }
+
+    const returnValueCountIsUsed = (location: Location): number => {
+        let countUsedWidthVolume = Math.floor(location.maxCapacity / (props.volume * valueConvert))
+        let countUsedWidthWeight = Math.floor(location.maxWeight / (props.weight * valueConvert))
+        return countUsedWidthVolume < countUsedWidthWeight ? countUsedWidthVolume : countUsedWidthWeight
     }
 
     const renderLocation = locations.map((location, index) => {
         return (
             <button
                 disabled={checkLocationIsNotOk(location)}
-                onClick={() => {
-
-                }}
                 key={index}
                 className={`btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative ${checkLocationIsNotOk(location) ? "bg-danger" : "bg-light"}`}
             >
@@ -151,7 +171,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         :
                         <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
                 }
-                <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể chứa: <span>{Math.floor(location.maxCapacity / props.volume)}</span></Badge>
+                <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể chứa: <span>{returnValueCountIsUsed(location)}</span></Badge>
             </button >
         )
     })
@@ -210,6 +230,14 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                     </Col>
                     <Col>
                         <h5><span className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3</h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <h5><span className="fw-bold">Khối lượng tối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg</h5>
+                    </Col>
+                    <Col>
+                        <h5><span className="fw-bold">Khối lượng đang lưu trữ :</span>{Number(shelf?.currentWeight).toLocaleString()} kg</h5>
                     </Col>
                 </Row>
                 <Row>

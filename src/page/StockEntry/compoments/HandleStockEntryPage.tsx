@@ -11,6 +11,7 @@ import StockEntry from "../../../interface/Entity/StockEntry"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import ModelAddItemCheck from "./ModelAddItemCheck"
 import { v4 as uuidv4 } from 'uuid';
+import CreateCheckStockEntry from "../../../services/StockEntry/CreateCheckStockEntry"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -33,9 +34,10 @@ export interface ProductCheck {
     productId: string
     productName: string
     quantity: number
-    unit: string
+    unit: { id: string, name: string }
     categoryName: string
     volume: number
+    weight: number
     listAddLocation: listAddLocationInf[]
 }
 
@@ -53,6 +55,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [quantity, setQuantity] = React.useState<number>(0);
     const [productCheckId, setProductCheckId] = React.useState<string>("");
     const [productId, setProductId] = React.useState<string>("");
+    const [unitId, setUnitId] = React.useState<string>("");
+    const [weight, setWeight] = React.useState<number>(0);
 
     React.useEffect(() => {
         const now = new Date();
@@ -64,18 +68,18 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     React.useEffect(() => {
         GetStockEntryById(props.stockEntryId)
             .then((response) => {
-                console.log(response?.receiveItems[0]);
                 if (response) {
+                    setStockEntry(response);
                     const productChecks: ProductCheck[] = response.receiveItems.map((receiveItem) => {
-                        console.log(receiveItem);
                         return {
                             id: receiveItem.id,
                             productId: receiveItem.product.id,
                             productName: receiveItem.product.name,
                             quantity: receiveItem.quantity,
-                            unit: receiveItem.unit,
+                            unit: { id: receiveItem.unit.id, name: receiveItem.unit.name },
                             categoryName: receiveItem.product.category.name,
                             volume: getVolume(receiveItem.sku.dimension),
+                            weight: Number(receiveItem.sku.weight),
                             listAddLocation: []
                         }
                     });
@@ -97,23 +101,18 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     }
 
     const validateAddLocation = (productCheckId: string, quantity: number) => {
-
         const productCheck = productChecks.find((productCheck) => productCheck.id === productCheckId);
-
         if (!productCheck) {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Không tìm thấy sản phẩm" });
             return false;
         }
-
         let sumQuantity = productCheck?.listAddLocation.reduce((acc, cur) => {
             return acc + cur.quantity;
         }, 0);
-
         if (sumQuantity + quantity > productCheck?.quantity) {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Tổng số lượng vượt quá số lượng nhập" });
             return false;
         }
-
         return true
     }
 
@@ -144,6 +143,58 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         setProductChecks(newProductChecks);
     }
 
+    const validateForm = (): boolean => {
+        let check = true;
+        const currentDate = new Date();
+        const creationDate = new Date(createDate);
+
+        if (creationDate > currentDate) {
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày tạo không được vượt quá ngày hiện tại." });
+            check = false;
+        }
+
+        productChecks.forEach((productCheck) => {
+            let sumQuantity = productCheck.listAddLocation.reduce((acc, cur) => {
+                return acc + cur.quantity;
+            }, 0);
+            if (sumQuantity !== productCheck.quantity) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: `Tổng số lượng kiểm tra của sản phẩm ${productCheck.productName} không bằng số lượng nhập` });
+                check = false;
+            }
+        });
+        return check;
+    }
+
+    const handleSubmit = () => {
+        if (validateForm()) {
+            console.log("Vẫn cho vào")
+            CreateCheckStockEntry({
+                receiveId: props.stockEntryId,
+                receiveDate: createDate,
+                receiveBy: profile!.id,
+                supplierId: stockEntry!.supplier.id,
+                receiveItems: productChecks.flatMap((productCheck) => {
+                    return productCheck.listAddLocation.map((location) => {
+                        return {
+                            receiveItemId: productCheck.id,
+                            receiveQuantity: location.quantity,
+                            itemStatus: location.status === "NORMAL" ? true : false,
+                            locationId: location.location.id
+                        };
+                    });
+                })
+            })
+                .then(() => {
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xử lý phiếu nhập kho thành công" });
+                    props.reload();
+                    props.onClose();
+                })
+                .catch((error) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                });
+        }
+    }
+
     return (
         <OverLay className="disabled-padding">
             <div className="w-100 h-100 bg-light p-5">
@@ -157,7 +208,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     <Button
                         variant="primary"
                         className="text-light fw-bold"
-                        onClick={() => { }}
+                        onClick={() => handleSubmit()}
                         disabled={productChecks.length === 0}
                     >
                         Xác nhận
@@ -217,7 +268,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                 <Col>
                                                     <span>
                                                         Đơn vị:
-                                                        <span className="fw-semibold"> {productCheck.unit}</span>
+                                                        <span className="fw-semibold"> {productCheck.unit.name}</span>
                                                     </span>
                                                 </Col>
                                             </Row>
@@ -232,6 +283,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                         setProductCheckId(productCheck.id);
                                                         setShowModelAddItemCheck(true);
                                                         setProductId(productCheck.productId);
+                                                        setUnitId(productCheck.unit.id);
+                                                        setWeight(productCheck.weight);
                                                     }}
                                                     className="btn btn-primary"
                                                 >
@@ -256,7 +309,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                                 <tr key={index}>
                                                                     <td>{index + 1}</td>
                                                                     <td>{location.quantity}</td>
-                                                                    <td>{productCheck.unit}</td>
+                                                                    <td>{productCheck.unit.name}</td>
                                                                     <td>
                                                                         {location.status === "NORMAL" ? "Bình thường" : "Bị hư hại"}
                                                                     </td>
@@ -294,8 +347,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 <ModelAddItemCheck
                     onClose={() => {
                         setShowModelAddItemCheck(false);
-                        setCategoryName("");
-                        setVolume(0);
                     }}
                     categoryName={categoryName}
                     volume={volume}
@@ -303,6 +354,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     addItem={addListAddLocation}
                     productCheckId={productCheckId}
                     productId={productId}
+                    unitId={unitId}
+                    weight={weight}
                 />
             }
         </OverLay>

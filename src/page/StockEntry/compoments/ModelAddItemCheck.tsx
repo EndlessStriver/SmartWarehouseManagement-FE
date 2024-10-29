@@ -15,6 +15,8 @@ interface ModelAddItemCheckProps {
     quantity: number
     productCheckId: string
     productId: string
+    unitId: string
+    weight: number
 }
 
 interface Location {
@@ -73,6 +75,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     }
                     <button
                         onClick={() => {
+                            if (quantity < 0) dispatch({ message: "Số lượng sản phẩm không thể nhỏ hơn 0", type: ActionTypeEnum.ERROR })
                             if (quantity === 0) dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
                             if (quantity > 0) setShowListShelf(true)
                         }}
@@ -110,6 +113,8 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     volume={props.volume}
                     quantity={quantity}
                     productId={props.productId}
+                    unitId={props.unitId}
+                    weight={props.weight}
                 />
             }
         </OverLay>
