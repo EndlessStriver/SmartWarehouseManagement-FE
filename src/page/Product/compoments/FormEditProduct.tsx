@@ -29,12 +29,14 @@ import OptionType from "../../../interface/OptionType";
 interface FormEditProductProps {
     handleClose: () => void;
     productId?: string;
+    reload: () => void;
 }
 
 interface FormDataType {
     name: string;
     description: string;
     weight: string;
+    unit: string;
     productCode: string;
     length: string;
     width: string;
@@ -57,7 +59,7 @@ interface TypeImageUpload {
     file: File
 }
 
-const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClose }) => {
+const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     const dispatch = useDispatchMessage();
     const uploadRef = React.useRef<HTMLInputElement>(null);
@@ -90,6 +92,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         description: "",
         weight: "",
         productCode: "",
+        unit: "",
         length: "",
         width: "",
         height: "",
@@ -104,6 +107,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         name: "",
         description: "",
         weight: "",
+        unit: "",
         productCode: "",
         length: "",
         width: "",
@@ -127,23 +131,24 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         return {
             name: data.name,
             description: data.description,
-            weight: data.productDetails!.sku.weight.toString(),
+            weight: data.productDetails[0].sku[0].weight.toString(),
+            unit: data.units?.find(unit => unit.isBaseUnit)?.name || "",
             productCode: data.productCode,
-            length: data.productDetails!.sku.dimension.split("x")[0],
-            width: data.productDetails!.sku.dimension.split("x")[1],
-            height: data.productDetails!.sku.dimension.split("x")[2],
-            color: { value: data.productDetails!.sku.color.id, label: data.productDetails!.sku.color.name },
+            length: data.productDetails[0].sku[0].dimension.split("x")[0],
+            width: data.productDetails[0].sku[0].dimension.split("x")[1],
+            height: data.productDetails[0].sku[0].dimension.split("x")[2],
+            color: { value: data.productDetails[0].sku[0].color.id, label: data.productDetails[0].sku[0].color.name },
             branch: {
-                value: data.productDetails!.sku.brand.id,
-                label: data!.productDetails!.sku.brand.name
+                value: data.productDetails[0].sku[0].brand.id,
+                label: data!.productDetails[0].sku[0].brand.name
             },
             model: {
-                value: data.productDetails!.sku.material.id,
-                label: data.productDetails!.sku.material.name
+                value: data.productDetails[0].sku[0].material.id,
+                label: data.productDetails[0].sku[0].material.name
             },
-            size: { value: data.productDetails!.sku.size.id, label: data.productDetails!.sku.size.name },
+            size: { value: data.productDetails[0].sku[0].size.id, label: data.productDetails[0].sku[0].size.name },
             category: { value: data.category!.id, label: data.category!.name },
-            supplier: { value: data.productDetails!.supplier.id, label: data.productDetails!.supplier.name },
+            supplier: { value: data.productDetails[0].sku[0].supplier.id, label: data.productDetails[0].sku[0].supplier.name },
         }
     }
 
@@ -158,6 +163,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         }
         if (formData.weight === "") {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập trọng lượng" });
+            return true;
+        }
+        if (formData.unit === "") {
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính cơ bản" });
             return true;
         }
         if (formData.productCode === "") {
@@ -216,19 +225,19 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     }
 
     React.useEffect(() => {
-        if (productId) {
-            GetProductById(productId)
+        if (props.productId) {
+            GetProductById(props.productId)
                 .then((data) => {
                     if (data) {
                         setFormData(FormatDataGet(data));
                         setDataDefault(FormatDataGet(data));
-                        setImagePreviews(data.productDetails?.images.map((image) => {
+                        setImagePreviews(data.productDetails[0].images.map((image) => {
                             return {
                                 key: crypto.randomUUID().toString(),
                                 url: image.url
                             }
                         }) || []);
-                        setImagePreviewsDefault(data.productDetails?.images.map((image) => {
+                        setImagePreviewsDefault(data.productDetails[0].images.map((image) => {
                             return {
                                 key: crypto.randomUUID().toString(),
                                 url: image.url
@@ -236,12 +245,13 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         }) || []);
                     }
                 }).catch((error) => {
+                    console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 }).finally(() => {
                     setLoading(false);
                 })
         }
-    }, [productId, dispatch, reload])
+    }, [props.productId, dispatch, reload])
 
     React.useEffect(() => {
         const id = setTimeout(() => {
@@ -330,6 +340,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
             name: formData.name,
             categoryId: formData.category!.value,
             description: formData.description,
+            unitName: formData.unit,
             productCode: formData.productCode,
             supplierId: formData.supplier!.value,
             colorId: formData.color!.value,
@@ -349,6 +360,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
             categoryId: formData.category!.value,
             description: formData.description,
             productCode: formData.productCode,
+            unitName: formData.unit,
             supplierId: formData.supplier!.value,
             colorId: formData.color!.value,
             sizeId: formData.size!.value,
@@ -368,6 +380,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
         if (DeepEqual(formData.model, dataDefault.model)) delete dataUpdate.materialId;
         if (formData.length === dataDefault.length && formData.width === dataDefault.width && formData.height === dataDefault.height) delete dataUpdate.dimension;
         if (formData.weight === dataDefault.weight) delete dataUpdate.weight;
+        if (formData.unit === dataDefault.unit) delete dataUpdate.unitName;
 
         return dataUpdate;
     }
@@ -375,12 +388,13 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     const handleSubmit = () => {
         if (validate1()) return;
         setLoading(true);
-        if (!productId) {
+        if (!props.productId) {
             CreateProduct(formatDataCreate())
                 .then(() => {
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo sản phẩm thành công" });
                     setTimeout(() => {
-                        handleClose();
+                        props.handleClose();
+                        props.reload();
                     }, 1000);
                 })
                 .catch((error) => {
@@ -395,7 +409,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                 dispatch({ type: ActionTypeEnum.ERROR, message: "Không có dữ liệu thay đổi" });
                 setLoading(false);
             } else {
-                UpdateProductByProductId(productId, dataUpdate)
+                UpdateProductByProductId(props.productId, dataUpdate)
                     .then((response) => {
                         if (response) {
                             setFormData(FormatDataGet(response));
@@ -437,11 +451,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     }
 
     const handleRemoveImage = (key: string) => {
-        if (productId) {
+        if (props.productId) {
             const image = imagePreviews.find((image) => image.key === key);
             if (image) {
                 setLoading(true);
-                DeleteImageByProductId(productId, image.url)
+                DeleteImageByProductId(props.productId, image.url)
                     .then(() => {
                         const newPreviews = imagePreviews.filter((image) => image.key !== key);
                         setImagePreviews(newPreviews);
@@ -487,7 +501,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
     const handleAddNewImage = () => {
         if (images.length > 0) {
             setLoading(true);
-            AddImagesProduct(productId!, getListImage())
+            AddImagesProduct(props.productId!, getListImage())
                 .then(() => {
                     setReload(!reload);
                     setImages([]);
@@ -510,15 +524,15 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <div className="d-flex flex-row align-items-center gap-2">
                         <button
-                            onClick={() => handleClose()}
+                            onClick={() => props.handleClose()}
                             className="btn fs-3 px-3 text-primary"
                         >
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
-                        <h2 className="fw-bold mb-0">{`${productId ? "Chỉnh Sửa Sản Phẩm" : "Tạo Mới Sản Phẩm"}`}</h2>
+                        <h2 className="fw-bold mb-0">{`${props.productId ? "Chỉnh Sửa Sản Phẩm" : "Tạo Mới Sản Phẩm"}`}</h2>
                     </div>
                     {
-                        productId ?
+                        props.productId ?
                             isEdit ?
                                 <div className={"d-flex gap-2"}>
                                     <Button
@@ -571,7 +585,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 name="name"
                                 onChange={handleChangeInput}
                                 required
-                                disabled={productId !== "" && !isEdit}
+                                disabled={props.productId !== "" && !isEdit}
                                 value={formData.name}
                             />
                         </Form.Group>
@@ -585,7 +599,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     name="description"
                                     onChange={handleChangeInput}
                                     required
-                                    disabled={productId !== "" && !isEdit}
+                                    disabled={props.productId !== "" && !isEdit}
                                     value={formData.description}
                                 />
                             </div>
@@ -602,13 +616,13 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={handleChangeInput}
                                         required
                                         value={formData.productCode}
-                                        disabled={productId !== "" && !isEdit}
+                                        disabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Trọng Lượng</Form.Label>
+                                    <Form.Label>Trọng Lượng (g)</Form.Label>
                                     <Form.Control
                                         type="number"
                                         placeholder="Nhập trọng lượng..."
@@ -617,13 +631,26 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={handleChangeInput}
                                         value={formData.weight}
                                         required
-                                        disabled={productId !== "" && !isEdit}
+                                        disabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Đơn vị tính cơ bản</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Nhập tên đơn vị tính cơ bản..."
+                                    className="py-3"
+                                    name="unit"
+                                    onChange={handleChangeInput}
+                                    required
+                                    value={formData.unit}
+                                    disabled={props.productId !== "" && !isEdit}
+                                />
+                            </Form.Group>
                         </Row>
                         <Form.Group className="mb-3">
-                            <Form.Label>Kích Thước</Form.Label>
+                            <Form.Label>Kích Thước (cm)</Form.Label>
                             <div className="d-flex flex-row gap-3 align-items-center">
                                 <Form.Control
                                     type="number"
@@ -634,7 +661,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     onChange={handleChangeInput}
                                     value={formData.length}
                                     required
-                                    disabled={productId !== "" && !isEdit}
+                                    disabled={props.productId !== "" && !isEdit}
                                 />
                                 <span>X</span>
                                 <Form.Control
@@ -646,7 +673,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     onChange={handleChangeInput}
                                     value={formData.width}
                                     required
-                                    disabled={productId !== "" && !isEdit}
+                                    disabled={props.productId !== "" && !isEdit}
                                 />
                                 <span>X</span>
                                 <Form.Control
@@ -658,7 +685,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                     onChange={handleChangeInput}
                                     value={formData.height}
                                     required
-                                    disabled={productId !== "" && !isEdit}
+                                    disabled={props.productId !== "" && !isEdit}
                                 />
                             </div>
                         </Form.Group>
@@ -683,7 +710,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, color: value })}
                                         options={colors}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
@@ -702,7 +729,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, model: value })}
                                         options={models}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
@@ -723,7 +750,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, branch: value })}
                                         options={branches}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
@@ -742,7 +769,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, size: value })}
                                         options={sizes}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
@@ -766,7 +793,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, category: value })}
                                         options={categories}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
@@ -787,7 +814,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         onChange={(value) => setFormData({ ...formData, supplier: value })}
                                         options={suppliers}
                                         required
-                                        isDisabled={productId !== "" && !isEdit}
+                                        isDisabled={props.productId !== "" && !isEdit}
                                     />
                                 </Form.Group>
                             </Col>
@@ -806,7 +833,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             onClick={() => {
                                 uploadRef.current?.click()
                             }}
-                            disabled={productId !== "" && !isEdit}
+                            disabled={props.productId !== "" && !isEdit}
                         >+ Thêm Ảnh</Button>
                     </div>
                     <Form.Group className="mb-3">
@@ -817,7 +844,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                             className="py-3 d-none"
                             multiple
                             onChange={handleChangeFile}
-                            disabled={productId !== "" && !isEdit}
+                            disabled={props.productId !== "" && !isEdit}
                             accept={"image/*"}
                         />
                     </Form.Group>
@@ -832,7 +859,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                 <CloseButton
                                     className="position-absolute bg-light"
                                     onClick={() => {
-                                        if (!productId) {
+                                        if (!props.productId) {
                                             handleRemoveImage(image.key)
                                         } else {
                                             setKeyImageDelete(image.key);
@@ -847,7 +874,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                                         }
                                     }}
                                     style={{ top: "0.5rem", right: "0.5rem" }}
-                                    disabled={productId !== "" && !isEdit}
+                                    disabled={props.productId !== "" && !isEdit}
                                 />
                                 {
                                     checkImageNew(image.key) &&
@@ -865,7 +892,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = ({ productId, handleClos
                         </div>
                     }
                     {
-                        handleCheckImageChangeData() && images.length > 0 && productId &&
+                        handleCheckImageChangeData() && images.length > 0 && props.productId &&
                         <div className={"d-flex justify-content-end gap-2"}>
                             <div
                                 onClick={handleAddNewImage}

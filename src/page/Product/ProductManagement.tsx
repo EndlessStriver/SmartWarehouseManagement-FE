@@ -1,5 +1,4 @@
 import React from 'react'
-import { Product } from '../../interface/Entity/Product'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Button, Table } from 'react-bootstrap';
@@ -13,6 +12,17 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import DeleteProductById from "../../services/Product/DeleteProductById";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
+
+interface Product {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    name: string;
+    description: string;
+    productCode: string;
+    img: string;
+}
 
 export const ProductManagement: React.FC = () => {
 
@@ -29,6 +39,7 @@ export const ProductManagement: React.FC = () => {
         totalPage: 0,
         totalElementOfPage: 0
     })
+    const [reload, setReload] = React.useState<boolean>(false)
 
     const updateProducts = (response: Product[]) => {
         setProducts(response)
@@ -78,7 +89,7 @@ export const ProductManagement: React.FC = () => {
             }).finally(() => {
                 setIsLoading(false)
             })
-    }, [dispatch])
+    }, [dispatch, reload])
 
     const handleDeleteAccount = () => {
         if (productId) {
@@ -114,6 +125,9 @@ export const ProductManagement: React.FC = () => {
         return (
             <tr key={index}>
                 <td>{index + 1}</td>
+                <td style={{ textAlign: "center" }}>
+                    <img src={product.img} alt={product.name} width={70} height={70} className='object-fit-cover border rounded' />
+                </td>
                 <td>{product.productCode}</td>
                 <td>{product.name}</td>
                 <td>{product.description}</td>
@@ -158,6 +172,7 @@ export const ProductManagement: React.FC = () => {
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Hình ảnh</th>
                         <th>Mã Sản Phẩm</th>
                         <th>Tên Sản Phẩm</th>
                         <th>Mô Tả</th>
@@ -189,6 +204,7 @@ export const ProductManagement: React.FC = () => {
                         setProductId("")
                     }}
                     productId={productId}
+                    reload={() => setReload(!reload)}
                 />
             }
             {

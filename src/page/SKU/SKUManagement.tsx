@@ -1,7 +1,6 @@
 import React from "react";
 import "./SKUManagement.css";
 import { Table } from "react-bootstrap";
-import SKU from "../../interface/Entity/SKU";
 import GetSKUs from "../../services/SKU/GetSKUs";
 import PaginationType from "../../interface/Pagination";
 import { useDispatchMessage } from "../../Context/ContextMessage";
@@ -9,6 +8,7 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
+import { SKU } from "../../interface/Entity/Product";
 
 export const SKUManagement: React.FC = () => {
 

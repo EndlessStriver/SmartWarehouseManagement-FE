@@ -14,6 +14,7 @@ interface ModelAddItemCheckProps {
     volume: number
     quantity: number
     productCheckId: string
+    productId: string
 }
 
 interface Location {
@@ -82,8 +83,14 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                 </FormGroup>
                 <button
                     onClick={() => {
-                        if (Number(quantity) === 0) dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
-                        if (!location) dispatch({ message: "Vui lòng chọn vị trí", type: ActionTypeEnum.ERROR })
+                        if (Number(quantity) <= 0) {
+                            dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
+                            return;
+                        }
+                        if (!location) {
+                            dispatch({ message: "Vui lòng chọn vị trí", type: ActionTypeEnum.ERROR })
+                            return;
+                        }
                         if (quantity > 0 && location) {
                             props.addItem(props.productCheckId, quantity, status, location)
                             props.onClose()
@@ -102,6 +109,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     categoryName={props.categoryName}
                     volume={props.volume}
                     quantity={quantity}
+                    productId={props.productId}
                 />
             }
         </OverLay>

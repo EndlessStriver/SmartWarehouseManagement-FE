@@ -11,6 +11,9 @@ import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
 
 interface ListLocationProps {
     shelfId: string;
+    volume: number
+    quantity: number
+    productId: string
     addLocation: (id: string, name: string) => void;
     close: () => void;
     closeAll: () => void;
@@ -89,15 +92,22 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         scrollContainerRef.current.scrollTop = scrollTop - walkY;
     };
 
+    const checkLocationIsNotOk = (location: Location): boolean => {
+        if ((location.maxCapacity / props.volume) < props.quantity) {
+            return true;
+        }
+        return false
+    }
+
     const renderLocation = locations.map((location, index) => {
         return (
             <button
-                // disabled={true}
+                disabled={checkLocationIsNotOk(location)}
                 onClick={() => {
 
                 }}
                 key={index}
-                className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"
+                className={`btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative ${checkLocationIsNotOk(location) ? "bg-danger" : "bg-light"}`}
             >
                 <div>
                     <div className="h5 fw-bold">{location.locationCode}</div>
@@ -122,10 +132,14 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         </div>
                         <div
                             onClick={() => {
+                                if ((location.maxCapacity / props.volume) < props.quantity) {
+                                    dispatch({ type: ActionTypeEnum.ERROR, message: "Vị trí này không thể chứa đủ số lượng yêu cầu vui lòng giảm số lượng hoặc chọn một vị trí khác" })
+                                    return;
+                                }
                                 props.addLocation(location.id, location.locationCode)
                                 props.closeAll()
                             }}
-                            className="btn btn-link text-danger"
+                            className={`btn btn-link ${checkLocationIsNotOk(location) ? "text-light" : "text-danger"}`}
                         >
                             Thêm
                         </div>
@@ -137,6 +151,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         :
                         <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
                 }
+                <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể chứa: <span>{Math.floor(location.maxCapacity / props.volume)}</span></Badge>
             </button >
         )
     })

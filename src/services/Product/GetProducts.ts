@@ -1,8 +1,18 @@
 import axios from "axios";
-import { Product } from "../../interface/Entity/Product";
 import { ResponseError } from "../../interface/ResponseError";
 import Order from "../../enum/Order";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+
+interface Product {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    name: string;
+    description: string;
+    productCode: string;
+    img: string;
+}
 
 interface GetProductsResponse {
     data: Product[],

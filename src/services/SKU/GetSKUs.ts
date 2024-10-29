@@ -1,8 +1,8 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import SKU from "../../interface/Entity/SKU";
 import Order from "../../enum/Order";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { SKU } from "../../interface/Entity/Product";
 
 interface GetSKUsResponse {
     data: SKU[];

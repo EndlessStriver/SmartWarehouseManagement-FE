@@ -10,6 +10,7 @@ import GetStockEntryById from "../../../services/StockEntry/GetStockEntryById"
 import StockEntry from "../../../interface/Entity/StockEntry"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import ModelAddItemCheck from "./ModelAddItemCheck"
+import { v4 as uuidv4 } from 'uuid';
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -18,6 +19,7 @@ interface HandleStockEntryPageProps {
 }
 
 interface listAddLocationInf {
+    id: string
     quantity: number
     status: string
     location: {
@@ -28,6 +30,7 @@ interface listAddLocationInf {
 
 export interface ProductCheck {
     id: string
+    productId: string
     productName: string
     quantity: number
     unit: string
@@ -44,10 +47,12 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [productChecks, setProductChecks] = React.useState<ProductCheck[]>([]);
     const [stockEntry, setStockEntry] = React.useState<StockEntry>();
     const [showModelAddItemCheck, setShowModelAddItemCheck] = React.useState<boolean>(false);
+
     const [categoryName, setCategoryName] = React.useState<string>("");
     const [volume, setVolume] = React.useState<number>(0);
     const [quantity, setQuantity] = React.useState<number>(0);
     const [productCheckId, setProductCheckId] = React.useState<string>("");
+    const [productId, setProductId] = React.useState<string>("");
 
     React.useEffect(() => {
         const now = new Date();
@@ -59,11 +64,13 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     React.useEffect(() => {
         GetStockEntryById(props.stockEntryId)
             .then((response) => {
+                console.log(response?.receiveItems[0]);
                 if (response) {
-                    setStockEntry(response);
                     const productChecks: ProductCheck[] = response.receiveItems.map((receiveItem) => {
+                        console.log(receiveItem);
                         return {
                             id: receiveItem.id,
+                            productId: receiveItem.product.id,
                             productName: receiveItem.product.name,
                             quantity: receiveItem.quantity,
                             unit: receiveItem.unit,
@@ -76,6 +83,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 }
             })
             .catch((error) => {
+                console.error(error);
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
             })
     }, [props.stockEntryId, dispatch])
@@ -109,6 +117,17 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         return true
     }
 
+    const removeListAddLocation = (productCheckId: string, locationId: string) => {
+        const newProductChecks = productChecks.map((productCheck) => {
+            if (productCheck.id === productCheckId) {
+                productCheck.listAddLocation = productCheck.listAddLocation.filter((location) => location.id !== locationId);
+            }
+            return productCheck;
+        });
+
+        setProductChecks(newProductChecks);
+    }
+
     const addListAddLocation = (id: string, quantity: number, status: string, location: { id: string, name: string }) => {
         if (!validateAddLocation(id, quantity)) return;
         const newProductChecks = productChecks.map((productCheck) => {
@@ -116,7 +135,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 productCheck.listAddLocation.push({
                     quantity: quantity,
                     status: status,
-                    location: location
+                    location: location,
+                    id: uuidv4()
                 });
             }
             return productCheck;
@@ -211,6 +231,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                         setQuantity(productCheck.quantity);
                                                         setProductCheckId(productCheck.id);
                                                         setShowModelAddItemCheck(true);
+                                                        setProductId(productCheck.productId);
                                                     }}
                                                     className="btn btn-primary"
                                                 >
@@ -236,11 +257,16 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                                     <td>{index + 1}</td>
                                                                     <td>{location.quantity}</td>
                                                                     <td>{productCheck.unit}</td>
-                                                                    <td>{location.status}</td>
+                                                                    <td>
+                                                                        {location.status === "NORMAL" ? "Bình thường" : "Bị hư hại"}
+                                                                    </td>
                                                                     <td>{location.location.name}</td>
                                                                     <td>
                                                                         <Button
                                                                             variant="danger"
+                                                                            onClick={() => {
+                                                                                removeListAddLocation(productCheck.id, location.id);
+                                                                            }}
                                                                         >
                                                                             <FontAwesomeIcon icon={faTrash} />
                                                                         </Button>
@@ -276,6 +302,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     quantity={quantity}
                     addItem={addListAddLocation}
                     productCheckId={productCheckId}
+                    productId={productId}
                 />
             }
         </OverLay>

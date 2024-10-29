@@ -11,4 +11,5 @@ export default interface DataTypeCreateProductAdmin {
     brandId: string,
     dimension: string,
     weight: number,
+    unitName: string,
 }

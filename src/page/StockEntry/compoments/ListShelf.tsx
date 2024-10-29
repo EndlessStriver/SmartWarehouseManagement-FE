@@ -18,6 +18,7 @@ interface ListShelfProps {
     categoryName: string
     volume: number
     quantity: number
+    productId: string
 }
 
 const ListShelf: React.FC<ListShelfProps> = (props) => {
@@ -247,6 +248,9 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         props.onClose()
                     }}
                     addLocation={props.setLocation}
+                    volume={props.volume}
+                    quantity={props.quantity}
+                    productId={props.productId}
                 />
             }
         </OverLay>

@@ -1,6 +1,6 @@
 export default interface DataTypeUpdateProductAdmin {
     name?: string,
-    unit?: string,
+    unitName?: string,
     categoryId?: string,
     description?: string,
     productCode?: string,

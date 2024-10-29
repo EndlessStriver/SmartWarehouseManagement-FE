@@ -16,18 +16,21 @@ const CreateProduct = async (product: DataTypeCreateProductAdmin): Promise<void>
             window.location.href = "/session-expired";
         } else {
             const formData = new FormData();
-            Object.keys(product).forEach(key => {
-                const value = product[key as keyof DataTypeCreateProductAdmin];
-                if (value) {
-                    if (Array.isArray(value)) {
-                        value.forEach((file: File) => {
-                            formData.append(key, file);
-                        });
-                    } else {
-                        formData.append(key, value as string);
-                    }
-                }
+            product.image.forEach((file) => {
+                formData.append('image', file);
             });
+            formData.append('name', product.name);
+            formData.append("categoryId", product.categoryId);
+            formData.append("description", product.description);
+            formData.append("productCode", product.productCode);
+            formData.append("supplierId", product.supplierId);
+            formData.append("colorId", product.colorId);
+            formData.append("sizeId", product.sizeId);
+            formData.append("materialId", product.materialId);
+            formData.append("brandId", product.brandId);
+            formData.append("dimension", product.dimension);
+            formData.append("weight", product.weight.toString());
+            formData.append("unitName", product.unitName);
             const response = await axios.post(`${HOST}/products`, formData, {
                 headers: {
                     "content-type": "multipart/form-data",
