@@ -11,6 +11,7 @@ import ListLocation from "./ListLocation";
 import GetShelfByCategoryName from "../../../services/Location/GetShelfsByCategoryName";
 import { NoData } from "../../../compoments/NoData/NoData";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
+import GetShelfByCategoryNameAndTypeShelf from "../../../services/Location/GetShelfsByCategoryName";
 
 interface ListShelfProps {
     onClose: () => void
@@ -21,6 +22,7 @@ interface ListShelfProps {
     productId: string
     unitId: string
     weight: number
+    status: string
 }
 
 const ListShelf: React.FC<ListShelfProps> = (props) => {
@@ -41,7 +43,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     React.useEffect(() => {
         if (!getAllShelf) {
             setIsLoading(true)
-            GetShelfByCategoryName({ categoryName: props.categoryName })
+            GetShelfByCategoryNameAndTypeShelf({ categoryName: props.categoryName, typeShelf: props.status })
                 .then((response) => {
                     if (response) {
                         setShelfs(response.data)
@@ -78,7 +80,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                     setIsLoading(false)
                 })
         }
-    }, [dispatch, props.categoryName, getAllShelf])
+    }, [dispatch, props.categoryName, getAllShelf, props.status])
 
     React.useEffect(() => {
         let id: NodeJS.Timeout | number;
@@ -106,7 +108,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
         } else {
             setIsLoading(true)
             id = setTimeout(() => {
-                GetShelfByCategoryName({ categoryName: props.categoryName, offset: pagination.offset })
+                GetShelfByCategoryNameAndTypeShelf({ categoryName: props.categoryName, typeShelf: props.status, offset: pagination.offset })
                     .then((response) => {
                         if (response) {
                             setShelfs(response.data)
@@ -126,7 +128,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
             }, 500)
         }
         return () => clearTimeout(id)
-    }, [dispatch, pagination.offset, props.categoryName, getAllShelf])
+    }, [dispatch, pagination.offset, props.categoryName, getAllShelf, props.status])
 
     const renderShelfs = () => {
         return shelfs.map((shelf: Shelf, index: number) => {

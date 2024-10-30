@@ -1,10 +1,9 @@
 import React from "react";
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { Badge, CloseButton, Col, Row } from "react-bootstrap";
-import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelfIdt";
+import GetLocationByShelfIdt, { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
-import Location from "../../../interface/Entity/Location";
 import ModelLocationDetail from "./ModelLocationDetail";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
@@ -18,7 +17,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
 
     const dispatch = useDispatchMessage();
     const [shelf, setShelf] = React.useState<Shelf>();
-    const [locations, setLocations] = React.useState<Location[]>([]);
+    const [locations, setLocations] = React.useState<StorageLocation[]>([]);
     const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
     const [locationCode, setLocationCode] = React.useState<string>('');
@@ -96,12 +95,12 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
             >
                 <div>
                     <div className="h5 fw-bold">{location.locationCode}</div>
-                    <div className="h6">Còn trống: {(100 - (location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
+                    <div className="h6">Còn trống: {(100 - (Number(location.currentCapacity) / Number(location.maxCapacity)) * 100).toFixed(2)}%</div>
                     {
                         location.occupied && (
                             <>
-                                <div className="h6">Tên sản phẩm: Iphone 18</div>
-                                <div className="h6">Số lượng: 19</div>
+                                <div className="h6">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
+                                <div className="h6">Số lượng: {location.quantity} {location.skus.productDetails.product.units?.find((unit) => unit.isBaseUnit)?.name || ""}</div>
                             </>
                         )
                     }
@@ -179,6 +178,14 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                     </Col>
                     <Col>
                         <h5><span className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3</h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <h5><span className="fw-bold">Khối lượng chứa đối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg</h5>
+                    </Col>
+                    <Col>
+                        <h5><span className="fw-bold">Khối lượng đang chứa :</span>{Number(shelf?.currentWeight).toLocaleString()} kg</h5>
                     </Col>
                 </Row>
                 <Row>

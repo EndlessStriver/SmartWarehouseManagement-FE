@@ -1,9 +1,74 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
-import Location from "../../interface/Entity/Location";
 
-const GetLocationByShelfIdt = async (shelfIdt: string): Promise<Location[] | undefined> => {
+interface Unit {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    name: string;
+    isBaseUnit: boolean;
+}
+
+interface Image {
+    url: string;
+    publicId: string;
+    isDeleted: boolean;
+}
+
+interface Product {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    name: string;
+    description: string;
+    productCode: string;
+    img: string;
+    units: Unit[];
+}
+
+interface ProductDetails {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    quantity: number;
+    images: Image[];
+    product: Product;
+}
+
+interface Sku {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    skuCode: string;
+    batchCode: string;
+    weight: string;
+    dimension: string;
+    description: string;
+    productDetails: ProductDetails;
+}
+
+export interface StorageLocation {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    locationCode: string;
+    maxCapacity: string;
+    currentCapacity: string;
+    maxWeight: string;
+    currentWeight: string;
+    quantity: number;
+    occupied: boolean;
+    skus: Sku;
+}
+
+
+const GetLocationByShelfIdt = async (shelfIdt: string): Promise<StorageLocation[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');

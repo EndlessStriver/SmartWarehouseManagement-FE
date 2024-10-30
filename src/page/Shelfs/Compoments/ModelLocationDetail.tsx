@@ -1,9 +1,10 @@
 import React from "react";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
-import GetLocationDetailsByCode, { LocationDetail } from "../../../services/Location/GetLocationDetailsByCode";
+import GetLocationDetailsByCode from "../../../services/Location/GetLocationDetailsByCode";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import { Badge, CloseButton, Col, Image, Row } from "react-bootstrap";
+import { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
 
 interface ModelLocationDetailProps {
     onClose: () => void;
@@ -13,7 +14,7 @@ interface ModelLocationDetailProps {
 const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
 
     const dispatch = useDispatchMessage();
-    const [locationDetail, setLocationDetail] = React.useState<LocationDetail>();
+    const [locationDetail, setLocationDetail] = React.useState<StorageLocation>();
 
     React.useEffect(() => {
         GetLocationDetailsByCode(props.locationCode)
@@ -69,10 +70,24 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                         </div>
                     </Col>
                 </Row>
+                <Row className="mb-2">
+                    <Col>
+                        <div>
+                            <span className="fw-semibold">Khối lượng chứa tối đa: </span>
+                            {Number(locationDetail?.maxWeight).toLocaleString()} kg
+                        </div>
+                    </Col>
+                    <Col>
+                        <div>
+                            <span className="fw-semibold">Khối lượng đang chứa: </span>
+                            {Number(locationDetail?.currentWeight).toLocaleString()} kg
+                        </div>
+                    </Col>
+                </Row>
                 <h5 className="fw-bold">Thông Tin Sản Phẩm:</h5>
                 <div className="d-flex flex-row gap-3 justify-content-between align-items-center">
                     <div className="my-2 d-flex justify-content-center" style={{ flex: 1 }}>
-                        <Image src={locationDetail?.skus?.productDetails[0]?.product.img || "/images/default-product-img.png"} thumbnail style={{
+                        <Image src={locationDetail?.skus.productDetails.product.img || "/images/default-product-img.png"} thumbnail style={{
                             width: "150px",
                             height: "auto",
                             objectFit: "cover"
@@ -86,21 +101,21 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                             </div>
                             <div>
                                 <span className="fw-semibold">Tên sản phẩm: </span>
-                                {locationDetail?.skus?.productDetails[0]?.product?.name || "Chưa có thông tin!"}
+                                {locationDetail?.skus.productDetails.product.name || "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">Trọng lượng: </span>
-                                {(locationDetail?.skus?.weight || "Chưa có thông tin!") + " (g)"}
+                                {(locationDetail?.skus?.weight || "Chưa có thông tin!") + " (kg)"}
                             </div>
                         </Col>
                         <Col>
                             <div>
                                 <span className="fw-semibold">Số lượng: </span>
-                                {locationDetail?.quantity || "Chưa có thông tin!"}
+                                {(locationDetail?.quantity + " " + locationDetail?.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name || "Chưa có thông tin!")}
                             </div>
                             <div>
                                 <span className="fw-semibold">Mã sản phẩm: </span>
-                                {locationDetail?.skus?.productDetails[0]?.product?.productCode || "No information!"}
+                                {locationDetail?.skus.productDetails.product.productCode || "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">kích thước: </span>

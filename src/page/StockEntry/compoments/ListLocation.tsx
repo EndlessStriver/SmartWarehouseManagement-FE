@@ -1,10 +1,9 @@
 import React from "react";
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { Badge, CloseButton, Col, Row } from "react-bootstrap";
-import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelfIdt";
+import GetLocationByShelfIdt, { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
-import Location from "../../../interface/Entity/Location";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
 import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
@@ -28,7 +27,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     const productCheck = useProductCheck();
     const dispatch = useDispatchMessage();
     const [shelf, setShelf] = React.useState<Shelf>();
-    const [locations, setLocations] = React.useState<Location[]>([]);
+    const [locations, setLocations] = React.useState<StorageLocation[]>([]);
     const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
     const [isDragging, setIsDragging] = React.useState(false);
     const [showModelLocationDetail, setShowModelLocationDetail] = React.useState(false);
@@ -111,7 +110,8 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         scrollContainerRef.current.scrollTop = scrollTop - walkY;
     };
 
-    const checkLocationIsNotOk = (location: Location): boolean => {
+    const checkLocationIsNotOk = (location: StorageLocation): boolean => {
+        if (location.occupied && location.skus.productDetails.product.id !== props.productId) return true;
         if (returnValueCountIsUsed(location) < props.quantity) {
             return true;
         }
@@ -119,13 +119,13 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         return false
     }
 
-    const returnValueCountIsUsed = (location: Location): number => {
-        let countUsedWidthVolume = Math.floor(location.maxCapacity / (props.volume * valueConvert))
-        let countUsedWidthWeight = Math.floor(location.maxWeight / (props.weight * valueConvert))
+    const returnValueCountIsUsed = (location: StorageLocation): number => {
+        let countUsedWidthVolume = Math.floor((Number(location.maxCapacity) - Number(location.currentCapacity)) / (props.volume * valueConvert))
+        let countUsedWidthWeight = Math.floor((Number(location.maxWeight) - Number(location.currentWeight)) / (props.weight * valueConvert))
         return countUsedWidthVolume < countUsedWidthWeight ? countUsedWidthVolume : countUsedWidthWeight
     }
 
-    const checkLocationIsChoose = (location: Location): boolean => {
+    const checkLocationIsChoose = (location: StorageLocation): boolean => {
 
         let check = false;
 
@@ -143,16 +143,16 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             <button
                 disabled={checkLocationIsNotOk(location)}
                 key={index}
-                className={`btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative ${checkLocationIsNotOk(location) ? "bg-danger" : "bg-light"}`}
+                className={`btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative ${checkLocationIsNotOk(location) ? "bg-warning" : "bg-light"}`}
             >
                 <div>
                     <div className="h5 fw-bold">{location.locationCode}</div>
-                    <div className="h6">Còn trống: {(100 - (location.currentCapacity / location.maxCapacity) * 100).toFixed(2)}%</div>
+                    <div className="h6">Còn trống: {(100 - (Number(location.currentCapacity) / Number(location.maxCapacity)) * 100).toFixed(2)}%</div>
                     {
                         location.occupied && (
                             <>
-                                <div className="h6">Tên sản phẩm: Iphone 18</div>
-                                <div className="h6">Số lượng: 19</div>
+                                <div className="h6">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
+                                <div className="h6">Số lượng: {location.quantity} {location.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name}</div>
                             </>
                         )
                     }
@@ -168,7 +168,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         </div>
                         <div
                             onClick={() => {
-                                if ((location.maxCapacity / props.volume) < props.quantity) {
+                                if ((Number(location.maxCapacity) / props.volume) < props.quantity) {
                                     dispatch({ type: ActionTypeEnum.ERROR, message: "Vị trí này không thể chứa đủ số lượng yêu cầu vui lòng giảm số lượng hoặc chọn một vị trí khác" })
                                     return;
                                 }

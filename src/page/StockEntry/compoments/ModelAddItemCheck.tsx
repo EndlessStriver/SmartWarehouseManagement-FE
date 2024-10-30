@@ -115,6 +115,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     productId={props.productId}
                     unitId={props.unitId}
                     weight={props.weight}
+                    status={status}
                 />
             }
         </OverLay>
