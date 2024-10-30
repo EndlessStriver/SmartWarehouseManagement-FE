@@ -71,7 +71,7 @@ export const SKUManagement: React.FC = () => {
             <tr key={sku.skuCode}>
                 <td>{index + 1}</td>
                 <td>{sku.skuCode}</td>
-                <td>{Number(sku.weight).toLocaleString()} (g)</td>
+                <td>{Number(sku.weight).toLocaleString()} (kg)</td>
                 <td>{sku.dimension} (cm)</td>
                 <td style={{ maxWidth: "400px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {sku.description}

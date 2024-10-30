@@ -425,6 +425,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                             setFormData(FormatDataGet(response));
                             setDataDefault(FormatDataGet(response));
                             dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật sản phẩm thành công" });
+                            props.reload();
                             setIsEdit(false);
                         }
                     })

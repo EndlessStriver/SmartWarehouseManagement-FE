@@ -1,8 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Button, Table } from 'react-bootstrap';
-import GetProducts from '../../services/Product/GetProducts';
 import PaginationType from '../../interface/Pagination';
 import Pagination from '../../compoments/Pagination/Pagination';
 import FormEditProduct from './compoments/FormEditProduct';
@@ -12,17 +11,7 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import DeleteProductById from "../../services/Product/DeleteProductById";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
-
-interface Product {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    name: string;
-    description: string;
-    productCode: string;
-    img: string;
-}
+import GetProductsByNameAndCodeAndSupplierName, { Product } from '../../services/Product/GetProductByNameAndCodeAndSupplierName';
 
 export const ProductManagement: React.FC = () => {
 
@@ -40,39 +29,15 @@ export const ProductManagement: React.FC = () => {
         totalElementOfPage: 0
     })
     const [reload, setReload] = React.useState<boolean>(false)
-
-    const updateProducts = (response: Product[]) => {
-        setProducts(response)
-    }
-
-    const updatePagination = (response: PaginationType) => {
-        setPagination(response)
-    }
+    const [key, setKey] = React.useState<string>("")
 
     const handleChangePage = (page: number) => {
-        setIsLoading(true)
-        GetProducts({ offset: page })
-            .then((response) => {
-                if (response) {
-                    setProducts(response.data)
-                    setPagination({
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    })
-                }
-            }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-            }).finally(() => {
-                setIsLoading(false)
-            })
+        setPagination({ ...pagination, offset: page })
     }
 
     React.useEffect(() => {
         setIsLoading(true)
-        GetProducts()
+        GetProductsByNameAndCodeAndSupplierName(key)
             .then((response) => {
                 if (response) {
                     setProducts(response.data)
@@ -89,27 +54,17 @@ export const ProductManagement: React.FC = () => {
             }).finally(() => {
                 setIsLoading(false)
             })
-    }, [dispatch, reload])
+    }, [dispatch, reload, key, pagination.limit, pagination.offset])
 
     const handleDeleteAccount = () => {
         if (productId) {
             setIsLoadingDelete(true);
             DeleteProductById(productId)
                 .then(() => {
-                    return GetProducts();
-                }).then((response) => {
-                    if (response) {
-                        updateProducts(response.data);
-                        updatePagination({
-                            totalPage: response.totalPage,
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage
-                        });
-                        setShowModelConfirmDelete(false);
-                        setProductId("");
-                        dispatch({ type: ActionTypeEnum.SUCCESS, message: "Delete product successfully" });
-                    }
+                    setReload(!reload);
+                    setShowModelConfirmDelete(false);
+                    setProductId("");
+                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa sản phẩm thành công" });
                 }).catch((error) => {
                     console.error(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -117,7 +72,7 @@ export const ProductManagement: React.FC = () => {
                     setIsLoadingDelete(false);
                 })
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Product delete failed" });
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa sản phẩm thất bại" });
         }
     }
 
@@ -125,12 +80,10 @@ export const ProductManagement: React.FC = () => {
         return (
             <tr key={index}>
                 <td>{index + 1}</td>
-                <td style={{ textAlign: "center" }}>
-                    <img src={product.img} alt={product.name} width={70} height={70} className='object-fit-cover border rounded' />
-                </td>
                 <td>{product.productCode}</td>
                 <td>{product.name}</td>
-                <td>{product.description}</td>
+                <td>{product.category.name}</td>
+                <td>{product.productDetails[0].sku[0].skuCode}</td>
                 <td>
                     <div className='d-flex gap-2'>
                         <Button
@@ -168,14 +121,30 @@ export const ProductManagement: React.FC = () => {
                     <Button onClick={() => setShowFormEdit(true)} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
             </div>
+            <div className='d-flex flex-row gap-2 justify-content-end mb-3'>
+                <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Nhập từ khóa tìm kiếm..."
+                    onChange={(e) => setKey(e.target.value)}
+                    style={{ width: "300px" }}
+                    value={key}
+                />
+                <button
+                    className='btn btn-primary'
+                    onClick={() => setKey("")}
+                >
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
+            </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Hình ảnh</th>
                         <th>Mã Sản Phẩm</th>
                         <th>Tên Sản Phẩm</th>
-                        <th>Mô Tả</th>
+                        <th>Tên Loại Sản Phẩm</th>
+                        <th>SKU</th>
                         <th>Hành Động</th>
                     </tr>
                 </thead>
@@ -210,7 +179,7 @@ export const ProductManagement: React.FC = () => {
             {
                 showModelConfirmDelete &&
                 <ModelConfirmDelete
-                    message={"Are you sure delete this product?"}
+                    message={"Bạn có chắc muốn xóa sản phẩm này?"}
                     onConfirm={handleDeleteAccount}
                     onClose={() => {
                         setShowModelConfirmDelete(false)

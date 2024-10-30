@@ -75,11 +75,11 @@ const StockEntry: React.FC = () => {
     const renderTypeStatus = (status: string) => {
         switch (status) {
             case "PENDING":
-                return <span className="badge text-bg-warning">{status}</span>;
-            case "COMPLETED":
-                return <span className="badge text-bg-success">{status}</span>;
+                return <span className="badge text-bg-warning">{"Đang Chở Xử Lý"}</span>;
+            case "COMPLETERECEIVECHECK":
+                return <span className="badge text-bg-primary">{"Đã Nhập Kho"}</span>;
             case "CANCELLED":
-                return <span className="badge text-bg-danger">{status}</span>;
+                return <span className="badge text-bg-danger">{"Đã Hủy"}</span>;
             default:
                 return <span className="badge text-bg-primary">{status}</span>;
         }
