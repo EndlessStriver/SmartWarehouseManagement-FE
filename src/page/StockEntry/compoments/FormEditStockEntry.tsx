@@ -22,7 +22,6 @@ import PaginationType from "../../../interface/Pagination";
 import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
 import Pagination from '../../../compoments/Pagination/Pagination';
-import ViewReceiveCheck from "./ViewReceiveCheck";
 
 interface FormEditStockEntryProps {
     handleClose: () => void;
@@ -69,7 +68,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     });
     const [statusStockEntry, setStatusStockEntry] = React.useState<string>("");
     const [loadingSubmit, setLoadingSubmit] = React.useState(false);
-    const [showReceiveCheck, setShowReceiveCheck] = React.useState(false);
 
     const getVietnamTime = (date: Date) => {
         const vietnamTime = new Date(date.getTime() + (7 * 60 * 60 * 1000));
@@ -685,16 +683,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     <SpinnerLoadingOverLayer />
                 }
             </Container>
-            {
-                showReceiveCheck && (
-                    <ViewReceiveCheck
-                        onClose={() => {
-                            setShowReceiveCheck(false);
-                        }}
-                        stockEntryId={stockEntryId}
-                    />
-                )
-            }
         </OverLay>
     );
 };
