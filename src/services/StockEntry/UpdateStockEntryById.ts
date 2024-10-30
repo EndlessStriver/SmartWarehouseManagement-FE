@@ -2,21 +2,21 @@ import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import StockEntry from "../../interface/Entity/StockEntry";
 
+export interface UpdateStockEntryProps {
+    receiveDate: string;
+    receiveBy: string;
+    description: string;
+    receiveItems: ReceiveItem[];
+}
+
 interface ReceiveItem {
-    id: string;
+    productId: string;
     quantity: number;
     unitId: string;
+    skuId: string;
 }
 
-interface UpdateStockEntryByIdTypeDataUpdate {
-    receiveBy?: string;
-    status?: string;
-    description?: string;
-    supplierId?: string;
-    receiveItems?: ReceiveItem[];
-}
-
-const UpdateStockEntryById = async (id: string, data: UpdateStockEntryByIdTypeDataUpdate): Promise<StockEntry | undefined> => {
+const UpdateStockEntryById = async (id: string, data: UpdateStockEntryProps): Promise<StockEntry | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -33,7 +33,6 @@ const UpdateStockEntryById = async (id: string, data: UpdateStockEntryByIdTypeDa
                     Authorization: `Bearer ${token}`
                 }
             });
-
             return response.data.data;
         }
     } catch (error) {

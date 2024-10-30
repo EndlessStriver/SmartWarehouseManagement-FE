@@ -402,11 +402,14 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
         } else {
             setLoadingSubmit(true);
             UpdateStockEntryById(stockEntryId, {
+                receiveDate: createDate,
+                receiveBy: profile?.fullName || "",
                 description: description,
                 receiveItems: productItems.map((item) => ({
-                    id: item.id || "",
-                    quantity: parseInt(item.quantity.toFixed(0)),
+                    productId: item.productId,
+                    quantity: item.quantity,
                     unitId: item.unit,
+                    skuId: item.skuId
                 }))
             }).then((res) => {
                 if (res) {
@@ -421,7 +424,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        unit: item.product.units[0].id,
+                        unit: item.unit.id,
                         skuId: item.sku.id
                     })));
                     setProductItemsDefault(res.receiveItems.map((item) => ({
@@ -429,7 +432,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                         productId: item.product.id,
                         name: item.product.name,
                         quantity: item.quantity,
-                        unit: item.product.units[0].id,
+                        unit: item.unit.id,
                         skuId: item.sku.id
                     })));
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
@@ -447,6 +450,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     });
                 }
             }).catch((err) => {
+                console.error(err);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             }).finally(() => {
                 setLoadingSubmit(false);

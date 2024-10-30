@@ -1,7 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface CreateStockEntryProps {
+export interface CreateStockEntryProps {
     receiveDate: string;
     receiveBy: string;
     description: string;
