@@ -122,7 +122,7 @@ const StockEntry: React.FC = () => {
                             stockEntry.status !== "PENDING" &&
                             <Button onClick={() => {
                                 setStockEntryId(stockEntry.id);
-                                setShowFormEdit(true);
+                                setShowHandleStockEntry(true);
                             }} variant="info" size="sm">
                                 <FontAwesomeIcon icon={faEye} />
                             </Button>

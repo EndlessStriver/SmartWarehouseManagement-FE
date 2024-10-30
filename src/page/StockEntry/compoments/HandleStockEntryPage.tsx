@@ -13,6 +13,7 @@ import ModelAddItemCheck from "./ModelAddItemCheck"
 import { v4 as uuidv4 } from 'uuid';
 import CreateCheckStockEntry from "../../../services/StockEntry/CreateCheckStockEntry"
 import { useDispatchProductCheck } from "../../../Context/ContextProductCheck"
+import GetReceiveCheckByStockEntryId from "../../../services/StockEntry/GetReceiveCheckByStockEntryId"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -61,11 +62,13 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [weight, setWeight] = React.useState<number>(0);
 
     React.useEffect(() => {
-        const now = new Date();
-        now.setHours(now.getHours() + 7);
-        const formattedDate = now.toISOString().slice(0, 16);
-        setCreateDate(formattedDate);
-    }, []);
+        if (props.stockEntryId === "") {
+            const now = new Date();
+            now.setHours(now.getHours() + 7);
+            const formattedDate = now.toISOString().slice(0, 16);
+            setCreateDate(formattedDate);
+        }
+    }, [props.stockEntryId]);
 
     React.useEffect(() => {
         dispatchProductCheck({ type: "ADD", data: productChecks });
@@ -97,6 +100,34 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
             })
     }, [props.stockEntryId, dispatch])
+
+    React.useEffect(() => {
+        if (stockEntry?.status !== "PENDING") {
+            GetReceiveCheckByStockEntryId(props.stockEntryId)
+                .then((response) => {
+                    if (response) {
+                        const newProductChecks = productChecks.map((productCheck) => productCheck);
+                        response.checkItems.forEach((receiveCheck) => {
+                            const productCheck = newProductChecks.find((productCheck) => productCheck.productId === receiveCheck.product.id);
+                            if (productCheck) {
+                                productCheck.listAddLocation.push({
+                                    id: receiveCheck.id,
+                                    quantity: receiveCheck.receiveQuantity,
+                                    status: receiveCheck.itemStatus ? "NORMAL" : "DAMAGE",
+                                    location: {
+                                        id: receiveCheck.locations[0]?.id || "A",
+                                        name: receiveCheck.locations[0]?.locationCode || "A"
+                                    }
+                                });
+                            }
+                        });
+                        const dateToFormat = stockEntry?.create_at ? new Date(stockEntry.create_at) : new Date();
+                        setCreateDate(dateToFormat.toISOString().slice(0, 16));
+                        setProductChecks(newProductChecks);
+                    }
+                })
+        }
+    }, [stockEntry, props.stockEntryId])
 
     const getVolume = (dimension: string) => {
         const dimensionArr = dimension.split("x");
@@ -173,7 +204,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
     const handleSubmit = () => {
         if (validateForm()) {
-            console.log("Vẫn cho vào")
             CreateCheckStockEntry({
                 receiveId: props.stockEntryId,
                 receiveDate: createDate,
@@ -211,14 +241,17 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                 />
                 <div className="d-flex justify-content-between align-items-center">
                     <h2 className="fw-bold">Xử lý phiếu nhập kho</h2>
-                    <Button
-                        variant="primary"
-                        className="text-light fw-bold"
-                        onClick={() => handleSubmit()}
-                        disabled={productChecks.length === 0}
-                    >
-                        Xác nhận
-                    </Button>
+                    {
+                        stockEntry?.status === "PENDING" &&
+                        <Button
+                            variant="primary"
+                            className="text-light fw-bold"
+                            onClick={() => handleSubmit()}
+                            disabled={productChecks.length === 0}
+                        >
+                            Xác nhận
+                        </Button>
+                    }
                 </div>
                 <div className="d-flex flex-row gap-3 w-100 mb-3">
                     <div className="w-100">
@@ -235,6 +268,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     <div className="w-100">
                         <label>Ngày tạo</label>
                         <input
+                            disabled={stockEntry?.status !== "PENDING"}
                             type="datetime-local"
                             className="form-control p-3"
                             value={createDate}
@@ -281,21 +315,24 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                         </Accordion.Header>
                                         <Accordion.Body>
                                             <div className="d-flex justify-content-end mb-3">
-                                                <button
-                                                    onClick={() => {
-                                                        setCategoryName(productCheck.categoryName);
-                                                        setVolume(productCheck.volume);
-                                                        setQuantity(productCheck.quantity);
-                                                        setProductCheckId(productCheck.id);
-                                                        setShowModelAddItemCheck(true);
-                                                        setProductId(productCheck.productId);
-                                                        setUnitId(productCheck.unit.id);
-                                                        setWeight(productCheck.weight);
-                                                    }}
-                                                    className="btn btn-primary"
-                                                >
-                                                    Thêm
-                                                </button>
+                                                {
+                                                    stockEntry?.status === "PENDING" &&
+                                                    <button
+                                                        onClick={() => {
+                                                            setCategoryName(productCheck.categoryName);
+                                                            setVolume(productCheck.volume);
+                                                            setQuantity(productCheck.quantity);
+                                                            setProductCheckId(productCheck.id);
+                                                            setShowModelAddItemCheck(true);
+                                                            setProductId(productCheck.productId);
+                                                            setUnitId(productCheck.unit.id);
+                                                            setWeight(productCheck.weight);
+                                                        }}
+                                                        className="btn btn-primary"
+                                                    >
+                                                        Thêm
+                                                    </button>
+                                                }
                                             </div>
                                             <Table striped bordered hover>
                                                 <thead>
@@ -305,7 +342,10 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                         <th>Đơn vị</th>
                                                         <th>Trạng thái</th>
                                                         <th>Vị trí</th>
-                                                        <th>Thao tác</th>
+                                                        {
+                                                            stockEntry?.status === "PENDING" &&
+                                                            <th>Thao tác</th>
+                                                        }
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -320,16 +360,19 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                                         {location.status === "NORMAL" ? "Bình thường" : "Bị hư hại"}
                                                                     </td>
                                                                     <td>{location.location.name}</td>
-                                                                    <td>
-                                                                        <Button
-                                                                            variant="danger"
-                                                                            onClick={() => {
-                                                                                removeListAddLocation(productCheck.id, location.id);
-                                                                            }}
-                                                                        >
-                                                                            <FontAwesomeIcon icon={faTrash} />
-                                                                        </Button>
-                                                                    </td>
+                                                                    {
+                                                                        stockEntry?.status === "PENDING" &&
+                                                                        <td>
+                                                                            <Button
+                                                                                variant="danger"
+                                                                                onClick={() => {
+                                                                                    removeListAddLocation(productCheck.id, location.id);
+                                                                                }}
+                                                                            >
+                                                                                <FontAwesomeIcon icon={faTrash} />
+                                                                            </Button>
+                                                                        </td>
+                                                                    }
                                                                 </tr>
                                                             )
                                                         })

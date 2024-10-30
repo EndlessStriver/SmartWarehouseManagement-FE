@@ -150,7 +150,6 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             setLoadingProducts(true);
             GetProductsBySupplier(supplierSelected.value)
                 .then((res) => {
-                    console.log(res);
                     if (res) {
                         setProducts(res.data);
                         setPagination({
