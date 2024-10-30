@@ -13,9 +13,13 @@ import ModelAddProductExport from "./ModelAddProductExport";
 import CreateOrderExport from "../../../services/StockEntry/CreateOrderExport";
 import PaginationType from "../../../interface/Pagination";
 import Pagination from "../../../compoments/Pagination/Pagination";
+import GetOrderExportById, { ExportOrder } from "../../../services/StockEntry/GetOrderExportById";
+import { validate } from "uuid";
+import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
 
 interface FormEditExportProductProps {
     onClose: () => void;
+    exportOrderId: string;
 }
 
 interface ProductExport {
@@ -41,11 +45,44 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [listProductExport, setListProductExport] = React.useState<ProductExport[]>([]);
     const [showModelAddProduct, setShowModelAddProduct] = React.useState<boolean>(false);
     const [pagination, setPagination] = React.useState<PaginationType>({ offset: 1, limit: 5, totalElementOfPage: 0, totalPage: 0 });
+    const [reload, setReload] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        const vietnamTime = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
-        setCreateDate(vietnamTime.toISOString().slice(0, 16));
-    }, [])
+        if (!props.exportOrderId) {
+            const vietnamTime = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
+            setCreateDate(vietnamTime.toISOString().slice(0, 16));
+        }
+    }, [props.exportOrderId])
+
+    React.useEffect(() => {
+        if (props.exportOrderId) {
+            GetOrderExportById(props.exportOrderId)
+                .then((response) => {
+                    if (response) {
+                        setExportProductCode(response.exportCode);
+                        setCreateDate(new Date(response.exportDate).toISOString().slice(0, 16));
+                        setMoreInfo(response.description);
+                        setListProductExport(response.orderExportDetails.map((item) => {
+                            return {
+                                productId: item.product.id,
+                                productCode: item.product.productCode,
+                                productName: item.product.name,
+                                unit: { id: item.unit.id, name: item.unit.name },
+                                quantity: item.quantity,
+                                skuId: item.skuCode // đang bi lỗi ở đây
+                            }
+                        }));
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                })
+        }
+    }, [props.exportOrderId, dispatch, reload])
 
     React.useEffect(() => {
         setIsLoading(true);
@@ -81,7 +118,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     }
 
     const checkAddedProduct = (product: Product): boolean => {
-        return listProductExport.find((item) => item.skuId === product.productDetails[0].sku[0].id) ? true : false;
+        return listProductExport.find((item) => item.productId === product.id) ? true : false;
     }
 
     const validateForm = (): boolean => {
@@ -133,6 +170,32 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
         }
     }
 
+    const handleUpdate = () => {
+        if (validateForm()) {
+            UpdateOrderExport(props.exportOrderId, {
+                exportCode: ExportProductCode,
+                exportDate: createDate,
+                description: moreInfo,
+                exportBy: profile?.fullName || "",
+                orderExportDetails: listProductExport.map((item) => {
+                    console.log(item);
+                    return {
+                        skuId: item.skuId,
+                        quantity: item.quantity,
+                        productId: item.productId,
+                        unitId: item.unit.id
+                    }
+                })
+            }).then(() => {
+                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu xuất kho thành công" });
+                setReload(!reload);
+            }).catch((err) => {
+                console.error(err);
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+            })
+        }
+    }
+
     const handlePageChange = (page: number) => {
         setPagination({ ...pagination, offset: page });
     }
@@ -155,15 +218,27 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         </h2>
                     </div>
                     <div>
-                        <Button
-                            onClick={() => {
-                                handleSubmit();
-                            }}
-                            variant="primary"
-                            className="px-4"
-                        >
-                            Tạo
-                        </Button>
+                        {
+                            props.exportOrderId ?
+                                <Button
+                                    onClick={() => {
+                                        handleUpdate();
+                                    }}
+                                    variant="success"
+                                >
+                                    Cập Nhật
+                                </Button>
+                                :
+                                <Button
+                                    onClick={() => {
+                                        handleSubmit();
+                                    }}
+                                    variant="primary"
+                                    className="px-4"
+                                >
+                                    Tạo
+                                </Button>
+                        }
                     </div>
                 </div>
                 <Row className={"p-3"}>
@@ -271,6 +346,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                             </tbody>
                         </Table>
                         {
+                            products.length > 0 &&
                             <Pagination
                                 currentPage={pagination.offset}
                                 onPageChange={handlePageChange}

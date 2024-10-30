@@ -9,7 +9,7 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import FormEditStockEntry from "./compoments/FormEditStockEntry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCogs, faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck, faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
@@ -102,7 +102,7 @@ const StockEntry: React.FC = () => {
                                     setStockEntryId(stockEntry.id);
                                     setShowHandleStockEntry(true);
                                 }} variant="info" size="sm">
-                                    <FontAwesomeIcon icon={faCogs} />
+                                    <FontAwesomeIcon icon={faClipboardCheck} />
                                 </Button>
                                 <Button onClick={() => {
                                     setStockEntryId(stockEntry.id);
