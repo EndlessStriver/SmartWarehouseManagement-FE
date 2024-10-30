@@ -62,7 +62,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [weight, setWeight] = React.useState<number>(0);
 
     React.useEffect(() => {
-        if (props.stockEntryId === "") {
+        if (props.stockEntryId !== "") {
             const now = new Date();
             now.setHours(now.getHours() + 7);
             const formattedDate = now.toISOString().slice(0, 16);
@@ -102,7 +102,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     }, [props.stockEntryId, dispatch])
 
     React.useEffect(() => {
-        if (stockEntry?.status !== "PENDING") {
+        if (stockEntry?.status === "COMPLETERECEIVECHECK") {
             GetReceiveCheckByStockEntryId(props.stockEntryId)
                 .then((response) => {
                     if (response) {
