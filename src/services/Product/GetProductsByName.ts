@@ -36,13 +36,22 @@ interface Image {
     isDeleted: boolean;
 }
 
-interface Unit {
+export interface Unit {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
     name: string;
     isBaseUnit: boolean;
+    unitConversionsFrom: UnitConversion[];
+}
+
+interface UnitConversion {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    conversionFactor: string;
 }
 
 

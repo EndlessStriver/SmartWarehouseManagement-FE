@@ -13,8 +13,7 @@ import ModelAddProductExport from "./ModelAddProductExport";
 import CreateOrderExport from "../../../services/StockEntry/CreateOrderExport";
 import PaginationType from "../../../interface/Pagination";
 import Pagination from "../../../compoments/Pagination/Pagination";
-import GetOrderExportById, { ExportOrder } from "../../../services/StockEntry/GetOrderExportById";
-import { validate } from "uuid";
+import GetOrderExportById from "../../../services/StockEntry/GetOrderExportById";
 import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
 
 interface FormEditExportProductProps {

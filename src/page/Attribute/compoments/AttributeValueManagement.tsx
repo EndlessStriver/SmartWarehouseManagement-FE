@@ -16,22 +16,21 @@ import {
     faTag,
     faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { Badge, Button, Table } from "react-bootstrap";
+import { Badge, Button, Tab, Table } from "react-bootstrap";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import DeleteAttributeValue from "../../../services/Attribute/DeleteAttributeValue";
 import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDelete";
-import GetUnits, { Unit } from "../../../services/Attribute/Unit/GetUnits";
+import GetUnits from "../../../services/Attribute/Unit/GetUnits";
 import ModelAddUnit from "./ModelAddUnit";
+import Select from 'react-select';
+import OptionType from "../../../interface/OptionType";
+import GetProductsByName, { Unit } from "../../../services/Product/GetProductsByName";
 
 interface AttributeValueManagementProps {
     handleCancelEditAttribute: () => void;
     attributeId: number;
-}
-
-interface UnitBadgeProps {
-    isBaseUnit: boolean;
 }
 
 export const AttributeValueManagement: React.FC<AttributeValueManagementProps> = ({ handleCancelEditAttribute, attributeId }) => {
@@ -51,6 +50,30 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         totalElementOfPage: 0
     });
     const [reload, setReload] = React.useState<boolean>(false)
+    const [productName, setProductName] = React.useState<string>("");
+    const [productSelect, setProductSelect] = React.useState<{ label: string, value: string, units: Unit[] } | null>(null);
+    const [products, setProducts] = React.useState<{ label: string, value: string, units: Unit[] }[]>([]);
+
+    React.useEffect(() => {
+        const id = setTimeout(() => {
+            GetProductsByName(productName)
+                .then((response) => {
+                    if (response) {
+                        setProducts(response.map((product) => {
+                            return {
+                                label: product.name,
+                                value: product.id,
+                                units: product.units
+                            }
+                        }));
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                })
+        }, 500);
+        return () => clearTimeout(id);
+    }, [productName, dispatch]);
 
     React.useEffect(() => {
         if (attributeId <= 5) {
@@ -65,26 +88,6 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                             offset: response.offset,
                             totalElementOfPage: response.totalElementOfPage
                         });
-                    }
-                }).catch((error) => {
-                    console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-                }).finally(() => {
-                    setIsLoading(false);
-                })
-        }
-        if (attributeId === 6) {
-            setIsLoading(true);
-            GetUnits({ offset: pagination.offset })
-                .then((response) => {
-                    if (response) {
-                        setUnits(response.data);
-                        setPagination({
-                            totalPage: response.totalPage,
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage
-                        })
                     }
                 }).catch((error) => {
                     console.error(error);
@@ -124,8 +127,6 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
             } else {
                 dispatch({ type: ActionTypeEnum.ERROR, message: "Xóa thất bại" });
             }
-        } else {
-
         }
     }
 
@@ -310,20 +311,67 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         )
                         :
                         (
-                            <Table hover striped bordered>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Tên Đơn Vị</th>
-                                        <th>Là Đơn Vị Cơ Bản</th>
-                                        <th>Giá trị quy đổi</th>
-                                        <th>Hành Động</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {renderUnits}
-                                </tbody>
-                            </Table>
+                            <div className="d-flex flex-column justify-content-center align-items-center">
+                                <h2>TRA CỨU THUỘC TÍNH SẢN PHẨM</h2>
+                                <Select
+                                    placeholder="Nhập tên sản phẩm cần tìm..."
+                                    isClearable
+                                    styles={{
+                                        control: (provided) => ({
+                                            ...provided,
+                                            padding: "0.5rem 0px",
+                                            width: "800px",
+                                            marginBottom: "1rem",
+                                        }),
+                                    }}
+                                    onInputChange={setProductName}
+                                    value={productSelect}
+                                    onChange={(value) => setProductSelect(value)}
+                                    options={products}
+                                />
+                                {
+                                    productSelect &&
+                                    <Table hover striped bordered style={{ width: "800px" }}>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Tên Đơn vị</th>
+                                                <th>Giá trị</th>
+                                                <th>Là Đơn Vị Cơ Bản</th>
+                                                <th>Hành Động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                productSelect?.units.map((unit, index) => {
+                                                    return (
+                                                        <tr key={unit.id}>
+                                                            <td>{index + 1}</td>
+                                                            <td>{unit.name}</td>
+                                                            <td>{unit?.unitConversionsFrom[0]?.conversionFactor || 1}</td>
+                                                            <td>
+                                                                <Badge bg={unit.isBaseUnit ? "primary" : "secondary"}>
+                                                                    {unit.isBaseUnit ? "Là đơn vị cơ bản" : "Là đơn vị quy đổi"}
+                                                                </Badge>
+                                                            </td>
+                                                            <td>
+                                                                <div className="d-flex flex-row gap-2">
+                                                                    <Button
+                                                                        disabled={unit.isBaseUnit}
+                                                                        variant="danger"
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faTrash} />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            }
+                                        </tbody>
+                                    </Table>
+                                }
+                            </div>
                         )
                 }
                 {
@@ -333,9 +381,6 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                 }
                 {
                     attributeId <= 5 && (attributeValues.length === 0) && !isLoading && <NoData />
-                }
-                {
-                    attributeId > 5 && (units.length === 0) && !isLoading && <NoData />
                 }
                 {
                     isLoading && <SpinnerLoading />
