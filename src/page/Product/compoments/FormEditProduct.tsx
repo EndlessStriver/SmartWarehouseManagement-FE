@@ -378,7 +378,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             materialId: formData.model!.value,
         }
 
-        if (formData.detailId === dataDefault.detailId) delete dataUpdate.name;
         if (formData.name === dataDefault.name) delete dataUpdate.name;
         if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
         if (formData.description === dataDefault.description) delete dataUpdate.description;
@@ -420,7 +419,6 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             } else {
                 UpdateProductByProductId(props.productId, dataUpdate)
                     .then((response) => {
-                        console.log(response)
                         if (response) {
                             setFormData(FormatDataGet(response));
                             setDataDefault(FormatDataGet(response));
