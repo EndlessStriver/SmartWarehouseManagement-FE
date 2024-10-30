@@ -12,6 +12,7 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import ModelAddItemCheck from "./ModelAddItemCheck"
 import { v4 as uuidv4 } from 'uuid';
 import CreateCheckStockEntry from "../../../services/StockEntry/CreateCheckStockEntry"
+import { useDispatchProductCheck } from "../../../Context/ContextProductCheck"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -43,6 +44,7 @@ export interface ProductCheck {
 
 const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
+    const dispatchProductCheck = useDispatchProductCheck();
     const dispatch = useDispatchMessage();
     const profile = GetProfile();
     const [createDate, setCreateDate] = React.useState<string>("");
@@ -64,6 +66,10 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         const formattedDate = now.toISOString().slice(0, 16);
         setCreateDate(formattedDate);
     }, []);
+
+    React.useEffect(() => {
+        dispatchProductCheck({ type: "ADD", data: productChecks });
+    }, [productChecks, dispatchProductCheck])
 
     React.useEffect(() => {
         GetStockEntryById(props.stockEntryId)

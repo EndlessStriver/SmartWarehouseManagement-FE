@@ -611,7 +611,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                             <h5 className="fw-semibold">Danh Sách Sản Phẩm</h5>
                             <div className="d-flex flex-row gap-1">
                                 {
-                                    statusStockEntry === "PENDING" && (
+                                    (statusStockEntry === "PENDING" || statusStockEntry === "") && (
                                         <>
                                             <input type="search" placeholder="Tìm kiếm sản phẩm..." className="form-control" style={{ width: "250px" }} />
                                             <button className="btn btn-primary ms-2">

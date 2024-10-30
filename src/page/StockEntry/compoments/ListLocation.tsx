@@ -9,6 +9,7 @@ import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
 import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
+import { useProductCheck } from "../../../Context/ContextProductCheck";
 
 interface ListLocationProps {
     shelfId: string;
@@ -24,6 +25,7 @@ interface ListLocationProps {
 
 const ListLocation: React.FC<ListLocationProps> = (props) => {
 
+    const productCheck = useProductCheck();
     const dispatch = useDispatchMessage();
     const [shelf, setShelf] = React.useState<Shelf>();
     const [locations, setLocations] = React.useState<Location[]>([]);
@@ -113,6 +115,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         if (returnValueCountIsUsed(location) < props.quantity) {
             return true;
         }
+        if (checkLocationIsChoose(location)) return true;
         return false
     }
 
@@ -120,6 +123,19 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         let countUsedWidthVolume = Math.floor(location.maxCapacity / (props.volume * valueConvert))
         let countUsedWidthWeight = Math.floor(location.maxWeight / (props.weight * valueConvert))
         return countUsedWidthVolume < countUsedWidthWeight ? countUsedWidthVolume : countUsedWidthWeight
+    }
+
+    const checkLocationIsChoose = (location: Location): boolean => {
+
+        let check = false;
+
+        productCheck.forEach((product) => {
+            product.listAddLocation.forEach((locationAdd) => {
+                if (locationAdd.location.id === location.id) check = true;
+            })
+        })
+
+        return check;
     }
 
     const renderLocation = locations.map((location, index) => {
@@ -172,6 +188,12 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
                 }
                 <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể chứa: <span>{returnValueCountIsUsed(location)}</span></Badge>
+                {
+                    checkLocationIsChoose(location) &&
+                    <div className="position-absolute top-50 start-50 translate-middle">
+                        <h3 className="fw-bold text-light">ĐÃ ĐƯỢC CHỌN</h3>
+                    </div>
+                }
             </button >
         )
     })
