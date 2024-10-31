@@ -26,6 +26,7 @@ const ExportProduct: React.FC = () => {
     });
     const [showModelConfirmOrderExport, setShowModelConfirmOrderExport] = React.useState<boolean>(false);
     const [exportOrderId, setExportOrderId] = React.useState<string>("");
+    const [reload, setReload] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         GetAllOrderExport(pagination.limit, pagination.offset)
@@ -47,7 +48,7 @@ const ExportProduct: React.FC = () => {
             .finally(() => {
                 setIsLoading(false);
             })
-    }, [dispatch, pagination.limit, pagination.offset]);
+    }, [dispatch, pagination.limit, pagination.offset, reload]);
 
     const handleChangePage = (page: number) => {
         setPagination({
@@ -147,6 +148,9 @@ const ExportProduct: React.FC = () => {
                         setShowFormEditExportProduct(false);
                     }}
                     exportOrderId={exportOrderId}
+                    reload={() => {
+                        setReload(!reload);
+                    }}
                 />
             }
             {
@@ -156,6 +160,9 @@ const ExportProduct: React.FC = () => {
                         setShowModelConfirmOrderExport(false);
                     }}
                     exportOrderId={exportOrderId}
+                    reload={() => {
+                        setReload(!reload);
+                    }}
                 />
             }
         </div>

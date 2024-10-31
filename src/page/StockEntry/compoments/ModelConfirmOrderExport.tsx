@@ -11,6 +11,7 @@ import GetOrderExportById, { ExportOrder } from "../../../services/StockEntry/Ge
 interface ModelConfirmOrderExportProps {
     onClose: () => void
     exportOrderId: string
+    reload: () => void
 }
 
 const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) => {
@@ -38,6 +39,7 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
         ConfirmOrderExport(props.exportOrderId)
             .then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xác nhận đơn hàng xuất kho thành công" });
+                props.reload();
                 props.onClose();
             })
             .catch((error) => {
@@ -54,6 +56,7 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
         DeleteOrderExport(props.exportOrderId)
             .then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Hủy đơn hàng xuất kho thành công" });
+                props.reload();
                 props.onClose();
             })
             .catch((error) => {

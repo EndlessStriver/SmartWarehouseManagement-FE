@@ -19,6 +19,7 @@ import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
 interface FormEditExportProductProps {
     onClose: () => void;
     exportOrderId: string;
+    reload: () => void;
 }
 
 interface ProductExport {
@@ -161,6 +162,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 })
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu xuất kho thành công" });
+                setReload(!reload);
                 props.onClose();
             }).catch((err) => {
                 console.error(err);
@@ -187,6 +189,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 })
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu xuất kho thành công" });
+                props.reload();
                 setReload(!reload);
             }).catch((err) => {
                 console.error(err);
