@@ -37,7 +37,7 @@ export const ProductManagement: React.FC = () => {
 
     React.useEffect(() => {
         setIsLoading(true)
-        GetProductsByNameAndCodeAndSupplierName(key)
+        GetProductsByNameAndCodeAndSupplierName(key, pagination.limit, pagination.offset)
             .then((response) => {
                 if (response) {
                     setProducts(response.data)

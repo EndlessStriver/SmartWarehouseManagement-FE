@@ -312,7 +312,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         :
                         (
                             <div className="d-flex flex-column justify-content-center align-items-center">
-                                <h2>TRA CỨU THUỘC TÍNH SẢN PHẨM</h2>
+                                <h2>TRA CỨU ĐƠN VỊ TÍNH SẢN PHẨM</h2>
                                 <Select
                                     placeholder="Nhập tên sản phẩm cần tìm..."
                                     isClearable
