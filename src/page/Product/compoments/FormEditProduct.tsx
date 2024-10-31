@@ -377,19 +377,19 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             sizeId: formData.size!.value,
             materialId: formData.model!.value,
         }
-
-        if (formData.name === dataDefault.name) delete dataUpdate.name;
-        if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
-        if (formData.description === dataDefault.description) delete dataUpdate.description;
-        if (formData.productCode === dataDefault.productCode) delete dataUpdate.productCode;
-        if (DeepEqual(formData.supplier, dataDefault.supplier)) delete dataUpdate.supplierId;
-        if (DeepEqual(formData.color, dataDefault.color)) delete dataUpdate.colorId;
-        if (DeepEqual(formData.size, dataDefault.size)) delete dataUpdate.sizeId;
-        if (DeepEqual(formData.model, dataDefault.model)) delete dataUpdate.materialId;
-        if (formData.length === dataDefault.length && formData.width === dataDefault.width && formData.height === dataDefault.height) delete dataUpdate.dimension;
-        if (formData.weight === dataDefault.weight) delete dataUpdate.weight;
-        if (formData.unitName === dataDefault.unitName) delete dataUpdate.unitName;
-
+        // ở đây có lỗi chưa sửa
+        // if(formData.detailId === dataDefault.detailId) delete dataUpdate.detailId;
+        // if (formData.name === dataDefault.name) delete dataUpdate.name;
+        // if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
+        // if (formData.description === dataDefault.description) delete dataUpdate.description;
+        // if (formData.productCode === dataDefault.productCode) delete dataUpdate.productCode;
+        // if (DeepEqual(formData.supplier, dataDefault.supplier)) delete dataUpdate.supplierId;
+        // if (DeepEqual(formData.color, dataDefault.color)) delete dataUpdate.colorId;
+        // if (DeepEqual(formData.size, dataDefault.size)) delete dataUpdate.sizeId;
+        // if (DeepEqual(formData.model, dataDefault.model)) delete dataUpdate.materialId;
+        // if (formData.length === dataDefault.length && formData.width === dataDefault.width && formData.height === dataDefault.height) delete dataUpdate.dimension;
+        // if (formData.weight === dataDefault.weight) delete dataUpdate.weight;
+        // if (formData.unitName === dataDefault.unitName) delete dataUpdate.unitName;
         return dataUpdate;
     }
 

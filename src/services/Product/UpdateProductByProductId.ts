@@ -4,6 +4,7 @@ import { Product } from "../../interface/Entity/Product";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
 const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin): Promise<Product | undefined> => {
+    console.log(dataUpdate);
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
