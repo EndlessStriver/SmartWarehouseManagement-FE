@@ -131,7 +131,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
 
         productCheck.forEach((product) => {
             product.listAddLocation.forEach((locationAdd) => {
-                if (locationAdd.location.id === location.id) check = true;
+                if (locationAdd.location.value === location.id) check = true;
             })
         })
 

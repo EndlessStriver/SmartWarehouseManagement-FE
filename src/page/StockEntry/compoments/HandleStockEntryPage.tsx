@@ -26,8 +26,8 @@ interface listAddLocationInf {
     quantity: number
     status: string
     location: {
-        id: string
-        name: string
+        label: string
+        value: string
     }
 }
 
@@ -115,8 +115,8 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                     quantity: receiveCheck.receiveQuantity,
                                     status: receiveCheck.itemStatus ? "NORMAL" : "DAMAGE",
                                     location: {
-                                        id: receiveCheck.locations[0]?.id || "A",
-                                        name: receiveCheck.locations[0]?.locationCode || "A"
+                                        value: receiveCheck.locations[0]?.id || "A",
+                                        label: receiveCheck.locations[0]?.locationCode || "A"
                                     }
                                 });
                             }
@@ -164,7 +164,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         setProductChecks(newProductChecks);
     }
 
-    const addListAddLocation = (id: string, quantity: number, status: string, location: { id: string, name: string }) => {
+    const addListAddLocation = (id: string, quantity: number, status: string, location: { label: string, value: string }) => {
         if (!validateAddLocation(id, quantity)) return;
         const newProductChecks = productChecks.map((productCheck) => {
             if (productCheck.id === id) {
@@ -215,7 +215,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                             receiveItemId: productCheck.id,
                             receiveQuantity: location.quantity,
                             itemStatus: location.status === "NORMAL" ? true : false,
-                            locationId: location.location.id
+                            locationId: location.location.value
                         };
                     });
                 })
@@ -276,120 +276,116 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                         />
                     </div>
                 </div>
-                <div>
-                    <div className="d-flex flex-row justify-content-start align-items-center py-2">
+                <Row>
+                    <Col>
                         <h5 className="fw-semibold">Danh Sách Sản Phẩm Kiểm Tra</h5>
-                    </div>
-                    <Accordion defaultActiveKey="0">
-                        {
-                            productChecks.map((productCheck, index) => {
-                                return (
-                                    <Accordion.Item key={index} eventKey={index + ""}>
-                                        <Accordion.Header>
-                                            <Row className="w-100">
-                                                <Col>
-                                                    <span>
-                                                        Tên sản phẩm:
-                                                        <span className="fw-semibold"> {productCheck.productName}</span>
-                                                    </span>
-                                                </Col>
-                                                <Col>
-                                                    <span>
-                                                        Loại sản phẩm:
-                                                        <span className="fw-semibold"> {productCheck.categoryName}</span>
-                                                    </span>
-                                                </Col>
-                                                <Col>
-                                                    <span>
-                                                        Số lượng nhập:
-                                                        <span className="fw-semibold"> {productCheck.quantity}</span>
-                                                    </span>
-                                                </Col>
-                                                <Col>
-                                                    <span>
-                                                        Đơn vị:
-                                                        <span className="fw-semibold"> {productCheck.unit.name}</span>
-                                                    </span>
-                                                </Col>
-                                            </Row>
-                                        </Accordion.Header>
-                                        <Accordion.Body>
-                                            <div className="d-flex justify-content-end mb-3">
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Loại sản phẩm</th>
+                                    <th>Số lượng nhập</th>
+                                    <th>Đơn vị</th>
+                                    {
+                                        stockEntry?.status === "PENDING" &&
+                                        <th>Thao tác</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    productChecks.map((productCheck, index) => {
+                                        return (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{productCheck.productName}</td>
+                                                <td>{productCheck.categoryName}</td>
+                                                <td>{productCheck.quantity}</td>
+                                                <td>{productCheck.unit.name}</td>
                                                 {
                                                     stockEntry?.status === "PENDING" &&
-                                                    <button
-                                                        onClick={() => {
-                                                            setCategoryName(productCheck.categoryName);
-                                                            setVolume(productCheck.volume);
-                                                            setQuantity(productCheck.quantity);
-                                                            setProductCheckId(productCheck.id);
-                                                            setShowModelAddItemCheck(true);
-                                                            setProductId(productCheck.productId);
-                                                            setUnitId(productCheck.unit.id);
-                                                            setWeight(productCheck.weight);
-                                                        }}
-                                                        className="btn btn-primary"
-                                                    >
-                                                        Thêm
-                                                    </button>
+                                                    <td>
+                                                        <button
+                                                            disabled={productCheck.listAddLocation.reduce((acc, cur) => acc + cur.quantity, 0) >= productCheck.quantity}
+                                                            onClick={() => {
+                                                                setCategoryName(productCheck.categoryName);
+                                                                setVolume(productCheck.volume);
+                                                                setQuantity(productCheck.quantity);
+                                                                setProductCheckId(productCheck.id);
+                                                                setShowModelAddItemCheck(true);
+                                                                setProductId(productCheck.productId);
+                                                                setUnitId(productCheck.unit.id);
+                                                                setWeight(productCheck.weight);
+                                                            }}
+                                                            className="btn btn-primary"
+                                                        >
+                                                            Thêm
+                                                        </button>
+                                                    </td>
                                                 }
-                                            </div>
-                                            <Table striped bordered hover>
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Đơn vị</th>
-                                                        <th>Trạng thái</th>
-                                                        <th>Vị trí</th>
-                                                        {
-                                                            stockEntry?.status === "PENDING" &&
-                                                            <th>Thao tác</th>
-                                                        }
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </Table>
+                    </Col>
+                    <Col>
+                        <h5 className="fw-semibold">Danh Sách Sản Phẩm Đã Kiểm Tra</h5>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng Kiểm Tra</th>
+                                    <th>Đơn vị</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Vị Trí</th>
+                                    {
+                                        stockEntry?.status === "PENDING" &&
+                                        <th>Thao tác</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    productChecks.map((productCheck) => {
+                                        return productCheck.listAddLocation.map((location, index) => {
+                                            return (
+                                                <tr key={index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{productCheck.productName}</td>
+                                                    <td>{location.quantity}</td>
+                                                    <td>{productCheck.unit.name}</td>
+                                                    <td>{location.status === "NORMAL" ? "Bình thường" : "Bị hư hại"}</td>
+                                                    <td>{location.location.label}</td>
                                                     {
-                                                        productCheck.listAddLocation.map((location, index) => {
-                                                            return (
-                                                                <tr key={index}>
-                                                                    <td>{index + 1}</td>
-                                                                    <td>{location.quantity}</td>
-                                                                    <td>{productCheck.unit.name}</td>
-                                                                    <td>
-                                                                        {location.status === "NORMAL" ? "Bình thường" : "Bị hư hại"}
-                                                                    </td>
-                                                                    <td>{location.location.name}</td>
-                                                                    {
-                                                                        stockEntry?.status === "PENDING" &&
-                                                                        <td>
-                                                                            <Button
-                                                                                variant="danger"
-                                                                                onClick={() => {
-                                                                                    removeListAddLocation(productCheck.id, location.id);
-                                                                                }}
-                                                                            >
-                                                                                <FontAwesomeIcon icon={faTrash} />
-                                                                            </Button>
-                                                                        </td>
-                                                                    }
-                                                                </tr>
-                                                            )
-                                                        })
+                                                        stockEntry?.status === "PENDING" &&
+                                                        <td>
+                                                            <Button
+                                                                variant="danger"
+                                                                onClick={() => {
+                                                                    removeListAddLocation(productCheck.id, location.id);
+                                                                }}
+                                                            >
+                                                                <FontAwesomeIcon icon={faTrash} />
+                                                            </Button>
+                                                        </td>
                                                     }
-                                                </tbody>
-                                            </Table>
-                                            {
-                                                productCheck.listAddLocation.length === 0 &&
-                                                <NoData />
-                                            }
-                                        </Accordion.Body>
-                                    </Accordion.Item>
-                                )
-                            })
+                                                </tr>
+                                            )
+                                        })
+                                    })
+                                }
+                            </tbody>
+                        </Table>
+                        {
+                            (productChecks.map((productCheck) => productCheck.listAddLocation.length).reduce((acc, cur) => acc + cur, 0) === 0) &&
+                            <NoData lable="CHƯA CÓ SẢN PHẨM KIỂM TRA" />
                         }
-                    </Accordion>
-                </div>
+                    </Col>
+                </Row>
             </div>
             {
                 showModelAddItemCheck &&

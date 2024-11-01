@@ -6,10 +6,11 @@ import React from "react"
 import ListShelf from "./ListShelf"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
+import Select from 'react-select';
 
 interface ModelAddItemCheckProps {
     onClose: () => void
-    addItem: (id: string, quantity: number, status: string, location: { id: string, name: string }) => void
+    addItem: (id: string, quantity: number, status: string, location: { value: string, label: string }) => void
     categoryName: string
     volume: number
     quantity: number
@@ -20,8 +21,8 @@ interface ModelAddItemCheckProps {
 }
 
 interface Location {
-    id: string
-    name: string
+    value: string
+    label: string
 }
 
 const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
@@ -33,7 +34,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
     const [showListShelf, setShowListShelf] = React.useState<boolean>(false)
 
     const addLocation = (id: string, name: string) => {
-        setLocation({ id, name })
+        setLocation({ value: id, label: name })
     }
 
     return (
@@ -63,26 +64,45 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                         onChange={(e) => setStatus(e.target.value)}
                         className="form-select p-3"
                     >
+                        <option value={""}>Chọn trạng thái sản phẩm...</option>
                         <option value={"NORMAL"}>Bình thường</option>
                         <option value={"DAMAGED"}>Bị hư hại</option>
                     </select>
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <label>Vị trí:</label>
-                    {
-                        location &&
-                        <span className="ms-2 fw-bold">{location.name}</span>
-                    }
-                    <button
-                        onClick={() => {
-                            if (quantity < 0) dispatch({ message: "Số lượng sản phẩm không thể nhỏ hơn 0", type: ActionTypeEnum.ERROR })
-                            if (quantity === 0) dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
-                            if (quantity > 0) setShowListShelf(true)
-                        }}
-                        className="btn btn-primary ms-3"
-                    >
-                        <FontAwesomeIcon icon={faMapMarkerAlt} />
-                    </button>
+                    <FormGroup className="mb-3 d-flex flex-row">
+                        <Select
+                            placeholder="Chọn vị trí được đề xuất..."
+                            isClearable
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    padding: "0.5rem 0px",
+                                    width: "385px",
+                                }),
+                            }}
+                            value={location}
+                            // onChange={(value) => setFormData({ ...formData, branch: value })}
+                            // options={branches}
+                            isDisabled={quantity <= 0 || status === ""}
+                        />
+                        <button
+                            disabled={quantity <= 0 || status === ""}
+                            onClick={() => {
+                                if (quantity < 0) dispatch({ message: "Số lượng sản phẩm không thể nhỏ hơn 0", type: ActionTypeEnum.ERROR })
+                                if (quantity === 0) dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
+                                if (quantity > 0) setShowListShelf(true)
+                            }}
+                            className="btn btn-primary ms-3"
+                            style={{
+                                width: "60px",
+                                height: "55px",
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faMapMarkerAlt} />
+                        </button>
+                    </FormGroup>
                 </FormGroup>
                 <button
                     onClick={() => {
