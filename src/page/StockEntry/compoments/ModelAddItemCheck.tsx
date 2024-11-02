@@ -7,6 +7,7 @@ import ListShelf from "./ListShelf"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import Select from 'react-select';
+import SuggestInbound from "../../../services/StockEntry/SuggestInbound"
 
 interface ModelAddItemCheckProps {
     onClose: () => void
@@ -18,6 +19,7 @@ interface ModelAddItemCheckProps {
     productId: string
     unitId: string
     weight: number
+    skuId: string
 }
 
 interface Location {
@@ -29,13 +31,39 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
 
     const dispatch = useDispatchMessage();
     const [quantity, setQuantity] = React.useState<number>(0)
-    const [status, setStatus] = React.useState<string>("NORMAL")
+    const [status, setStatus] = React.useState<string>("")
     const [location, setLocation] = React.useState<Location | null>(null)
     const [showListShelf, setShowListShelf] = React.useState<boolean>(false)
+    const [locations, setLocations] = React.useState<Location[]>([])
 
     const addLocation = (id: string, name: string) => {
         setLocation({ value: id, label: name })
     }
+
+    React.useEffect(() => {
+        if (quantity > 0 && status !== "") {
+            SuggestInbound({
+                quantity: quantity,
+                skuId: props.skuId,
+                typeShelf: status,
+                unitId: props.unitId
+            })
+                .then((res) => {
+                    if (res) {
+                        setLocations(res.map((location) => {
+                            return {
+                                value: location.locationCode,
+                                label: `${location.locationCode} - (${location.maxQuantityInbound})`
+                            }
+                        }))
+                    }
+                })
+                .catch((err) => {
+                    console.error(err)
+                    dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
+                })
+        }
+    }, [quantity, status, props.skuId, props.unitId, dispatch])
 
     return (
         <OverLay>
@@ -83,8 +111,8 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                                 }),
                             }}
                             value={location}
-                            // onChange={(value) => setFormData({ ...formData, branch: value })}
-                            // options={branches}
+                            onChange={(e) => setLocation(e)}
+                            options={locations}
                             isDisabled={quantity <= 0 || status === ""}
                         />
                         <button
@@ -108,6 +136,10 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     onClick={() => {
                         if (Number(quantity) <= 0) {
                             dispatch({ message: "Vui lòng nhập số lượng sản phẩm", type: ActionTypeEnum.ERROR })
+                            return;
+                        }
+                        if (status === "") {
+                            dispatch({ message: "Vui lòng chọn trạng thái sản phẩm", type: ActionTypeEnum.ERROR })
                             return;
                         }
                         if (!location) {

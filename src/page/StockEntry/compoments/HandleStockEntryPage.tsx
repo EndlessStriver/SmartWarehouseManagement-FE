@@ -1,4 +1,4 @@
-import { Accordion, Button, CloseButton, Col, Row, Table } from "react-bootstrap"
+import { Button, CloseButton, Col, Row, Table } from "react-bootstrap"
 import { OverLay } from "../../../compoments/OverLay/OverLay"
 import { useDispatchMessage } from "../../../Context/ContextMessage"
 import GetProfile from "../../../util/GetProfile"
@@ -60,6 +60,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
     const [productId, setProductId] = React.useState<string>("");
     const [unitId, setUnitId] = React.useState<string>("");
     const [weight, setWeight] = React.useState<number>(0);
+    const [skuId, setSkuId] = React.useState<string>("");
 
     React.useEffect(() => {
         if (props.stockEntryId !== "") {
@@ -317,6 +318,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                                                 setProductId(productCheck.productId);
                                                                 setUnitId(productCheck.unit.id);
                                                                 setWeight(productCheck.weight);
+                                                                setSkuId(stockEntry.receiveItems.find((receiveItem) => receiveItem.product.id === productCheck.productId)?.sku.id || "");
                                                             }}
                                                             className="btn btn-primary"
                                                         >
@@ -401,6 +403,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     productId={productId}
                     unitId={unitId}
                     weight={weight}
+                    skuId={skuId}
                 />
             }
         </OverLay>

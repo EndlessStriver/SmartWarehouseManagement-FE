@@ -16,8 +16,8 @@ import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
 
-const StockEntry: React.FC = () => {
 
+const StockEntry: React.FC = () => {
     const dispatch = useDispatchMessage();
     const [reload, setReload] = React.useState<boolean>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -33,7 +33,6 @@ const StockEntry: React.FC = () => {
     const [showFormEdit, setShowFormEdit] = React.useState<boolean>(false);
     const [ShowHandleStockEntry, setShowHandleStockEntry] = React.useState<boolean>(false);
     const [loadingDelete, setLoadingDelete] = React.useState<boolean>(false);
-
     React.useEffect(() => {
         setIsLoading(true);
         GetStockEntries()
@@ -53,11 +52,9 @@ const StockEntry: React.FC = () => {
                 setIsLoading(false);
             })
     }, [dispatch, reload]);
-
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page });
     }
-
     const handleDeleteStockEntry = (id: string) => {
         setLoadingDelete(true);
         RemoveStockEntry(id)
@@ -71,7 +68,6 @@ const StockEntry: React.FC = () => {
                 setLoadingDelete(false);
             });
     }
-
     const renderTypeStatus = (status: string) => {
         switch (status) {
             case "PENDING":
@@ -84,7 +80,6 @@ const StockEntry: React.FC = () => {
                 return <span className="badge text-bg-primary">{status}</span>;
         }
     }
-
     const listStockEntry = stockEntry.map((stockEntry, index) => {
         return (
             <tr key={stockEntry.id}>
@@ -120,27 +115,26 @@ const StockEntry: React.FC = () => {
                         }
                         {
                             stockEntry.status !== "PENDING" &&
-                            <Button onClick={() => {
-                                setStockEntryId(stockEntry.id);
-                                setShowHandleStockEntry(true);
-                            }} variant="info" size="sm">
-                                <FontAwesomeIcon icon={faEye} />
-                            </Button>
+                            <>
+                                <Button onClick={() => {
+                                    setStockEntryId(stockEntry.id);
+                                    setShowHandleStockEntry(true);
+                                }} variant="info" size="sm">
+                                    <FontAwesomeIcon icon={faEye} />
+                                </Button>
+                            </>
                         }
                     </div>
                 </td>
             </tr>
         );
     });
-
     const updateStockEntry = (response: ReceiveHeader[]) => {
         setStockEntry(response);
     }
-
     const updatePagination = (response: PaginationType) => {
         setPagination(response);
     }
-
     return (
         <div className={"w-100 h-100"}>
             <div className="d-flex justify-content-between align-items-center mb-3">
