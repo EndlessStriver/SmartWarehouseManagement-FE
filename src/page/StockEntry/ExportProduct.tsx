@@ -146,6 +146,7 @@ const ExportProduct: React.FC = () => {
                 <FormEditExportProduct
                     onClose={() => {
                         setShowFormEditExportProduct(false);
+                        setExportOrderId("");
                     }}
                     exportOrderId={exportOrderId}
                     reload={() => {

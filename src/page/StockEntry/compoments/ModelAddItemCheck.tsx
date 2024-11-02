@@ -52,7 +52,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     if (res) {
                         setLocations(res.map((location) => {
                             return {
-                                value: location.locationCode,
+                                value: location.locationId,
                                 label: `${location.locationCode} - (${location.maxQuantityInbound})`
                             }
                         }))

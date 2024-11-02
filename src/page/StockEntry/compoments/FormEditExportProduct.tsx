@@ -1,7 +1,7 @@
-import { Button, Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
+import { Button, CloseButton, Col, Container, Form, FormGroup, Row, Table } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faLocationDot, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
@@ -15,6 +15,7 @@ import PaginationType from "../../../interface/Pagination";
 import Pagination from "../../../compoments/Pagination/Pagination";
 import GetOrderExportById from "../../../services/StockEntry/GetOrderExportById";
 import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
+import ModelRecomedLocationOrderExport from "./ModelRecomandLocationOrderExport";
 
 interface FormEditExportProductProps {
     onClose: () => void;
@@ -29,6 +30,8 @@ interface ProductExport {
     unit: { id: string, name: string };
     quantity: number;
     skuId: string;
+    status: string;
+    locations: { locationCode: string, quantity: number }[];
 }
 
 const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
@@ -46,6 +49,14 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [showModelAddProduct, setShowModelAddProduct] = React.useState<boolean>(false);
     const [pagination, setPagination] = React.useState<PaginationType>({ offset: 1, limit: 5, totalElementOfPage: 0, totalPage: 0 });
     const [reload, setReload] = React.useState<boolean>(false);
+    const [showModelRecomendLocation, setShowModelRecomendLocation] = React.useState<boolean>(false);
+    const [status, setStatus] = React.useState<string>("");
+
+    const [skuId, setSkuId] = React.useState<string>("");
+    const [unitId, setUnitId] = React.useState<string>("");
+    const [typeShelf, setTypeShelf] = React.useState<string>("");
+    const [quantity, setQuantity] = React.useState<number>(0);
+    const [locations, setLocations] = React.useState<{ locationCode: string, quantity: number }[]>([]);
 
     React.useEffect(() => {
         if (!props.exportOrderId) {
@@ -62,16 +73,10 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         setExportProductCode(response.exportCode);
                         setCreateDate(new Date(response.exportDate).toISOString().slice(0, 16));
                         setMoreInfo(response.description);
-                        setListProductExport(response.orderExportDetails.map((item) => {
-                            return {
-                                productId: item.product.id,
-                                productCode: item.product.productCode,
-                                productName: item.product.name,
-                                unit: { id: item.unit.id, name: item.unit.name },
-                                quantity: item.quantity,
-                                skuId: item.skuCode // đang bi lỗi ở đây
-                            }
-                        }));
+                        setStatus(response.status);
+                        // setListProductExport({
+
+                        // })
                     }
                 })
                 .catch((error) => {
@@ -105,14 +110,16 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
             })
     }, [productName, dispatch, pagination.limit, pagination.offset])
 
-    const addProductExport = (product: Product, unit: Unit, quantity: number) => {
+    const addProductExport = (product: Product, unit: Unit, quantity: number, productStatus: string, locations: { locationCode: string, quantity: number }[]) => {
         const productExport: ProductExport = {
             productId: product.id,
             productCode: product.productCode,
             productName: product.name,
             unit: { id: unit.id, name: unit.name },
             quantity: quantity,
-            skuId: product.productDetails[0].sku[0].id
+            skuId: product.productDetails[0].sku[0].id,
+            status: productStatus,
+            locations: locations
         }
         setListProductExport([...listProductExport, productExport]);
     }
@@ -134,19 +141,27 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Danh sách sản phẩm xuất kho phải có tối thiểu 1 sản phẩm" });
             return false;
         }
-
+        for (const item of listProductExport) {
+            if (item.quantity === 0) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: `Số lượng sản phẩm xuất kho của ${item.productName} phải lớn hơn 0` });
+                return false;
+            }
+            if (item.locations.reduce((total, location) => total + location.quantity, 0) < item.quantity) {
+                dispatch({ type: ActionTypeEnum.ERROR, message: `Tổng số lượng xuất kho của ${item.productName} phải bằng số lượng cần xuất` });
+                return false;
+            }
+        }
         let date = new Date(createDate);
         let currentDate = new Date();
         if (date.getTime() > currentDate.getTime()) {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày tạo không được lớn hơn ngày hiện tại" });
             return false;
         }
-
         return true;
     }
 
     const handleSubmit = () => {
-        if (validateForm()) {
+        if (validateForm() === true) {
             CreateOrderExport({
                 exportCode: ExportProductCode,
                 exportDate: createDate,
@@ -155,14 +170,21 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 orderExportDetails: listProductExport.map((item) => {
                     return {
                         skuId: item.skuId,
-                        quantity: item.quantity,
                         productId: item.productId,
-                        unitId: item.unit.id
+                        unitId: item.unit.id,
+                        itemStatus: item.status === "NORMAL" ? true : false,
+                        locationExport: item.locations.map((location) => {
+                            return {
+                                locationCode: location.locationCode,
+                                quantity: location.quantity
+                            }
+                        }),
+                        totalQuantity: item.locations.reduce((total, location) => total + location.quantity, 0)
                     }
                 })
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu xuất kho thành công" });
-                setReload(!reload);
+                props.reload();
                 props.onClose();
             }).catch((err) => {
                 console.error(err);
@@ -179,7 +201,6 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 description: moreInfo,
                 exportBy: profile?.fullName || "",
                 orderExportDetails: listProductExport.map((item) => {
-                    console.log(item);
                     return {
                         skuId: item.skuId,
                         quantity: item.quantity,
@@ -190,7 +211,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
             }).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu xuất kho thành công" });
                 props.reload();
-                setReload(!reload);
+                props.onClose();
             }).catch((err) => {
                 console.error(err);
                 dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
@@ -200,6 +221,24 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
 
     const handlePageChange = (page: number) => {
         setPagination({ ...pagination, offset: page });
+    }
+
+    const removeLocation = (skuId: string, locationCode: string) => {
+        setListProductExport(listProductExport.map((item) => {
+            if (item.skuId === skuId) {
+                item.locations = item.locations.filter((location) => location.locationCode !== locationCode);
+            }
+            return item;
+        }))
+    }
+
+    const updateLocations = (skuId: string, locations: { locationCode: string, quantity: number }[]) => {
+        setListProductExport(listProductExport.map((item) => {
+            if (item.skuId === skuId) {
+                item.locations = locations;
+            }
+            return item;
+        }))
     }
 
     return (
@@ -221,7 +260,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                     </div>
                     <div>
                         {
-                            props.exportOrderId ?
+                            props.exportOrderId && status === "PENDING" ?
                                 <Button
                                     onClick={() => {
                                         handleUpdate();
@@ -252,6 +291,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                             className={"form-control py-3"}
                             value={ExportProductCode}
                             onChange={(e) => setExportProductCode(e.target.value)}
+                            disabled={props.exportOrderId ? true : false}
                         />
                     </FormGroup>
                     <Col>
@@ -365,15 +405,18 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         }
                     </Col>
                     <Col>
-                        <h5 className="fw-semibold">Danh Sách Sản Phẩm Xuất Kho</h5>
+                        <div className="d-flex justify-content-between">
+                            <h5 className="fw-semibold">Danh Sách Sản Phẩm Xuất Kho</h5>
+                        </div>
                         <Table striped bordered hover responsive>
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Mã Sản Phẩm</th>
                                     <th>Tên Sản Phẩm</th>
                                     <th>Đơn Vị Tính</th>
                                     <th>Số Lượng</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Vị Trí</th>
                                     <th>Thao Tác</th>
                                 </tr>
                             </thead>
@@ -383,10 +426,55 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{index + 1}</td>
-                                                <td>{product.productCode}</td>
                                                 <td>{product.productName}</td>
                                                 <td>{product.unit.name}</td>
                                                 <td>{product.quantity}</td>
+                                                <td>
+                                                    {
+                                                        product.status === "NORMAL" ?
+                                                            "Bình thường" : "Hư hỏng"
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <div className="d-flex flex-row justify-content-center align-items-center gap-2">
+                                                        {
+                                                            product.locations.length > 0 &&
+                                                            <div className="d-flex flex-column">
+                                                                {
+                                                                    product.locations.map((location, index) => {
+                                                                        return (
+                                                                            <p key={index} className="text-nowrap d-flex align-items-center gap-3">
+                                                                                <h6 className="m-0">{location.locationCode} ({location.quantity})</h6>
+                                                                                <CloseButton
+                                                                                    className="p-0"
+                                                                                    onClick={() => {
+                                                                                        removeLocation(product.skuId, location.locationCode);
+                                                                                    }}
+                                                                                />
+                                                                            </p>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </div>
+                                                        }
+                                                        {
+                                                            product.locations.reduce((total, location) => total + location.quantity, 0) < product.quantity &&
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setSkuId(product.skuId);
+                                                                    setUnitId(product.unit.id);
+                                                                    setTypeShelf(product.status);
+                                                                    setQuantity(product.quantity);
+                                                                    setLocations(product.locations);
+                                                                    setShowModelRecomendLocation(true);
+                                                                }}
+                                                                variant="primary"
+                                                            >
+                                                                <FontAwesomeIcon icon={faLocationDot} />
+                                                            </Button>
+                                                        }
+                                                    </div>
+                                                </td>
                                                 <td>
                                                     <Button
                                                         variant="danger"
@@ -405,7 +493,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         </Table>
                         {
                             listProductExport.length === 0 &&
-                            <NoData />
+                            <NoData lable="KHÔN CÓ SẢN PHẨM CẦN XUẤT KHO" />
                         }
                     </Col>
                 </Row>
@@ -418,6 +506,20 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                     }}
                     product={productWantToExport}
                     addProductExport={addProductExport}
+                />
+            }
+            {
+                showModelRecomendLocation &&
+                <ModelRecomedLocationOrderExport
+                    quantity={quantity}
+                    skuId={skuId}
+                    typeShelf={typeShelf}
+                    unitId={unitId}
+                    locations={locations}
+                    updateLocations={updateLocations}
+                    onClose={() => {
+                        setShowModelRecomendLocation(false);
+                    }}
                 />
             }
         </OverLay>

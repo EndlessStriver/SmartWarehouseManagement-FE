@@ -112,7 +112,15 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
                                         <td>{item.product.name}</td>
                                         <td>{item.quantity}</td>
                                         <td>{item.unit.name}</td>
-                                        <td>{item.retrievedProducts[0].locationCode}</td>
+                                        <td>
+                                            {
+                                                item.locationExport.map((location, index) => {
+                                                    return (
+                                                        <p key={index}>{location.locationCode}: ({location.exportQuantity} Sản Phẩm)</p>
+                                                    )
+                                                })
+                                            }
+                                        </td>
                                     </tr>
                                 )
                             })

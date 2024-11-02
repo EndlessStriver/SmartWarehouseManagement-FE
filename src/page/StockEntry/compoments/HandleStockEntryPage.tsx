@@ -205,6 +205,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
     const handleSubmit = () => {
         if (validateForm()) {
+            console.log(productChecks);
             CreateCheckStockEntry({
                 receiveId: props.stockEntryId,
                 receiveDate: createDate,

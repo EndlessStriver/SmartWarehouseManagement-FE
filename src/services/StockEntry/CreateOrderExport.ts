@@ -9,11 +9,18 @@ interface ExportOrder {
     orderExportDetails: OrderExportDetail[];
 }
 
+interface LocationExport {
+    locationCode: string;
+    quantity: number;
+}
+
 interface OrderExportDetail {
     skuId: string;
     productId: string;
-    quantity: number;
+    totalQuantity: number;
     unitId: string;
+    itemStatus: boolean;
+    locationExport: LocationExport[];
 }
 
 const CreateOrderExport = async (data: ExportOrder): Promise<void> => {

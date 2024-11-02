@@ -22,15 +22,15 @@ interface OrderExportDetail {
     isDeleted: boolean;
     skuCode: string;
     quantity: number;
-    retrievedProducts: RetrievedProduct[];
+    locationExport: RetrievedProduct[];
     product: Product;
     unit: Unit;
 }
 
 interface RetrievedProduct {
     locationCode: string;
-    quantityTaken: number;
-    productId: string;
+    exportQuantity: number;
+    availableQuantity: string;
 }
 
 interface Product {

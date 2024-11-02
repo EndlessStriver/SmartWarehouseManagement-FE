@@ -5,11 +5,12 @@ import React from "react";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
+import SuggestExportLocation from "../../../services/StockEntry/SuggestExportLocation";
 
 interface ModelAddProductExportProps {
     onClose: () => void;
     product: Product | null;
-    addProductExport: (product: Product, unit: Unit, quantity: number) => void;
+    addProductExport: (product: Product, unit: Unit, quantity: number, productStatus: string, locations: { locationCode: string, quantity: number }[]) => void;
 }
 
 const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
@@ -18,6 +19,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
     const [unit, setUnit] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<number>(0);
     const [convertValue, setConvertValue] = React.useState<number>(0);
+    const [statusProduct, setStatusProduct] = React.useState<string>("");
 
     React.useEffect(() => {
         if (unit !== "" && quantity > 0) {
@@ -41,6 +43,10 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
         }
         if (quantity <= 0) {
             dispatch({ message: "Số lượng xuất phải lớn hơn 0", type: ActionTypeEnum.ERROR });
+            return false;
+        }
+        if (statusProduct === "") {
+            dispatch({ message: "Vui lòng chọn trạng thái sản phẩm", type: ActionTypeEnum.ERROR });
             return false;
         }
         if (quantity * convertValue > props.product!.productDetails[0].quantity) {
@@ -81,6 +87,18 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                     </select>
                 </FormGroup>
                 <FormGroup className="mb-3">
+                    <label>Trạng Thái Sản Phẩm</label>
+                    <select
+                        value={statusProduct}
+                        onChange={(e) => setStatusProduct(e.target.value)}
+                        className="form-select p-3"
+                    >
+                        <option value="">Chọn trạng thái sản phẩm...</option>
+                        <option value="NORMAL">Bình thường</option>
+                        <option value="DAMAGED">Hư hỏng</option>
+                    </select>
+                </FormGroup>
+                <FormGroup className="mb-3">
                     <label>Số Lượng</label>
                     <input
                         type="number"
@@ -94,8 +112,27 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                 <button
                     onClick={() => {
                         if (validateForm()) {
-                            props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, quantity);
-                            props.onClose();
+                            SuggestExportLocation({
+                                skuId: props.product!.productDetails[0].sku[0].id,
+                                unitId: unit,
+                                quantity: quantity,
+                                typeShelf: statusProduct
+                            })
+                                .then((response) => {
+                                    if (response) {
+                                        props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, quantity, statusProduct, response.map((item) => {
+                                            return {
+                                                locationCode: item.locationCode,
+                                                quantity: item.quantityTaken
+                                            }
+                                        }));
+                                        props.onClose();
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                                })
                         }
                     }}
                     className="btn btn-primary w-100 p-2"

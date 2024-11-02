@@ -3,8 +3,7 @@ import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface Location {
     locationCode: string;
-    maxQuantityInbound: number;
-    locationId: string;
+    quantityToExport: number;
 }
 
 interface SuggestInboundProps {
@@ -14,7 +13,7 @@ interface SuggestInboundProps {
     quantity: number;
 }
 
-const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | undefined> => {
+const SuggestExportLocations = async (data: SuggestInboundProps): Promise<Location[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -26,12 +25,11 @@ const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | u
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/locations/suggest-inbound?skuId=${data.skuId}&unitId=${data.unitId}&quantity=${data.quantity}&typeShelf=${data.typeShelf}`, {
+            const response = await axios.get(`${HOST}/locations/suggest-export-all?skuId=${data.skuId}&unitId=${data.unitId}&quantity=${data.quantity}&typeShelf=${data.typeShelf}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-
             return response.data.data;
         }
     } catch (error) {
@@ -50,4 +48,4 @@ const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | u
     }
 }
 
-export default SuggestInbound;
+export default SuggestExportLocations;
