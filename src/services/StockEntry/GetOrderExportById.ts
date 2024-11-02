@@ -20,11 +20,13 @@ interface OrderExportDetail {
     create_at: string;
     update_at: string;
     isDeleted: boolean;
+    itemStatus: boolean
     skuCode: string;
     quantity: number;
     locationExport: RetrievedProduct[];
     product: Product;
     unit: Unit;
+    sku: SKU;
 }
 
 interface RetrievedProduct {
@@ -51,6 +53,18 @@ interface Unit {
     isDeleted: boolean;
     name: string;
     isBaseUnit: boolean;
+}
+
+interface SKU {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    skuCode: string;
+    batchCode: string;
+    weight: string;
+    dimension: string;
+    description: string;
 }
 
 

@@ -12,9 +12,17 @@ interface ExportOrder {
 interface OrderExportDetail {
     skuId: string;
     productId: string;
-    quantity: number;
+    totalQuantity: number;
     unitId: string;
+    itemStatus: boolean;
+    locationExport: LocationExport[];
 }
+
+interface LocationExport {
+    locationCode: string;
+    quantity: number;
+}
+
 
 const UpdateOrderExport = async (orderExportId: string, data: ExportOrder): Promise<void> => {
     console.log(data);

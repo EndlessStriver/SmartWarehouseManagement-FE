@@ -50,7 +50,6 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [pagination, setPagination] = React.useState<PaginationType>({ offset: 1, limit: 5, totalElementOfPage: 0, totalPage: 0 });
     const [reload, setReload] = React.useState<boolean>(false);
     const [showModelRecomendLocation, setShowModelRecomendLocation] = React.useState<boolean>(false);
-    const [status, setStatus] = React.useState<string>("");
 
     const [skuId, setSkuId] = React.useState<string>("");
     const [unitId, setUnitId] = React.useState<string>("");
@@ -73,10 +72,24 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         setExportProductCode(response.exportCode);
                         setCreateDate(new Date(response.exportDate).toISOString().slice(0, 16));
                         setMoreInfo(response.description);
-                        setStatus(response.status);
-                        // setListProductExport({
-
-                        // })
+                        setListProductExport(response.orderExportDetails.map((item) => {
+                            return {
+                                productId: item.product.id,
+                                productCode: item.product.productCode,
+                                productName: item.product.name,
+                                unit: { id: item.unit.id, name: item.unit.name },
+                                quantity: item.quantity,
+                                skuId: item.sku.id,
+                                status: item.itemStatus ? "NORMAL" : "DAMAGE",
+                                locations: item.locationExport.map((location) => {
+                                    return {
+                                        locationCode: location.locationCode,
+                                        quantity: location.exportQuantity
+                                    };
+                                }),
+                                totalQuantity: item.quantity
+                            };
+                        }));
                     }
                 })
                 .catch((error) => {
@@ -85,9 +98,9 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 })
                 .finally(() => {
                     setIsLoading(false);
-                })
+                });
         }
-    }, [props.exportOrderId, dispatch, reload])
+    }, [props.exportOrderId, dispatch, reload]);
 
     React.useEffect(() => {
         setIsLoading(true);
@@ -203,9 +216,16 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 orderExportDetails: listProductExport.map((item) => {
                     return {
                         skuId: item.skuId,
-                        quantity: item.quantity,
                         productId: item.productId,
-                        unitId: item.unit.id
+                        unitId: item.unit.id,
+                        itemStatus: item.status === "NORMAL" ? true : false,
+                        locationExport: item.locations.map((location) => {
+                            return {
+                                locationCode: location.locationCode,
+                                quantity: location.quantity
+                            }
+                        }),
+                        totalQuantity: item.locations.reduce((total, location) => total + location.quantity, 0)
                     }
                 })
             }).then(() => {
@@ -255,12 +275,12 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                             <FontAwesomeIcon icon={faChevronLeft} />
                         </button>
                         <h2 className="fw-bold mb-0">
-                            Tạo Phiếu Xuất Kho
+                            {props.exportOrderId ? "Cập Nhật Phiếu Xuất Kho" : "Tạo Mới Phiếu Xuất Kho"}
                         </h2>
                     </div>
                     <div>
                         {
-                            props.exportOrderId && status === "PENDING" ?
+                            props.exportOrderId ?
                                 <Button
                                     onClick={() => {
                                         handleUpdate();

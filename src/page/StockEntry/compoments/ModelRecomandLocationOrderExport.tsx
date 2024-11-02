@@ -35,11 +35,12 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
             unitId: props.unitId
         }).then((data) => {
             if (data) {
+                console.log(data);
                 setLocations(() => {
                     return data.map((location) => {
                         return {
                             locationCode: location.locationCode,
-                            quantityToExport: location.quantityToExport,
+                            quantityToExport: location.availableQuantity,
                             numberExport: props.locations.find((loc) => loc.locationCode === location.locationCode)?.quantity || 0
                         }
                     })

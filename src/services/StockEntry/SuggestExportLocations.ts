@@ -3,7 +3,7 @@ import { checkTokenExpired } from "../../util/DecodeJWT";
 
 interface Location {
     locationCode: string;
-    quantityToExport: number;
+    availableQuantity: number;
 }
 
 interface SuggestInboundProps {
