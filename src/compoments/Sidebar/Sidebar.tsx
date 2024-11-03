@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faBoxes, faChartBar } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faBoxes, faChartBar, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { SidebarItem } from "./compoments/SidebarItem";
 import { SidebarNav } from "./compoments/SidebarNav";
 import { SidebarLogo } from "./compoments/SidebarLogo";
@@ -68,6 +68,11 @@ export const Sidebar: React.FC = () => {
                             { href: "/statictical-order-export", lable: "Thống kê xuất kho" },
                         ]
                     }
+                />
+                <SidebarItem
+                    href={"/qr-code"}
+                    icon={<FontAwesomeIcon icon={faQrcode} />}
+                    label={"QR Code"}
                 />
             </SidebarNav>
         </div>

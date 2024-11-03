@@ -23,6 +23,7 @@ import ShelfsPage from './page/Shelfs/StorageManagementPage';
 import ExportProduct from './page/StockEntry/ExportProduct';
 import StaticticalStockEntry from './page/Statistical/StatisticalStockEntry';
 import StatisticalOrderExport from './page/Statistical/StatisticalOrderExport';
+import GenerateQRCodePage from './page/QRCode/GenerateQRCodePage';
 
 const router = createBrowserRouter([
     {
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
             {
                 path: "statictical-order-export",
                 element: <StatisticalOrderExport />,
+            },
+            {
+                path: "qr-code",
+                element: <GenerateQRCodePage />,
             }
         ]
     },
