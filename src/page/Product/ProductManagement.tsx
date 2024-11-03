@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faQrcode, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Button, Table } from 'react-bootstrap';
 import PaginationType from '../../interface/Pagination';
 import Pagination from '../../compoments/Pagination/Pagination';
@@ -12,6 +12,7 @@ import DeleteProductById from "../../services/Product/DeleteProductById";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import GetProductsByNameAndCodeAndSupplierName, { Product } from '../../services/Product/GetProductByNameAndCodeAndSupplierName';
+import ModelGenerateQRCode from './compoments/ModelGenerateQRCode';
 
 export const ProductManagement: React.FC = () => {
 
@@ -30,6 +31,8 @@ export const ProductManagement: React.FC = () => {
     })
     const [reload, setReload] = React.useState<boolean>(false)
     const [key, setKey] = React.useState<string>("")
+    const [valueQRCodeGenerate, setValueQRCodeGenerate] = React.useState<string>("")
+    const [showModelGenerateQRCode, setShowModelGenerateQRCode] = React.useState<boolean>(false)
 
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page })
@@ -103,6 +106,15 @@ export const ProductManagement: React.FC = () => {
                             variant="danger"
                         >
                             <FontAwesomeIcon icon={faTrash} />
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setValueQRCodeGenerate(product.productCode)
+                                setShowModelGenerateQRCode(true)
+                            }}
+                            variant="info"
+                        >
+                            <FontAwesomeIcon icon={faQrcode} />
                         </Button>
                     </div>
                 </td>
@@ -186,6 +198,16 @@ export const ProductManagement: React.FC = () => {
                         setProductId("")
                     }}
                     loading={isLoadingDelete}
+                />
+            }
+            {
+                showModelGenerateQRCode &&
+                <ModelGenerateQRCode
+                    valueQRCodeGenerate={valueQRCodeGenerate}
+                    onClose={() => {
+                        setShowModelGenerateQRCode(false)
+                        setValueQRCodeGenerate("")
+                    }}
                 />
             }
         </div>
