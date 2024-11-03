@@ -24,6 +24,9 @@ import { OverLay } from "../../../compoments/OverLay/OverLay";
 import SpinnerLoadingOverLayer from "../../../compoments/Loading/SpinnerLoadingOverLay";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import GetLogsUser, { Action } from "../../../services/User/UserLogs";
+import { NoData } from "../../../compoments/NoData/NoData";
+import Pagination from "../../../compoments/Pagination/Pagination";
 
 interface EditUserComponentProps {
     hideOverlay: () => void;
@@ -73,6 +76,13 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         avatar: "",
     });
     const gender: Gender[] = [Gender.Male, Gender.Female, Gender.Others];
+    const [logs, setLogs] = React.useState<Action[]>([]);
+    const [pagination, setPagination] = React.useState<PaginationType>({
+        totalPage: 0,
+        limit: 10,
+        offset: 1,
+        totalElementOfPage: 0
+    });
 
     React.useEffect(() => {
         setIsLoading(true);
@@ -86,6 +96,26 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                 setIsLoading(false);
             })
     }, [dispatch])
+
+    React.useEffect(() => {
+        if (userId) {
+            GetLogsUser(userId, pagination.limit, pagination.offset)
+                .then((response) => {
+                    if (response) {
+                        setLogs(response.data);
+                        setPagination({
+                            totalPage: response.totalPage,
+                            limit: Number(response.limit),
+                            offset: Number(response.offset),
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                    }
+                }).catch((err) => {
+                    console.error(err.message);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                })
+        }
+    }, [userId, dispatch, pagination.limit, pagination.offset])
 
     React.useEffect(() => {
         if (userId) {
@@ -659,6 +689,42 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                         </Button>
                                     </>
                                 )
+                            }
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Nhật kí hoạt động</h5>
+                            <div className="border p-3"
+                                style={{
+                                    width: "100%",
+                                    height: "400px",
+                                    overflowY: "auto"
+                                }}
+
+                            >
+                                {
+                                    logs.map((item, index) => (
+                                        <div key={index} className="mb-3">
+                                            <p className="mb-1 fw-bold">{item.actionType}</p>
+                                            <p className="mb-1">{item.description}</p>
+                                            <p className="mb-1">{item.timestamp}</p>
+                                        </div>
+                                    ))
+                                }
+                                {
+                                    logs.length === 0 &&
+                                    <NoData lable="NGƯỜI DÙNG CHƯA CÓ HOẠT ĐỘNG NÀO" />
+                                }
+                            </div>
+                            {
+                                logs.length > 0 &&
+                                <Pagination
+                                    currentPage={pagination.offset}
+                                    totalPages={pagination.totalPage}
+                                    onPageChange={(page) => {
+                                        setPagination(preVal => ({
+                                            ...preVal,
+                                            offset: page
+                                        }))
+                                    }}
+                                />
                             }
                         </div>
                     </Col>
