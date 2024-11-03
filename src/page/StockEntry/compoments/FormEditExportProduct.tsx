@@ -16,6 +16,7 @@ import Pagination from "../../../compoments/Pagination/Pagination";
 import GetOrderExportById from "../../../services/StockEntry/GetOrderExportById";
 import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
 import ModelRecomedLocationOrderExport from "./ModelRecomandLocationOrderExport";
+import formatDateForInput from "../../../util/FormartDateInput";
 
 interface FormEditExportProductProps {
     onClose: () => void;
@@ -56,6 +57,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [typeShelf, setTypeShelf] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<number>(0);
     const [locations, setLocations] = React.useState<{ locationCode: string, quantity: number }[]>([]);
+    const [unit, setUnit] = React.useState<string>("");
 
     React.useEffect(() => {
         if (!props.exportOrderId) {
@@ -332,7 +334,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                             <Form.Control
                                 type="datetime-local"
                                 className={"form-control py-3"}
-                                value={createDate}
+                                value={formatDateForInput(createDate)}
                                 onChange={(e) => setCreateDate(e.target.value)}
                             />
                         </FormGroup>
@@ -486,6 +488,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                                                     setTypeShelf(product.status);
                                                                     setQuantity(product.quantity);
                                                                     setLocations(product.locations);
+                                                                    setUnit(product.unit.name);
                                                                     setShowModelRecomendLocation(true);
                                                                 }}
                                                                 variant="primary"
@@ -537,6 +540,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                     unitId={unitId}
                     locations={locations}
                     updateLocations={updateLocations}
+                    unit={unit}
                     onClose={() => {
                         setShowModelRecomendLocation(false);
                     }}

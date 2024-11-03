@@ -7,6 +7,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage"
 import DeleteOrderExport from "../../../services/StockEntry/DeleteOrderExport"
 import SpinnerLoadingOverLayer from "../../../compoments/Loading/SpinnerLoadingOverLay"
 import GetOrderExportById, { ExportOrder } from "../../../services/StockEntry/GetOrderExportById"
+import formatDateVietNam from "../../../util/FormartDateVietnam"
 
 interface ModelConfirmOrderExportProps {
     onClose: () => void
@@ -78,7 +79,7 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
                         <p>Mã Phiếu Xuất Kho: <span className="fw-bold">{orderExport?.exportCode}</span></p>
                     </Col>
                     <Col>
-                        <p>Ngày tạo: <span className="fw-bold">{orderExport?.exportDate}</span></p>
+                        <p>Ngày tạo: <span className="fw-bold">{formatDateVietNam(orderExport?.exportDate || "")}</span></p>
                     </Col>
                 </Row>
                 <Row>

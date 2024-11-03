@@ -12,6 +12,7 @@ interface ModelRecomandLocationOrderExportProps {
     typeShelf: string,
     quantity: number,
     locations: { locationCode: string, quantity: number }[]
+    unit: string,
     updateLocations: (skuId: string, locations: { locationCode: string, quantity: number }[]) => void
 }
 
@@ -63,7 +64,7 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
 
     const handleSubmit = () => {
         if (validate()) {
-            props.updateLocations(props.skuId, locations.map((location) => {
+            props.updateLocations(props.skuId, locations.filter((location) => location.numberExport > 0).map((location) => {
                 return {
                     locationCode: location.locationCode,
                     quantity: location.numberExport
@@ -77,7 +78,7 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
         <OverLay>
             <div className="bg-light rounded position-relative p-4" style={{ width: "800px" }}>
                 <CloseButton onClick={() => props.onClose()} className="position-absolute" style={{ top: "15px", right: "15px" }} />
-                <h2>Danh sách đề xuất vị trí xuất hàng</h2>
+                <h3 className="fw-semibold">Danh sách đề xuất vị trí xuất hàng</h3>
                 <Table striped bordered hover >
                     <thead>
                         <tr>
@@ -85,6 +86,7 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
                             <th>Vị trí</th>
                             <th>Số lượng đang chứa</th>
                             <th>Số lượng muốn xuất</th>
+                            <th>Đơn vị tính</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,6 +118,7 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
                                         }}
                                     />
                                 </td>
+                                <td>{props.unit}</td>
                             </tr>
                         ))}
                     </tbody>

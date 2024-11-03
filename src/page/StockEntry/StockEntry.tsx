@@ -15,6 +15,7 @@ import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete
 import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
+import formatDateVietNam from "../../util/FormartDateVietnam";
 
 
 const StockEntry: React.FC = () => {
@@ -86,7 +87,7 @@ const StockEntry: React.FC = () => {
                 <td>{index + 1}</td>
                 <td>{stockEntry.receiveCode}</td>
                 <td>{stockEntry.receiveBy}</td>
-                <td>{new Date(stockEntry.receiveDate).toLocaleDateString()}</td>
+                <td>{formatDateVietNam(stockEntry.create_at)}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
                 <td>
                     <div className="d-flex flex-row gap-2">

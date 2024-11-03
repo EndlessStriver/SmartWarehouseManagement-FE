@@ -193,7 +193,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 className="position-fixed bg-white"
                 style={{ top: "15px", right: "15px" }}
             />
-            <div className="bg-white d-flex flex-column justify-content-center align-items-center p-3 rounded position-relative" style={{ minWidth: "800px", minHeight: "300px" }}>
+            <div className="bg-white d-flex flex-column justify-content-center align-items-center p-5 rounded position-relative" style={{ minWidth: "800px", minHeight: "300px" }}>
                 <Form.Check
                     type="switch"
                     label="Lấy tẩt cả kệ"

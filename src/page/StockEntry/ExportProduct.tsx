@@ -11,6 +11,7 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboardCheck, faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
 import ModelConfirmOrderExport from "./compoments/ModelConfirmOrderExport";
+import formatDateVietNam from "../../util/FormartDateVietnam";
 
 const ExportProduct: React.FC = () => {
 
@@ -89,7 +90,7 @@ const ExportProduct: React.FC = () => {
                                     <td>{index + 1}</td>
                                     <td>{item.exportCode}</td>
                                     <td>{item.exportBy}</td>
-                                    <td>{item.exportDate}</td>
+                                    <td>{formatDateVietNam(item.create_at)}</td>
                                     <td>
                                         {
                                             item.status === "PENDING" ? <Badge bg="primary">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="success">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
@@ -158,6 +159,7 @@ const ExportProduct: React.FC = () => {
                 showModelConfirmOrderExport &&
                 <ModelConfirmOrderExport
                     onClose={() => {
+                        setExportOrderId("");
                         setShowModelConfirmOrderExport(false);
                     }}
                     exportOrderId={exportOrderId}

@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import CreateCheckStockEntry from "../../../services/StockEntry/CreateCheckStockEntry"
 import { useDispatchProductCheck } from "../../../Context/ContextProductCheck"
 import GetReceiveCheckByStockEntryId from "../../../services/StockEntry/GetReceiveCheckByStockEntryId"
+import formatDateForInput from "../../../util/FormartDateInput"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -273,7 +274,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                             disabled={stockEntry?.status !== "PENDING"}
                             type="datetime-local"
                             className="form-control p-3"
-                            value={createDate}
+                            value={formatDateForInput(createDate)}
                             onChange={(e) => setCreateDate(e.target.value)}
                         />
                     </div>

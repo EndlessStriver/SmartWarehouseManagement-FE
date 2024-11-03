@@ -22,6 +22,7 @@ import PaginationType from "../../../interface/Pagination";
 import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
 import Pagination from '../../../compoments/Pagination/Pagination';
+import formatDateForInput from "../../../util/FormartDateInput";
 
 interface FormEditStockEntryProps {
     handleClose: () => void;
@@ -542,7 +543,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                             <Form.Control
                                 disabled={statusStockEntry !== ""}
                                 type="datetime-local"
-                                value={createDate}
+                                value={formatDateForInput(createDate)}
                                 className={"form-control py-3"}
                                 onChange={handleDateChange}
                             />
