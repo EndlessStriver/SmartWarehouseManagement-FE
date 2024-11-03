@@ -21,6 +21,8 @@ import ProfilePage from './page/Profile/ProfilePage';
 import InventoryTracking from './page/StockEntry/InventoryTracking';
 import ShelfsPage from './page/Shelfs/StorageManagementPage';
 import ExportProduct from './page/StockEntry/ExportProduct';
+import StaticticalStockEntry from './page/Statistical/StatisticalStockEntry';
+import StatisticalOrderExport from './page/Statistical/StatisticalOrderExport';
 
 const router = createBrowserRouter([
     {
@@ -74,6 +76,14 @@ const router = createBrowserRouter([
             {
                 path: "shelfs",
                 element: <ShelfsPage />,
+            },
+            {
+                path: "statictical-stock-entry",
+                element: <StaticticalStockEntry />,
+            },
+            {
+                path: "statictical-order-export",
+                element: <StatisticalOrderExport />,
             }
         ]
     },

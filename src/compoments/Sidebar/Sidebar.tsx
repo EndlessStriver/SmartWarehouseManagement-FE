@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faBoxes } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faWarehouse, faBox, faUser, faBarcode, faTruck, faBoxes, faChartBar } from '@fortawesome/free-solid-svg-icons';
 import { SidebarItem } from "./compoments/SidebarItem";
 import { SidebarNav } from "./compoments/SidebarNav";
 import { SidebarLogo } from "./compoments/SidebarLogo";
@@ -58,6 +58,16 @@ export const Sidebar: React.FC = () => {
                     href={"/management-user"}
                     icon={<FontAwesomeIcon icon={faUser} />}
                     label={"Người dùng"}
+                />
+                <SidebarItem
+                    icon={<FontAwesomeIcon icon={faChartBar} />}
+                    label={"Thống kê"}
+                    subItems={
+                        [
+                            { href: "/statictical-stock-entry", lable: "Thống kê nhập kho" },
+                            { href: "/statictical-order-export", lable: "Thống kê xuất kho" },
+                        ]
+                    }
                 />
             </SidebarNav>
         </div>

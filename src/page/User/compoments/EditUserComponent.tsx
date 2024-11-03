@@ -694,7 +694,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             <div className="border p-3"
                                 style={{
                                     width: "100%",
-                                    height: "400px",
+                                    height: "350px",
                                     overflowY: "auto"
                                 }}
 
