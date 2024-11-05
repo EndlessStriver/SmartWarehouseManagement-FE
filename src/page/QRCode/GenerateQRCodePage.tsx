@@ -7,7 +7,6 @@ const GenerateQRCodePage = () => {
     const contentRef = React.useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
     const [qrCode, setQRCode] = React.useState<string>("");
-    const [showModel, setShowModel] = React.useState<boolean>(false);
 
     return (
         <div>
@@ -16,7 +15,7 @@ const GenerateQRCodePage = () => {
                 <p className="h6">Bạn có thể tạo mã QR Code theo ý muốn của bạn ở đây</p>
             </div>
             <div className={"mb-4 d-flex flex-column justify-content-center align-items-center"}>
-                <div className="d-flex justify-content-center">
+                <div className="d-flex justify-content-center mb-3">
                     <input
                         value={qrCode}
                         onChange={(e) => setQRCode(e.target.value)}

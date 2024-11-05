@@ -8,6 +8,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import Select from 'react-select';
 import SuggestInbound from "../../../services/StockEntry/SuggestInbound"
+import { useProductCheck } from "../../../Context/ContextProductCheck"
 
 interface ModelAddItemCheckProps {
     onClose: () => void
@@ -30,6 +31,7 @@ interface Location {
 const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
 
     const dispatch = useDispatchMessage();
+    const productChecks = useProductCheck();
     const [quantity, setQuantity] = React.useState<number>(0)
     const [status, setStatus] = React.useState<string>("")
     const [location, setLocation] = React.useState<Location | null>(null)
@@ -38,6 +40,23 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
 
     const addLocation = (id: string, name: string) => {
         setLocation({ value: id, label: name })
+    }
+
+    const filterRecomandLocationIsCheck = () => {
+        if (locations.length > 0) {
+            let locationIsCheck = productChecks.map((productCheck) => productCheck.listAddLocation.map(location => location.location.value)).flat()
+            return locations.filter((location) => !locationIsCheck.includes(location.value))
+        }
+    }
+
+    const getTotalQuantityNeed = () => {
+        let myProductCheck = productChecks.find((productCheck) => productCheck.productId === props.productId)
+        if (myProductCheck) {
+            let totalQuantityNeed = myProductCheck.listAddLocation.reduce((total, location) => total + location.quantity, 0)
+            return props.quantity - totalQuantityNeed
+        } else {
+            return 0
+        }
     }
 
     React.useEffect(() => {
@@ -65,6 +84,10 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
         }
     }, [quantity, status, props.skuId, props.unitId, dispatch])
 
+    React.useEffect(() => {
+        setQuantity(getTotalQuantityNeed())
+    }, [])
+
     return (
         <OverLay>
             <div className="position-relative bg-light rounded p-4" style={{ width: "500px" }}>
@@ -78,6 +101,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                     <label>Số lượng: </label>
                     <input
                         min={0}
+                        max={getTotalQuantityNeed()}
                         type="number"
                         className="form-control p-3"
                         placeholder="Nhập số lượng...."
@@ -112,7 +136,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                             }}
                             value={location}
                             onChange={(e) => setLocation(e)}
-                            options={locations}
+                            options={filterRecomandLocationIsCheck()}
                             isDisabled={quantity <= 0 || status === ""}
                         />
                         <button

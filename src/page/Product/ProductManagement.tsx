@@ -109,7 +109,7 @@ export const ProductManagement: React.FC = () => {
                         </Button>
                         <Button
                             onClick={() => {
-                                setValueQRCodeGenerate(product.productCode)
+                                setValueQRCodeGenerate(product.id + ".product")
                                 setShowModelGenerateQRCode(true)
                             }}
                             variant="info"
