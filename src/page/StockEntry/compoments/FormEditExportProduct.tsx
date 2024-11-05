@@ -375,6 +375,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                     <th>#</th>
                                     <th>Tên Sản Phẩm</th>
                                     <th>Lượng Tồn Kho</th>
+                                    <th>Số Lượng Lỗi</th>
                                     <th>Đơn Vị Tính</th>
                                     <th>Loại Sản phẩm</th>
                                     <th>Thao Tác</th>
@@ -388,6 +389,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                                 <td>{index + 1}</td>
                                                 <td>{product.name}</td>
                                                 <td>{product.productDetails[0].quantity}</td>
+                                                <td>{product.productDetails[0].damagedQuantity}</td>
                                                 <td>{product.units.find((unit) => unit.isBaseUnit)?.name}</td>
                                                 <td>{product.category.name}</td>
                                                 <td>

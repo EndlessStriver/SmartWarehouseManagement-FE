@@ -40,6 +40,7 @@ interface ProductDetail {
     update_at: string;
     isDeleted: boolean;
     quantity: number;
+    damagedQuantity: number;
     images: Image[];
     sku: SKU[];
 }

@@ -81,6 +81,7 @@ const InventoryTracking: React.FC = () => {
                         <th>Mã Sản Phẩm</th>
                         <th>Tên Sản Phẩm</th>
                         <th>Số Lượng Tồn Kho</th>
+                        <th>Số lượng Lỗi</th>
                         <th>Đơn Vị</th>
                         <th>SKU</th>
                         <th>Thao Tác</th>
@@ -93,6 +94,7 @@ const InventoryTracking: React.FC = () => {
                             <td>{product.productCode}</td>
                             <td>{product.name}</td>
                             <td>{product.productDetails[0].quantity}</td>
+                            <td>{product.productDetails[0].damagedQuantity}</td>
                             <td>{product.units.find((unit) => unit.isBaseUnit)?.name}</td>
                             <td>{product.productDetails[0].sku[0].skuCode}</td>
                             <td>
