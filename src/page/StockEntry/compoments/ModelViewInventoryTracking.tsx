@@ -4,6 +4,7 @@ import React from "react";
 import GetAllLocationHaveProduct, { Product } from "../../../services/StockEntry/GetAllLocationHaveProduct";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { NoData } from "../../../compoments/NoData/NoData";
 
 interface ModelViewInventoryTrackingProps {
     onClose: () => void;
@@ -69,6 +70,10 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
                             ))}
                         </tbody>
                     </table>
+                    {
+                        product?.productDetails[0].sku[0].locations.length === 0 &&
+                        <NoData lable="KHÔNG CÓ VỊ TRÍ NÀO CHỨA SẢN PHẨM" />
+                    }
                 </div>
             </div>
         </OverLay>
