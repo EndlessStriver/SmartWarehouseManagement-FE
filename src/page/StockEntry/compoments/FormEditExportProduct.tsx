@@ -56,6 +56,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [unitId, setUnitId] = React.useState<string>("");
     const [typeShelf, setTypeShelf] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<number>(0);
+    const [quantityDamged, setQuantityDamged] = React.useState<number>(0);
     const [locations, setLocations] = React.useState<{ locationCode: string, quantity: number }[]>([]);
     const [unit, setUnit] = React.useState<string>("");
 
@@ -397,6 +398,8 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                                         disabled={checkAddedProduct(product)}
                                                         onClick={() => {
                                                             setProductWantToExport(product);
+                                                            setQuantity(product.productDetails[0].quantity);
+                                                            setQuantityDamged(product.productDetails[0].damagedQuantity);
                                                             setShowModelAddProduct(true);
                                                         }}
                                                         variant="primary"
@@ -530,6 +533,8 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         setShowModelAddProduct(false);
                     }}
                     product={productWantToExport}
+                    quantity={quantity}
+                    quantityDamaged={quantityDamged}
                     addProductExport={addProductExport}
                 />
             }

@@ -6,10 +6,13 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import SuggestExportLocation from "../../../services/StockEntry/SuggestExportLocation";
+import { stat } from "fs";
 
 interface ModelAddProductExportProps {
     onClose: () => void;
     product: Product | null;
+    quantity: number;
+    quantityDamaged: number;
     addProductExport: (product: Product, unit: Unit, quantity: number, productStatus: string, locations: { locationCode: string, quantity: number }[]) => void;
 }
 
@@ -49,8 +52,12 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
             dispatch({ message: "Vui lòng chọn trạng thái sản phẩm", type: ActionTypeEnum.ERROR });
             return false;
         }
-        if (quantity * convertValue > props.product!.productDetails[0].quantity) {
-            dispatch({ message: "Số lượng xuất phải nhỏ hơn hoặc bằng số lượng tồn", type: ActionTypeEnum.ERROR });
+        if (quantity * convertValue > props.product!.productDetails[0].quantity && statusProduct === "NORMAL") {
+            dispatch({ message: "Số lượng xuất lớn hơn số lượng tồn kho đang có", type: ActionTypeEnum.ERROR });
+            return false;
+        }
+        if (quantity * convertValue > props.product!.productDetails[0].damagedQuantity && statusProduct === "DAMAGED") {
+            dispatch({ message: "Số lượng xuất lớn hơn số lượng tồn kho đang có", type: ActionTypeEnum.ERROR });
             return false;
         }
         return true
@@ -107,6 +114,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                         placeholder="Nhập số lượng xuất..."
                         value={quantity}
                         onChange={(e) => setQuantity(parseInt(e.target.value))}
+                        disabled={unit === "" || statusProduct === ""}
                     />
                 </FormGroup>
                 <button
