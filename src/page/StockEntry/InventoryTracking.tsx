@@ -1,4 +1,4 @@
-import { faEye, faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Table } from "react-bootstrap";
 import GetProductsByNameAndCodeAndSupplierName, { Product } from "../../services/Product/GetProductByNameAndCodeAndSupplierName";
@@ -9,6 +9,7 @@ import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import PaginationType from "../../interface/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import Pagination from "../../compoments/Pagination/Pagination";
+import ModelViewInventoryTracking from "./compoments/ModelViewInventoryTracking";
 
 const InventoryTracking: React.FC = () => {
 
@@ -22,6 +23,8 @@ const InventoryTracking: React.FC = () => {
         totalElementOfPage: 0,
         totalPage: 0
     });
+    const [showModelViewInventoryTracking, setShowModelViewInventoryTracking] = React.useState<boolean>(false);
+    const [productId, setProductId] = React.useState<string>("");
 
     React.useEffect(() => {
         const id = setTimeout(() => {
@@ -98,7 +101,13 @@ const InventoryTracking: React.FC = () => {
                             <td>{product.units.find((unit) => unit.isBaseUnit)?.name}</td>
                             <td>{product.productDetails[0].sku[0].skuCode}</td>
                             <td>
-                                <button className="btn btn-primary">
+                                <button
+                                    onClick={() => {
+                                        setShowModelViewInventoryTracking(true);
+                                        setProductId(product.id);
+                                    }}
+                                    className="btn btn-primary"
+                                >
                                     <FontAwesomeIcon icon={faEye} />
                                 </button>
                             </td>
@@ -122,6 +131,13 @@ const InventoryTracking: React.FC = () => {
             {
                 loading &&
                 <SpinnerLoading />
+            }
+            {
+                showModelViewInventoryTracking &&
+                <ModelViewInventoryTracking
+                    onClose={() => setShowModelViewInventoryTracking(false)}
+                    productId={productId}
+                />
             }
         </div>
     )
