@@ -1,8 +1,7 @@
 import React from "react";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
 import { Table } from "react-bootstrap";
-import StatisticalOrderExportAPI from "../../services/Statistical/StatisticalOrderExportAPI";
-import { ExportOrder } from "../../services/StockEntry/GetOrderExportById";
+import StatisticalOrderExportAPI, { ExportOrder } from "../../services/Statistical/StatisticalOrderExportAPI";
 import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import PaginationType from "../../interface/Pagination";

@@ -10,7 +10,7 @@ interface ExportOrderResponse {
     totalQuantity: number;
 }
 
-interface ExportOrder {
+export interface ExportOrder {
     id: string;
     create_at: string;
     update_at: string;
@@ -78,7 +78,6 @@ interface SKU {
 
 
 const StatisticalOrderExportAPI = async (from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportOrderResponse | undefined> => {
-    console.log(from, to, status, limit, offset);
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
