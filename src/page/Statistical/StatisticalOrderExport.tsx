@@ -9,6 +9,10 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import formatDateVietNam from "../../util/FormartDateVietnam";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
 const StatisticalOrderExport = () => {
 
@@ -25,12 +29,14 @@ const StatisticalOrderExport = () => {
     })
     const [loading, setLoading] = React.useState<boolean>(false);
     const [reload, setReload] = React.useState<boolean>(false);
+    const contentRef = React.useRef(null);
 
     React.useEffect(() => {
         setLoading(true);
         StatisticalOrderExportAPI(fromDate, toDate, status, pagination.offset, pagination.limit)
             .then((res) => {
                 if (res) {
+                    if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này" })
                     setOrderExport(res.data);
                     setPagination({
                         limit: res.limit,
@@ -48,6 +54,22 @@ const StatisticalOrderExport = () => {
                 setLoading(false);
             })
     }, [reload]);
+
+    const handleExportPDF = () => {
+        const input = contentRef.current;
+        if (input) {
+            html2canvas(input, { scale: 2 })
+                .then((canvas) => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    pdf.addImage(imgData, 'PNG', 0, 5, pdfWidth, pdfHeight);
+                    pdf.save('document.pdf');
+                })
+        }
+    }
 
     return (
         <div>
@@ -90,41 +112,51 @@ const StatisticalOrderExport = () => {
                     >
                         Thống kê
                     </button>
+                    <button className="btn btn-danger" onClick={handleExportPDF}>
+                        <FontAwesomeIcon icon={faFilePdf} className="me-1" />
+                        Xuất PDF
+                    </button>
                 </div>
-                <Table striped bordered hover responsive className="mt-4">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Mã Phiếu Xuất</th>
-                            <th>Ngày xuất</th>
-                            <th>Người xuất</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn vị</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            orderExport.map((item, index) => (
-                                <tr key={item.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.exportCode}</td>
-                                    <td>{formatDateVietNam(item.create_at)}</td>
-                                    <td>{item.exportBy}</td>
-                                    <td>{item.orderExportDetails[0].product.name}</td>
-                                    <td>{item.orderExportDetails[0].quantity}</td>
-                                    <td>{item.orderExportDetails[0].unit.name}</td>
-                                    <td>
-                                        {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
-                                        {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
-                                        {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
-                                    </td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </Table>
+                <div ref={contentRef} className="mt-5">
+                    <h3 className="text-center fw-bold">BẢNG THỐNG KÊ HÀNG HÓA XUẤT KHO</h3>
+                    <div>
+                        <p className="text-center">Từ ngày: {formatDateVietNam(fromDate)} - Đến ngày: {formatDateVietNam(toDate)}</p>
+                    </div>
+                    <Table striped bordered hover responsive className="mt-4">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã Phiếu Xuất</th>
+                                <th>Ngày xuất</th>
+                                <th>Người xuất</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn vị</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                orderExport.map((item, index) => (
+                                    <tr key={item.id}>
+                                        <td>{index + 1}</td>
+                                        <td>{item.exportCode}</td>
+                                        <td>{formatDateVietNam(item.create_at)}</td>
+                                        <td>{item.exportBy}</td>
+                                        <td>{item.orderExportDetails[0].product.name}</td>
+                                        <td>{item.orderExportDetails[0].quantity}</td>
+                                        <td>{item.orderExportDetails[0].unit.name}</td>
+                                        <td>
+                                            {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
+                                            {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
+                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </Table>
+                </div>
                 {
                     orderExport.length > 0 &&
                     <Pagination
