@@ -95,6 +95,7 @@ const GetAllLocationHaveProduct = async (productId: string): Promise<Product | u
                     Authorization: `Bearer ${token}`
                 }
             });
+            // console.log(response.data.data);
             return response.data.data;
         }
     } catch (error) {
