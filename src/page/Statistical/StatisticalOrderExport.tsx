@@ -12,7 +12,18 @@ import formatDateVietNam from "../../util/FormartDateVietnam";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import * as XLSX from 'xlsx';
+
+interface ConvertDataToDataExcel {
+    orderExportCode: string;
+    createDate: string;
+    exportBy: string;
+    productName: string;
+    quantity: number;
+    unit: string;
+    status: string;
+}
 
 const StatisticalOrderExport = () => {
 
@@ -71,6 +82,32 @@ const StatisticalOrderExport = () => {
         }
     }
 
+    const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
+        const result: ConvertDataToDataExcel[] = [];
+        data.forEach((item) => {
+            result.push({
+                orderExportCode: item.exportCode,
+                createDate: formatDateVietNam(item.create_at),
+                exportBy: item.exportBy,
+                productName: item.orderExportDetails[0].product.name,
+                quantity: item.orderExportDetails[0].quantity,
+                unit: item.orderExportDetails[0].unit.name,
+                status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy"
+            })
+        })
+        return result;
+    }
+
+    const exportToExcel = () => {
+        const data = convertDataToDataExcel(orderExport);
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        const headers = [["Mã Phiếu Xuất", "Ngày Xuất", "Người Xuất", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị", "Trạng Thái"]];
+        XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'data.xlsx');
+    };
+
     return (
         <div>
             <div className={"mb-4"}>
@@ -112,9 +149,21 @@ const StatisticalOrderExport = () => {
                     >
                         Thống kê
                     </button>
-                    <button className="btn btn-danger" onClick={handleExportPDF}>
+                    <button
+                        disabled={orderExport.length === 0}
+                        className="btn btn-danger"
+                        onClick={handleExportPDF}
+                    >
                         <FontAwesomeIcon icon={faFilePdf} className="me-1" />
                         Xuất PDF
+                    </button>
+                    <button
+                        disabled={orderExport.length === 0}
+                        className="btn btn-success"
+                        onClick={exportToExcel}
+                    >
+                        <FontAwesomeIcon icon={faFileExcel} className="me-1" />
+                        Xuất Excel
                     </button>
                 </div>
                 <div ref={contentRef} className="mt-5">
