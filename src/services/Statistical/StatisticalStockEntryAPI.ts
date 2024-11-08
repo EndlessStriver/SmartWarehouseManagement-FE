@@ -1,49 +1,6 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface ExportOrderResponse {
-    data: ExportOrder[];
-    totalPage: number;
-    limit: number;
-    offset: number;
-    totalElementOfPage: number;
-    totalQuantity: number;
-}
-
-export interface ExportOrder {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    status: string;
-    exportCode: string;
-    exportDate: string;
-    description: string;
-    exportBy: string;
-    totalQuantity: number;
-    orderExportDetails: OrderExportDetail[];
-}
-
-interface OrderExportDetail {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    skuCode: string;
-    quantity: number;
-    itemStatus: boolean;
-    locationExport: LocationExport[];
-    product: Product;
-    unit: Unit;
-    sku: SKU;
-}
-
-interface LocationExport {
-    locationCode: string;
-    exportQuantity: number;
-    availableQuantity: number;
-}
-
 interface Product {
     id: string;
     create_at: string;
@@ -64,20 +21,28 @@ interface Unit {
     isBaseUnit: boolean;
 }
 
-interface SKU {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    skuCode: string;
-    batchCode: string;
-    weight: string;
-    dimension: string;
-    description: string;
+export interface CheckedProduct {
+    product: Product;
+    expectQuantity: number;
+    receiveQuantity: number;
+    unit: Unit | null;
+}
+
+interface ProductCheckResponse {
+    startDate: string;
+    endDate: string;
+    checkedProducts: CheckedProduct[];
+    totalCheckedProducts: number;
+    totalExpectQuantity: number;
+    totalReceiveQuantity: number;
+    currentPage: number;
+    totalPages: number;
+    limit: number;
 }
 
 
-const StatisticalOrderExportAPI = async (from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportOrderResponse | undefined> => {
+
+const StatisticalStockEntryAPI = async (from: string, to: string, limit?: number, offset?: number): Promise<ProductCheckResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -89,7 +54,7 @@ const StatisticalOrderExportAPI = async (from: string, to: string, status: strin
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/order-export/status-date?limit=${limit || 10}&offset=${offset || 1}&status=${status}&from=${from}&to=${to}`, {
+            const response = await axios.get(`${HOST}/receive-check/date/pagination?offset=${offset || 1}&limit=${limit || 10}&startDate=${from}&endDate=${to}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -112,4 +77,4 @@ const StatisticalOrderExportAPI = async (from: string, to: string, status: strin
     }
 }
 
-export default StatisticalOrderExportAPI;
+export default StatisticalStockEntryAPI;

@@ -6,22 +6,27 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import formatDateVietNam from "../../util/FormartDateVietnam";
 import { Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../Context/ContextMessage";
-import StatisticalOrderExportAPI from "../../services/Statistical/StatisticalOrderExportAPI";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { ExportOrder } from "../../services/StockEntry/GetOrderExportById";
 import PaginationType from "../../interface/Pagination";
+import StatisticalStockEntryAPI, { CheckedProduct } from "../../services/Statistical/StatisticalStockEntryAPI";
+import * as XLSX from 'xlsx';
+
+interface CheckedProductToDataExcel {
+    productCode: string;
+    productName: string;
+    receiveQuantity: number;
+    unit: string;
+}
 
 const StaticticalStockEntry = () => {
-
     const dispatch = useDispatchMessage();
     const [fromDate, setFromDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
     const [toDate, setToDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
-    const [status, setStatus] = React.useState<"PENDING" | "EXPORTED" | "CANCEL">("PENDING");
-    const [orderExport, setOrderExport] = React.useState<ExportOrder[]>([]);
+    const [productStockEntry, setProductStockEntry] = React.useState<CheckedProduct[]>([]);
     const [pagination, setPagination] = React.useState<PaginationType>({
         limit: 10,
         offset: 1,
@@ -34,16 +39,16 @@ const StaticticalStockEntry = () => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalOrderExportAPI(fromDate, toDate, status, pagination.offset, pagination.limit)
+        StatisticalStockEntryAPI(fromDate, toDate, pagination.offset, pagination.limit)
             .then((res) => {
                 if (res) {
-                    if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Nhập Trong Khoảng Thời Gian Này" })
-                    setOrderExport(res.data);
+                    if (res.checkedProducts.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Nhập Trong Khoảng Thời Gian Này" })
+                    setProductStockEntry(res.checkedProducts);
                     setPagination({
                         limit: res.limit,
-                        offset: res.offset,
-                        totalElementOfPage: res.totalElementOfPage,
-                        totalPage: res.totalPage,
+                        offset: res.currentPage,
+                        totalPage: res.totalPages,
+                        totalElementOfPage: 0,
                     });
                 }
             })
@@ -72,6 +77,27 @@ const StaticticalStockEntry = () => {
         }
     }
 
+    const convertDataToExcel = (data: CheckedProduct[]): CheckedProductToDataExcel[] => {
+        return data.map((item) => {
+            return {
+                productCode: item.product.productCode,
+                productName: item.product.name,
+                receiveQuantity: item.receiveQuantity,
+                unit: item.unit ? item.unit.name : "Không có"
+            }
+        })
+    }
+
+    const exportToExcel = () => {
+        const data = convertDataToExcel(productStockEntry);
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
+        XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'data.xlsx');
+    };
+
     return (
         <div>
             <div className={"mb-4"}>
@@ -85,11 +111,6 @@ const StaticticalStockEntry = () => {
                     <span>Đến ngày:</span>
                     <input type="date" value={formatDateForInputNoTime(toDate)} onChange={(e) => setToDate(e.target.value)} className="form-control" style={{ width: "250px" }} />
                     <span>Trạng thái:</span>
-                    <select className="form-select" style={{ width: "250px" }} value={status} onChange={(e) => setStatus(e.target.value as any)}>
-                        <option value="PENDING">Chờ xuất</option>
-                        <option value="EXPORTED">Đã xuất</option>
-                        <option value="CANCEL">Hủy</option>
-                    </select>
                     <button
                         onClick={() => {
                             const currentDate = new Date();
@@ -113,9 +134,21 @@ const StaticticalStockEntry = () => {
                     >
                         Thống kê
                     </button>
-                    <button className="btn btn-danger" onClick={handleExportPDF}>
+                    <button
+                        disabled={productStockEntry.length === 0}
+                        className="btn btn-danger"
+                        onClick={handleExportPDF}
+                    >
                         <FontAwesomeIcon icon={faFilePdf} className="me-1" />
                         Xuất PDF
+                    </button>
+                    <button
+                        disabled={productStockEntry.length === 0}
+                        className="btn btn-success"
+                        onClick={exportToExcel}
+                    >
+                        <FontAwesomeIcon icon={faFileExcel} className="me-1" />
+                        Xuất Excel
                     </button>
                 </div>
                 <div ref={contentRef} className="mt-5">
@@ -123,35 +156,25 @@ const StaticticalStockEntry = () => {
                     <div>
                         <p className="text-center">Từ ngày: {formatDateVietNam(fromDate)} - Đến ngày: {formatDateVietNam(toDate)}</p>
                     </div>
-                    <Table striped bordered hover responsive className="mt-4">
+                    <Table striped bordered responsive className="mt-4">
                         <thead>
                             <tr>
                                 <th>STT</th>
-                                <th>Mã Phiếu Xuất</th>
-                                <th>Ngày xuất</th>
-                                <th>Người xuất</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Số lượng</th>
+                                <th>Mã Sản Phẩm</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Số Lượng Nhập</th>
                                 <th>Đơn vị</th>
-                                <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
-                                orderExport.map((item, index) => (
-                                    <tr key={item.id}>
+                                productStockEntry.map((item, index) => (
+                                    <tr key={index}>
                                         <td>{index + 1}</td>
-                                        <td>{item.exportCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                        <td>{item.exportBy}</td>
-                                        <td>{item.orderExportDetails[0].product.name}</td>
-                                        <td>{item.orderExportDetails[0].quantity}</td>
-                                        <td>{item.orderExportDetails[0].unit.name}</td>
-                                        <td>
-                                            {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
-                                            {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
-                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
-                                        </td>
+                                        <td>{item.product.productCode}</td>
+                                        <td>{item.product.name}</td>
+                                        <td>{item.receiveQuantity}</td>
+                                        <td>{item.unit ? item.unit.name : "Không có"}</td>
                                     </tr>
                                 ))
                             }
@@ -159,7 +182,7 @@ const StaticticalStockEntry = () => {
                     </Table>
                 </div>
                 {
-                    orderExport.length > 0 &&
+                    productStockEntry.length > 0 &&
                     <Pagination
                         currentPage={pagination.offset}
                         totalPages={pagination.totalPage}
@@ -169,7 +192,7 @@ const StaticticalStockEntry = () => {
                     />
                 }
                 {
-                    orderExport.length === 0 &&
+                    productStockEntry.length === 0 &&
                     <NoData />
                 }
                 {
