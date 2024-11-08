@@ -24,7 +24,7 @@ interface FormEditExportProductProps {
     reload: () => void;
 }
 
-interface ProductExport {
+export interface ProductExport {
     productId: string;
     productCode: string;
     productName: string;
@@ -137,11 +137,21 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
             status: productStatus,
             locations: locations
         }
-        setListProductExport([...listProductExport, productExport]);
-    }
-
-    const checkAddedProduct = (product: Product): boolean => {
-        return listProductExport.find((item) => item.productId === product.id) ? true : false;
+        setListProductExport((preVal) => {
+            let check = false;
+            const newValue = preVal.map((item) => {
+                if (item.productId === productExport.productId && item.status === productExport.status) {
+                    check = true;
+                    return productExport;
+                } else {
+                    return item;
+                }
+            })
+            if (!check) {
+                newValue.push(productExport);
+            }
+            return newValue;
+        });
     }
 
     const validateForm = (): boolean => {
@@ -395,7 +405,6 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                                 <td>{product.category.name}</td>
                                                 <td>
                                                     <Button
-                                                        disabled={checkAddedProduct(product)}
                                                         onClick={() => {
                                                             setProductWantToExport(product);
                                                             setQuantity(product.productDetails[0].quantity);
@@ -536,6 +545,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                     quantity={quantity}
                     quantityDamaged={quantityDamged}
                     addProductExport={addProductExport}
+                    listProductExport={listProductExport}
                 />
             }
             {

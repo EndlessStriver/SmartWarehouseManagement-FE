@@ -6,7 +6,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import SuggestExportLocation from "../../../services/StockEntry/SuggestExportLocation";
-import { stat } from "fs";
+import { ProductExport } from "./FormEditExportProduct";
 
 interface ModelAddProductExportProps {
     onClose: () => void;
@@ -14,6 +14,7 @@ interface ModelAddProductExportProps {
     quantity: number;
     quantityDamaged: number;
     addProductExport: (product: Product, unit: Unit, quantity: number, productStatus: string, locations: { locationCode: string, quantity: number }[]) => void;
+    listProductExport: ProductExport[]
 }
 
 const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
@@ -52,15 +53,19 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
             dispatch({ message: "Vui lòng chọn trạng thái sản phẩm", type: ActionTypeEnum.ERROR });
             return false;
         }
-        if (quantity * convertValue > props.product!.productDetails[0].quantity && statusProduct === "NORMAL") {
+        if ((checkProductExport(props.product!.id, unit, statusProduct) ? (quantity + checkProductExport(props.product!.id, unit, statusProduct)!.quantity) : quantity) * convertValue > props.product!.productDetails[0].quantity && statusProduct === "NORMAL") {
             dispatch({ message: "Số lượng xuất lớn hơn số lượng tồn kho đang có", type: ActionTypeEnum.ERROR });
             return false;
         }
-        if (quantity * convertValue > props.product!.productDetails[0].damagedQuantity && statusProduct === "DAMAGED") {
+        if ((checkProductExport(props.product!.id, unit, statusProduct) ? (quantity + checkProductExport(props.product!.id, unit, statusProduct)!.quantity) : quantity) * convertValue > props.product!.productDetails[0].damagedQuantity && statusProduct === "DAMAGED") {
             dispatch({ message: "Số lượng xuất lớn hơn số lượng tồn kho đang có", type: ActionTypeEnum.ERROR });
             return false;
         }
         return true
+    }
+
+    const checkProductExport = (productId: string, unitId: string, productStatus: string) => {
+        return props.listProductExport.find((item) => item.productId === productId && item.unit.id === unitId && item.status === productStatus);
     }
 
     return (
@@ -123,12 +128,12 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                             SuggestExportLocation({
                                 skuId: props.product!.productDetails[0].sku[0].id,
                                 unitId: unit,
-                                quantity: quantity,
+                                quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
                                 typeShelf: statusProduct
                             })
                                 .then((response) => {
                                     if (response) {
-                                        props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, quantity, statusProduct, response.map((item) => {
+                                        props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {
                                             return {
                                                 locationCode: item.locationCode,
                                                 quantity: item.quantityTaken
