@@ -8,7 +8,6 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import { Badge, CloseButton, Form } from "react-bootstrap";
 import Pagination from "../../../compoments/Pagination/Pagination";
 import ListLocation from "./ListLocation";
-import GetShelfByCategoryName from "../../../services/Location/GetShelfsByCategoryName";
 import { NoData } from "../../../compoments/NoData/NoData";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import GetShelfByCategoryNameAndTypeShelf from "../../../services/Location/GetShelfsByCategoryName";

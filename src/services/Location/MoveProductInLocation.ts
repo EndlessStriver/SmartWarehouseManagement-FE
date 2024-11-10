@@ -1,20 +1,15 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { ResponseError } from "../../interface/ResponseError";
 
-export interface Location {
-    locationCode: string;
-    maxQuantityInbound: number;
-    locationId: string;
-}
-
-interface SuggestInboundProps {
-    skuId: string;
-    unitId: string;
-    typeShelf: string
+interface MoveProductInLocationProps {
+    locationCurrentId: string;
+    locationDestinationId: string;
     quantity: number;
+    unitId: string;
 }
 
-const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | undefined> => {
+const MoveProductInLocation = async (data: MoveProductInLocationProps) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -26,13 +21,11 @@ const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | u
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/locations/suggest-inbound?skuId=${data.skuId}&unitId=${data.unitId}&quantity=${data.quantity}&typeShelf=${data.typeShelf}`, {
+            axios.post(`${HOST}/whtransaction/location-mover`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            });
-
-            return response.data.data;
+            })
         }
     } catch (error) {
         console.error(error);
@@ -42,12 +35,12 @@ const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | u
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An error occurred during registration.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
     }
 }
 
-export default SuggestInbound;
+export default MoveProductInLocation;

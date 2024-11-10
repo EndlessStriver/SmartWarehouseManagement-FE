@@ -7,6 +7,10 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ModelLocationDetail from "./ModelLocationDetail";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import SuggestInbound from "../../../services/StockEntry/SuggestInbound";
+import MoveProductInLocation from "../../../services/Location/MoveProductInLocation";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -30,6 +34,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     React.useEffect(() => {
         GetLocationByShelfIdt(props.shelfId)
             .then((response) => {
+                console.log(response)
                 if (response) setLocations(response);
             })
             .catch((error) => {
@@ -87,40 +92,15 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
         scrollContainerRef.current.scrollTop = scrollTop - walkY;
     };
 
-    const renderLocation = locations.map((location, index) => {
+    const renderLocation = locations.map((location) => {
         return (
-            <div
-                key={index}
-                className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"
-            >
-                <div>
-                    <div className="h5 fw-bold">{location.locationCode}</div>
-                    <div className="h6">Còn trống: {(100 - (Number(location.currentCapacity) / Number(location.maxCapacity)) * 100).toFixed(2)}%</div>
-                    {
-                        location.occupied && (
-                            <>
-                                <div className="h6">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
-                                <div className="h6">Số lượng: {location.quantity} {location.skus.productDetails.product.units?.find((unit) => unit.isBaseUnit)?.name || ""}</div>
-                            </>
-                        )
-                    }
-                    <div
-                        onClick={() => {
-                            setLocationCode(location.locationCode)
-                            setShowLocationDetail(true)
-                        }}
-                        className="btn btn-link"
-                    >
-                        Chi Tiết
-                    </div>
-                </div>
-                {
-                    location.occupied ?
-                        <Badge className="position-absolute top-0 end-0" bg="danger">Đang sử dụng</Badge>
-                        :
-                        <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
-                }
-            </div>
+            <MyLocation
+                key={location.locationCode}
+                location={location}
+                setLocationCode={setLocationCode}
+                setShowLocationDetail={setShowLocationDetail}
+                typeShelf={shelf?.typeShelf || ""}
+            />
         );
     });
 
@@ -237,5 +217,226 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
         </OverLay>
     )
 }
-
 export default ShelfDetails;
+
+interface ModelLocationProps {
+    onClose: () => void;
+    typeShelf: string;
+    location: StorageLocation;
+}
+
+const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
+
+    const dispatch = useDispatchMessage();
+    const [quantity, setQuantity] = React.useState(props.location.quantity);
+    const [suggestedLocation, setSuggestedLocation] = React.useState<{ value: string, label: string }[]>();
+    const [unitId, setUnitId] = React.useState<string>('');
+    const [newLocation, setNewLocation] = React.useState<string>("");
+    const [loading, setLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        if (quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf) {
+            SuggestInbound({
+                quantity: quantity,
+                skuId: props.location.skus.id,
+                typeShelf: props.typeShelf,
+                unitId: unitId
+            })
+                .then((res) => {
+                    if (res) {
+                        if (res.length === 0) dispatch({ message: "Không tìm thấy vị trí phù hợp", type: ActionTypeEnum.ERROR })
+                        setSuggestedLocation(res.map((location) => {
+                            return {
+                                value: location.locationId,
+                                label: `${location.locationCode} - (${location.maxQuantityInbound})`
+                            }
+                        }))
+                    }
+                })
+                .catch((err) => {
+                    console.error(err)
+                    dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
+                })
+        }
+    })
+
+    const filterCurrentLocation = suggestedLocation?.filter((location) => location.value !== props.location.id);
+
+    const handleSubmit = () => {
+        if (quantity === 0) {
+            dispatch({ message: "Số lượng sản phẩm cần chuyển phải lớn hơn 0", type: ActionTypeEnum.ERROR })
+            return;
+        }
+        if (unitId === "") {
+            dispatch({ message: "Chưa chọn đơn vị tính", type: ActionTypeEnum.ERROR })
+            return;
+        }
+        if (newLocation === "") {
+            dispatch({ message: "Chưa chọn vị trí mới", type: ActionTypeEnum.ERROR })
+            return;
+        }
+        setLoading(true)
+        MoveProductInLocation({
+            locationCurrentId: props.location.id,
+            locationDestinationId: newLocation,
+            quantity: quantity,
+            unitId: unitId
+        })
+            .then(() => {
+                dispatch({ message: "Chuyển hàng thành công", type: ActionTypeEnum.SUCCESS })
+                props.onClose();
+            })
+            .catch((err) => {
+                console.error(err)
+                dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
+            })
+            .finally(() => setLoading(false))
+    }
+
+    return (
+        <OverLay className="disabled-padding">
+            <div className="p-4 bg-light rounded position-relative" style={{ width: "550px" }}>
+                <CloseButton onClick={() => props.onClose()} className="position-absolute" style={{ top: "15px", right: "15px" }} />
+                <h2 className="text-start">Chuyển Hàng</h2>
+                <div className="mb-3 text-start">
+                    <label>Vị trí hiện tại</label>
+                    <input type="text" value={props.location.locationCode} className="form-control p-3" placeholder="Vị trí cần chuyển..." readOnly />
+                </div>
+                <div className="mb-3 text-start">
+                    <label>Số lượng sản phẩm cần chuyển</label>
+                    <input
+                        type="number"
+                        value={quantity}
+                        min={1}
+                        max={props.location.quantity}
+                        onChange={(e) => setQuantity(Number(e.target.value))}
+                        className="form-control p-3"
+                        placeholder="Vị trí cần chuyển..."
+                    />
+                </div>
+                <div className="mb-3 text-start">
+                    <label>Đơn vị tính</label>
+                    <select
+                        className="form-select p-3"
+                        value={unitId}
+                        onChange={(e) => setUnitId(e.target.value)}
+                    >
+                        <option value="">Chọn đơn vị tính...</option>
+                        {
+                            props.location.skus.productDetails.product.units?.map((unit) => {
+                                return (
+                                    <option key={unit.id} value={unit.id}>{unit.name}</option>
+                                )
+                            })
+                        }
+                    </select>
+                </div>
+                <div className="mb-3 text-start">
+                    <label>Vị trí mới</label>
+                    <div className="d-flex flex-row gap-3">
+                        <select
+                            disabled={(quantity > 0 && unitId !== "" && props.location.skus.id !== "" && props.typeShelf !== "") ? false : true}
+                            onChange={(e) => setNewLocation(e.target.value)}
+                            value={newLocation}
+                            className="form-select p-3"
+                        >
+                            <option value="">Chọn vị trí được đề xuất...</option>
+                            {
+                                filterCurrentLocation?.map((location) => {
+                                    return (
+                                        <option key={location.value} value={location.value}>{location.label}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button
+                            style={{ width: "57px", height: "57px" }}
+                            className="btn btn-primary"
+                        >
+                            <FontAwesomeIcon icon={faLocationDot} />
+                        </button>
+                    </div>
+                </div>
+                <div className="d-flex justify-content-end">
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="btn btn-primary w-100 py-3"
+                    >
+                        {loading ? "Đang chuyển..." : "Chuyển hàng"}
+                    </button>
+                </div>
+            </div>
+        </OverLay>
+    )
+}
+
+interface MyLocationProps {
+    typeShelf: string;
+    location: StorageLocation;
+    setLocationCode: (locationCode: string) => void;
+    setShowLocationDetail: (show: boolean) => void;
+}
+
+const MyLocation: React.FC<MyLocationProps> = (props) => {
+
+    const [showOptions, setShowOptions] = React.useState(false);
+    const [showMoveLocation, setShowMoveLocation] = React.useState(false);
+
+    return (
+        <div
+            onMouseEnter={() => setShowOptions(true)}
+            onMouseLeave={() => setShowOptions(false)}
+            className="btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative"
+        >
+            <div>
+                <div className="h4 fw-bold">{props.location.locationCode}</div>
+                {
+                    props.location.occupied && (
+                        <>
+                            <div className="h6 text-info">{props.location.skus.productDetails.product.name}</div>
+                            <div className="h6">Số lượng: {props.location.quantity} {props.location.skus.productDetails.product.units?.find((unit) => unit.isBaseUnit)?.name || ""}</div>
+                        </>
+                    )
+                }
+            </div>
+            {
+                props.location.occupied ?
+                    <Badge className="position-absolute top-0 end-0" bg="danger">Đang sử dụng</Badge>
+                    :
+                    <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
+            }
+            {
+                showOptions &&
+                <div className="position-absolute w-100 h-100 bg-light d-flex flex-column justify-content-center gap-1 p-2 rounded">
+                    <button
+                        onClick={() => {
+                            props.setLocationCode(props.location.locationCode)
+                            props.setShowLocationDetail(true)
+                        }}
+                        className="btn btn-primary"
+                    >
+                        Chi Tiết
+                    </button>
+                    {
+                        props.location.occupied &&
+                        <button
+                            onClick={() => setShowMoveLocation(true)}
+                            className="btn btn-danger"
+                        >
+                            Chuyển hàng
+                        </button>
+                    }
+                </div>
+            }
+            {
+                showMoveLocation &&
+                <ModelMoveLocation
+                    onClose={() => setShowMoveLocation(false)}
+                    location={props.location}
+                    typeShelf={props.typeShelf}
+                />
+            }
+        </div>
+    )
+}
