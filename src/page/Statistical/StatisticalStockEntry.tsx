@@ -41,7 +41,7 @@ const StaticticalStockEntry = () => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalStockEntryAPI(fromDate, toDate, pagination.offset, pagination.limit)
+        StatisticalStockEntryAPI(fromDate, toDate, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
                     if (res.checkedProducts.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Nhập Trong Khoảng Thời Gian Này" })
