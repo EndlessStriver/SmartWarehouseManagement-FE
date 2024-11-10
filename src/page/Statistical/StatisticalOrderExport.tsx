@@ -9,11 +9,11 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import formatDateVietNam from "../../util/FormartDateVietnam";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import * as XLSX from 'xlsx';
+import ViewPDFOrderExport from "./compoments/ViewPDFOrderExport";
+import StatisticalOrderExportALLAPI from "../../services/Statistical/StatisticalOrderExportAllAPI";
 
 interface ConvertDataToDataExcel {
     orderExportCode: string;
@@ -40,7 +40,8 @@ const StatisticalOrderExport = () => {
     })
     const [loading, setLoading] = React.useState<boolean>(false);
     const [reload, setReload] = React.useState<boolean>(false);
-    const contentRef = React.useRef(null);
+    const [showViewPDFOrderExport, setShowViewPDFOrderExport] = React.useState<boolean>(false);
+    const [loadingExportExcel, setLoadingExportExcel] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         setLoading(true);
@@ -66,22 +67,6 @@ const StatisticalOrderExport = () => {
             })
     }, [reload]);
 
-    const handleExportPDF = () => {
-        const input = contentRef.current;
-        if (input) {
-            html2canvas(input, { scale: 2 })
-                .then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    pdf.addImage(imgData, 'PNG', 0, 5, pdfWidth, pdfHeight);
-                    pdf.save('document.pdf');
-                })
-        }
-    }
-
     const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
         const result: ConvertDataToDataExcel[] = [];
         data.forEach((item) => {
@@ -99,13 +84,27 @@ const StatisticalOrderExport = () => {
     }
 
     const exportToExcel = () => {
-        const data = convertDataToDataExcel(orderExport);
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        const headers = [["Mã Phiếu Xuất", "Ngày Xuất", "Người Xuất", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị", "Trạng Thái"]];
-        XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        XLSX.writeFile(wb, 'data.xlsx');
+        setLoadingExportExcel(true);
+        StatisticalOrderExportALLAPI(fromDate, toDate, status)
+            .then((res) => {
+                if (res) {
+                    if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này" })
+                    const data = convertDataToDataExcel(res.data);
+                    const ws = XLSX.utils.json_to_sheet(data);
+                    const wb = XLSX.utils.book_new();
+                    const headers = [["Mã Phiếu Xuất", "Ngày Xuất", "Người Xuất", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị", "Trạng Thái"]];
+                    XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
+                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+                    XLSX.writeFile(wb, 'data.xlsx');
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
+            })
+            .finally(() => {
+                setLoadingExportExcel(false);
+            })
     };
 
     return (
@@ -153,21 +152,21 @@ const StatisticalOrderExport = () => {
                     <button
                         disabled={orderExport.length === 0}
                         className="btn btn-danger"
-                        onClick={handleExportPDF}
+                        onClick={() => setShowViewPDFOrderExport(true)}
                     >
                         <FontAwesomeIcon icon={faFilePdf} className="me-1" />
                         Xuất PDF
                     </button>
                     <button
-                        disabled={orderExport.length === 0}
+                        disabled={orderExport.length === 0 || loadingExportExcel}
                         className="btn btn-success"
                         onClick={exportToExcel}
                     >
                         <FontAwesomeIcon icon={faFileExcel} className="me-1" />
-                        Xuất Excel
+                        {loadingExportExcel ? "Đang Xuất" : "Xuất Excel"}
                     </button>
                 </div>
-                <div ref={contentRef} className="mt-5">
+                <div className="mt-5">
                     <h3 className="text-center fw-bold">BẢNG THỐNG KÊ HÀNG HÓA XUẤT KHO</h3>
                     <div>
                         <p className="text-center">Từ ngày: {formatDateVietNam(fromDate)} - Đến ngày: {formatDateVietNam(toDate)}</p>
@@ -226,6 +225,15 @@ const StatisticalOrderExport = () => {
                     <SpinnerLoading />
                 }
             </div>
+            {
+                showViewPDFOrderExport &&
+                <ViewPDFOrderExport
+                    onClose={() => setShowViewPDFOrderExport(false)}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    status={status}
+                />
+            }
         </div>
     );
 }
