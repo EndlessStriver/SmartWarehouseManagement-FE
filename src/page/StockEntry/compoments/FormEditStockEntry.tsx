@@ -359,6 +359,12 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
             dispatch({ type: ActionTypeEnum.ERROR, message: "Số lượng sản phẩm phải lớn hơn 0" });
             return;
         }
+
+        if (productItems.some((item) => item.unit === "")) {
+            dispatch({ type: ActionTypeEnum.ERROR, message: `Vui lòng chọn đơn vị tính cho sản phẩm` });
+            return;
+        }
+
         const currentDate = new Date();
         const creationDate = new Date(createDate);
         if (creationDate > currentDate) {
