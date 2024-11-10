@@ -12,11 +12,11 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({ openModelLogout }) =
         <div className='dropdown-menu-user'>
             <Link to="/profile">
                 <FontAwesomeIcon icon={faUserCircle} className="dropdown-icon" />
-                Profile
+                Thông tin cá nhân
             </Link>
             <Link to="/" onClick={openModelLogout}>
                 <FontAwesomeIcon icon={faSignOutAlt} className="dropdown-icon" />
-                Logout
+                Đăng xuất
             </Link>
         </div>
 

@@ -180,7 +180,7 @@ const ProfilePage: React.FC = () => {
                                     onClick={() => setShowEditProfile(true)}
                                     className="btn btn-danger"
                                 >
-                                    <FontAwesomeIcon icon={faEdit} /> Edit
+                                    <FontAwesomeIcon icon={faEdit} /> Chỉnh sửa
                                 </button>
                             ) : (
                                 <div className="d-flex flex-row gap-2">
@@ -189,7 +189,7 @@ const ProfilePage: React.FC = () => {
                                         className="btn btn-primary"
                                         disabled={checkDataChange() === false}
                                     >
-                                        <FontAwesomeIcon icon={faEdit} /> Save
+                                        <FontAwesomeIcon icon={faEdit} /> Lưu
                                     </button>
                                     <button
                                         onClick={() => {
@@ -198,7 +198,7 @@ const ProfilePage: React.FC = () => {
                                         }}
                                         className="btn btn-secondary"
                                     >
-                                        Cancel
+                                        Hủy
                                     </button>
                                 </div>
                             )
@@ -207,19 +207,19 @@ const ProfilePage: React.FC = () => {
                             className="btn btn-link"
                             onClick={() => setShowChangePassword(true)}
                         >
-                            Change Password
+                            Đổi mật khẩu
                         </button>
                     </div>
                 </div>
                 <div className="d-flex flex-column justify-content-center p-3">
                     <FloatingLabel
-                        label="Username"
+                        label="Tên tài khoản"
                         className="mb-3"
                     >
                         <FormControl type="text" value={profile?.username} readOnly />
                     </FloatingLabel>
                     <FloatingLabel
-                        label="FullName"
+                        label="Họ và tên"
                         className="mb-3"
                     >
                         <FormControl
@@ -234,7 +234,7 @@ const ProfilePage: React.FC = () => {
                         <Row>
                             <Col>
                                 <FloatingLabel
-                                    label="Birthday"
+                                    label="Ngày sinh"
                                     className="mb-3"
                                 >
                                     <FormControl
@@ -248,7 +248,7 @@ const ProfilePage: React.FC = () => {
                             </Col>
                             <Col>
                                 <FloatingLabel
-                                    label="Gender"
+                                    label="Giới tính"
                                 >
                                     <FormSelect
                                         value={profile?.gender}
@@ -283,7 +283,7 @@ const ProfilePage: React.FC = () => {
                             </Col>
                             <Col>
                                 <FloatingLabel
-                                    label="PhoneNumber"
+                                    label="Số điện thoại"
                                     className="mb-3"
                                 >
                                     <FormControl
@@ -298,7 +298,7 @@ const ProfilePage: React.FC = () => {
                         </Row>
                     </div>
                     <FloatingLabel
-                        label="Address"
+                        label="Địa chỉ"
                         className="mb-3"
                     >
                         <FormControl
