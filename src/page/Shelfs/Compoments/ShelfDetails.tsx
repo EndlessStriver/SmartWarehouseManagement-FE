@@ -365,6 +365,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                             isDisabled={quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf ? false : true}
                         />
                         <button
+                            disabled={quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf ? false : true}
                             onClick={() => setShowListShelf(true)}
                             style={{ width: "57px", height: "57px" }}
                             className="btn btn-primary"
@@ -395,6 +396,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                     weight={Number(props.location.skus.weight)}
                     setLocation={updateNewLocation}
                     volume={volumnProudct()}
+                    locationMoveId={props.location.id}
                 />
             }
         </OverLay>

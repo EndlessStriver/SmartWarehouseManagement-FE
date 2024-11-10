@@ -15,6 +15,7 @@ import GetShelfByCategoryNameAndTypeShelf from "../../../services/Location/GetSh
 interface ListShelfProps {
     onClose: () => void
     setLocation: (id: string, name: string) => void
+    locationMoveId?: string
     categoryName: string
     volume: number
     quantity: number
@@ -256,6 +257,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                     productId={props.productId}
                     unitId={props.unitId}
                     weight={props.weight}
+                    locationMoveId={props.locationMoveId}
                 />
             }
         </OverLay>

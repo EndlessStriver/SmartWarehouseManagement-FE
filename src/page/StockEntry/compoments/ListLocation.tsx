@@ -11,6 +11,7 @@ import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import { useProductCheck } from "../../../Context/ContextProductCheck";
 
 interface ListLocationProps {
+    locationMoveId?: string;
     shelfId: string;
     volume: number
     quantity: number
@@ -111,6 +112,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     };
 
     const checkLocationIsNotOk = (location: StorageLocation): boolean => {
+        if (props.locationMoveId && props.locationMoveId === location.id) return true;
         if (location.occupied && location.skus.productDetails.product.id !== props.productId) return true;
         if (returnValueCountIsUsed(location) < props.quantity) {
             return true;
