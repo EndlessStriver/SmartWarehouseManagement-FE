@@ -206,7 +206,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
 
     const handleSubmit = () => {
         if (validateForm()) {
-            console.log(productChecks);
             CreateCheckStockEntry({
                 receiveId: props.stockEntryId,
                 receiveDate: createDate,
@@ -225,6 +224,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
             })
                 .then(() => {
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xử lý phiếu nhập kho thành công" });
+                    dispatchProductCheck({ type: "RESSET", data: [] });
                     props.reload();
                     props.onClose();
                 })

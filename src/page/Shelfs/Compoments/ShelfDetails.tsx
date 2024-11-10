@@ -11,6 +11,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import SuggestInbound from "../../../services/StockEntry/SuggestInbound";
 import MoveProductInLocation from "../../../services/Location/MoveProductInLocation";
+import ListShelf from "../../StockEntry/compoments/ListShelf";
+import Select from 'react-select';
+import OptionType from "../../../interface/OptionType";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -100,6 +103,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 setLocationCode={setLocationCode}
                 setShowLocationDetail={setShowLocationDetail}
                 typeShelf={shelf?.typeShelf || ""}
+                categoryName={shelf?.category?.name || ""}
             />
         );
     });
@@ -222,6 +226,7 @@ export default ShelfDetails;
 interface ModelLocationProps {
     onClose: () => void;
     typeShelf: string;
+    categoryName: string;
     location: StorageLocation;
 }
 
@@ -231,8 +236,9 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
     const [quantity, setQuantity] = React.useState(props.location.quantity);
     const [suggestedLocation, setSuggestedLocation] = React.useState<{ value: string, label: string }[]>();
     const [unitId, setUnitId] = React.useState<string>('');
-    const [newLocation, setNewLocation] = React.useState<string>("");
+    const [newLocation, setNewLocation] = React.useState<OptionType | null>(null);
     const [loading, setLoading] = React.useState(false);
+    const [showListShelf, setShowListShelf] = React.useState(false);
 
     React.useEffect(() => {
         if (quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf) {
@@ -262,6 +268,11 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
 
     const filterCurrentLocation = suggestedLocation?.filter((location) => location.value !== props.location.id);
 
+    const volumnProudct = () => {
+        const dimension = props.location.skus.dimension.split("x");
+        return Number(dimension[0]) * Number(dimension[1]) * Number(dimension[2]);
+    }
+
     const handleSubmit = () => {
         if (quantity === 0) {
             dispatch({ message: "Số lượng sản phẩm cần chuyển phải lớn hơn 0", type: ActionTypeEnum.ERROR })
@@ -271,14 +282,14 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
             dispatch({ message: "Chưa chọn đơn vị tính", type: ActionTypeEnum.ERROR })
             return;
         }
-        if (newLocation === "") {
+        if (newLocation === undefined || newLocation?.value === "") {
             dispatch({ message: "Chưa chọn vị trí mới", type: ActionTypeEnum.ERROR })
             return;
         }
         setLoading(true)
         MoveProductInLocation({
             locationCurrentId: props.location.id,
-            locationDestinationId: newLocation,
+            locationDestinationId: newLocation?.value || "",
             quantity: quantity,
             unitId: unitId
         })
@@ -291,6 +302,10 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                 dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
             })
             .finally(() => setLoading(false))
+    }
+
+    const updateNewLocation = (id: string, value: string) => {
+        setNewLocation({ value: id, label: value })
     }
 
     return (
@@ -334,22 +349,23 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                 <div className="mb-3 text-start">
                     <label>Vị trí mới</label>
                     <div className="d-flex flex-row gap-3">
-                        <select
-                            disabled={(quantity > 0 && unitId !== "" && props.location.skus.id !== "" && props.typeShelf !== "") ? false : true}
-                            onChange={(e) => setNewLocation(e.target.value)}
+                        <Select
+                            placeholder="Chọn vị trí được đề xuất..."
+                            isClearable
+                            styles={{
+                                control: (provided) => ({
+                                    ...provided,
+                                    padding: "0.5rem 0px",
+                                    width: "430px",
+                                }),
+                            }}
                             value={newLocation}
-                            className="form-select p-3"
-                        >
-                            <option value="">Chọn vị trí được đề xuất...</option>
-                            {
-                                filterCurrentLocation?.map((location) => {
-                                    return (
-                                        <option key={location.value} value={location.value}>{location.label}</option>
-                                    )
-                                })
-                            }
-                        </select>
+                            onChange={(e) => setNewLocation(e)}
+                            options={filterCurrentLocation}
+                            isDisabled={quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf ? false : true}
+                        />
                         <button
+                            onClick={() => setShowListShelf(true)}
                             style={{ width: "57px", height: "57px" }}
                             className="btn btn-primary"
                         >
@@ -367,12 +383,27 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                     </button>
                 </div>
             </div>
+            {
+                showListShelf &&
+                <ListShelf
+                    onClose={() => setShowListShelf(false)}
+                    unitId={unitId}
+                    quantity={quantity}
+                    categoryName={props.categoryName}
+                    productId={props.location.skus.productDetails.product.id}
+                    status={props.typeShelf}
+                    weight={Number(props.location.skus.weight)}
+                    setLocation={updateNewLocation}
+                    volume={volumnProudct()}
+                />
+            }
         </OverLay>
     )
 }
 
 interface MyLocationProps {
     typeShelf: string;
+    categoryName: string;
     location: StorageLocation;
     setLocationCode: (locationCode: string) => void;
     setShowLocationDetail: (show: boolean) => void;
@@ -435,6 +466,8 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     onClose={() => setShowMoveLocation(false)}
                     location={props.location}
                     typeShelf={props.typeShelf}
+                    categoryName={props.categoryName}
+
                 />
             }
         </div>

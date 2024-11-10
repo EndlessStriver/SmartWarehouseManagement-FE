@@ -223,7 +223,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
 
     return (
         <OverLay className="disabled-padding bg-light">
-            <div className="mt-3 w-100 px-4 py-2 shadow">
+            <div className="mt-3 w-100 px-4 py-2 shadow text-start">
                 <div className="d-flex gap-2 align-items-center">
                     <h1 className="fw-bold">
                         THÔNG TIN KỆ HÀNG: {shelf?.name}

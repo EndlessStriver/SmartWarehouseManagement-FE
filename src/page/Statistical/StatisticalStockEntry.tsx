@@ -119,10 +119,10 @@ const StaticticalStockEntry = () => {
                                 dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày bắt đầu không được lớn hơn ngày hiện tại" })
                                 return;
                             }
-                            if (toDateConvert > currentDate) {
-                                dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày kết thúc không được lớn hơn ngày hiện tại" })
-                                return;
-                            }
+                            // if (toDateConvert > currentDate) {
+                            //     dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày kết thúc không được lớn hơn ngày hiện tại" })
+                            //     return;
+                            // }
                             if (fromDateConvert > toDateConvert) {
                                 dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày bắt đầu không được lớn hơn ngày kết thúc" })
                                 return;
