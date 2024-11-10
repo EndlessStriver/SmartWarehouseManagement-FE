@@ -9,11 +9,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../Context/ContextMessage";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import PaginationType from "../../interface/Pagination";
 import StatisticalStockEntryAPI, { CheckedProduct } from "../../services/Statistical/StatisticalStockEntryAPI";
 import * as XLSX from 'xlsx';
+import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
+import StatisticalStockEntryAllAPI from "../../services/Statistical/StatisticalStockEntryAllAPI";
 
 interface CheckedProductToDataExcel {
     productCode: string;
@@ -36,6 +36,8 @@ const StaticticalStockEntry = () => {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [reload, setReload] = React.useState<boolean>(false);
     const contentRef = React.useRef(null);
+    const [ShowViewPDFStockEntry, setShowViewPDFStockEntry] = React.useState<boolean>(false);
+    const [loadingExportExcel, setLoadingExportExcel] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         setLoading(true);
@@ -61,22 +63,6 @@ const StaticticalStockEntry = () => {
             })
     }, [reload]);
 
-    const handleExportPDF = () => {
-        const input = contentRef.current;
-        if (input) {
-            html2canvas(input, { scale: 2 })
-                .then((canvas) => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    const imgProps = pdf.getImageProperties(imgData);
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    pdf.addImage(imgData, 'PNG', 0, 5, pdfWidth, pdfHeight);
-                    pdf.save('document.pdf');
-                })
-        }
-    }
-
     const convertDataToExcel = (data: CheckedProduct[]): CheckedProductToDataExcel[] => {
         return data.map((item) => {
             return {
@@ -89,13 +75,26 @@ const StaticticalStockEntry = () => {
     }
 
     const exportToExcel = () => {
-        const data = convertDataToExcel(productStockEntry);
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
-        XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        XLSX.writeFile(wb, 'data.xlsx');
+        setLoadingExportExcel(true);
+        StatisticalStockEntryAllAPI(fromDate, toDate)
+            .then((res) => {
+                if (res) {
+                    const data = convertDataToExcel(res.checkedProducts);
+                    const ws = XLSX.utils.json_to_sheet(data);
+                    const wb = XLSX.utils.book_new();
+                    const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
+                    XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
+                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+                    XLSX.writeFile(wb, 'data.xlsx');
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
+            })
+            .finally(() => {
+                setLoadingExportExcel(false);
+            })
     };
 
     return (
@@ -137,18 +136,18 @@ const StaticticalStockEntry = () => {
                     <button
                         disabled={productStockEntry.length === 0}
                         className="btn btn-danger"
-                        onClick={handleExportPDF}
+                        onClick={() => setShowViewPDFStockEntry(true)}
                     >
                         <FontAwesomeIcon icon={faFilePdf} className="me-1" />
                         Xuất PDF
                     </button>
                     <button
-                        disabled={productStockEntry.length === 0}
+                        disabled={productStockEntry.length === 0 || loadingExportExcel}
                         className="btn btn-success"
                         onClick={exportToExcel}
                     >
                         <FontAwesomeIcon icon={faFileExcel} className="me-1" />
-                        Xuất Excel
+                        {loadingExportExcel ? "Đang xuất..." : "Xuất Excel"}
                     </button>
                 </div>
                 <div ref={contentRef} className="mt-5">
@@ -200,6 +199,14 @@ const StaticticalStockEntry = () => {
                     <SpinnerLoading />
                 }
             </div>
+            {
+                ShowViewPDFStockEntry &&
+                <ViewPDFStockEntry
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    onClose={() => setShowViewPDFStockEntry(false)}
+                />
+            }
         </div>
     );
 }

@@ -28,7 +28,7 @@ export interface CheckedProduct {
     unit: Unit | null;
 }
 
-interface ProductCheckResponse {
+export interface ProductCheckResponse {
     startDate: string;
     endDate: string;
     checkedProducts: CheckedProduct[];
@@ -36,8 +36,6 @@ interface ProductCheckResponse {
     totalExpectQuantity: number;
     totalReceiveQuantity: number;
 }
-
-
 
 const StatisticalStockEntryAllAPI = async (from: string, to: string): Promise<ProductCheckResponse | undefined> => {
     try {
