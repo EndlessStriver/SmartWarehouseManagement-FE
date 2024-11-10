@@ -193,7 +193,9 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                         <h5><span className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (shelf?.currentColumnsUsed || 0)} Vị trí</h5>
                     </Col>
                     <Col>
-                        <h5><span className="fw-bold">Vị trí đang sử dụng: </span>{shelf?.currentColumnsUsed || 0} Vị trí</h5>
+                        <h5><span className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
+                            return location.occupied ? currentVal + 1 : currentVal
+                        }, 0) || 0} Vị trí</h5>
                     </Col>
                 </Row>
             </div>
