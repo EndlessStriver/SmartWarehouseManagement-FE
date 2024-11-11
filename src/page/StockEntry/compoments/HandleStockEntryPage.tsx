@@ -209,7 +209,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
             CreateCheckStockEntry({
                 receiveId: props.stockEntryId,
                 receiveDate: createDate,
-                receiveBy: profile!.id,
+                receiveBy: profile?.fullName || "",
                 supplierId: stockEntry!.supplier.id,
                 receiveItems: productChecks.flatMap((productCheck) => {
                     return productCheck.listAddLocation.map((location) => {
@@ -340,7 +340,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
-                                    <th>#</th>
                                     <th>Tên sản phẩm</th>
                                     <th>Số lượng Kiểm Tra</th>
                                     <th>Đơn vị</th>
@@ -358,7 +357,6 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                         return productCheck.listAddLocation.map((location, index) => {
                                             return (
                                                 <tr key={index}>
-                                                    <td>{index + 1}</td>
                                                     <td>{productCheck.productName}</td>
                                                     <td>{location.quantity}</td>
                                                     <td>{productCheck.unit.name}</td>
