@@ -7,6 +7,8 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import SuggestExportLocation from "../../../services/StockEntry/SuggestExportLocation";
 import { ProductExport } from "./FormEditExportProduct";
+import SuggestExportLocationFIFO from "../../../services/StockEntry/SuggestExportLocationFIFO";
+import SuggestExportLocationLIFO from "../../../services/StockEntry/SuggestExportLocationLIFO";
 
 interface ModelAddProductExportProps {
     onClose: () => void;
@@ -24,6 +26,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
     const [quantity, setQuantity] = React.useState<number>(0);
     const [convertValue, setConvertValue] = React.useState<number>(0);
     const [statusProduct, setStatusProduct] = React.useState<string>("");
+    const [typeExport, setTypeExport] = React.useState<string>("");
 
     React.useEffect(() => {
         if (unit !== "" && quantity > 0) {
@@ -51,6 +54,10 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
         }
         if (statusProduct === "") {
             dispatch({ message: "Vui lòng chọn trạng thái sản phẩm", type: ActionTypeEnum.ERROR });
+            return false;
+        }
+        if (typeExport === "") {
+            dispatch({ message: "Vui lòng chọn kiểu xuất kho", type: ActionTypeEnum.ERROR });
             return false;
         }
         if ((checkProductExport(props.product!.id, unit, statusProduct) ? (quantity + checkProductExport(props.product!.id, unit, statusProduct)!.quantity) : quantity) * convertValue > props.product!.productDetails[0].quantity && statusProduct === "NORMAL") {
@@ -111,6 +118,18 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                     </select>
                 </FormGroup>
                 <FormGroup className="mb-3">
+                    <label>Kiểu Xuất Kho</label>
+                    <select
+                        value={typeExport}
+                        onChange={(e) => setTypeExport(e.target.value)}
+                        className="form-select p-3"
+                    >
+                        <option value="">Chọn kiểu xuất kho...</option>
+                        <option value="FIFO">Vào Trước - Ra Trước</option>
+                        <option value="LIFO">Vào Sau - Ra Trước</option>
+                    </select>
+                </FormGroup>
+                <FormGroup className="mb-3">
                     <label>Số Lượng</label>
                     <input
                         type="number"
@@ -125,27 +144,52 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                 <button
                     onClick={() => {
                         if (validateForm()) {
-                            SuggestExportLocation({
-                                skuId: props.product!.productDetails[0].sku[0].id,
-                                unitId: unit,
-                                quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
-                                typeShelf: statusProduct
-                            })
-                                .then((response) => {
-                                    if (response) {
-                                        props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {
-                                            return {
-                                                locationCode: item.locationCode,
-                                                quantity: item.quantityTaken
-                                            }
-                                        }));
-                                        props.onClose();
-                                    }
+                            if (typeExport === "FIFO") {
+                                SuggestExportLocationFIFO({
+                                    skuId: props.product!.productDetails[0].sku[0].id,
+                                    unitId: unit,
+                                    quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
+                                    typeShelf: statusProduct
                                 })
-                                .catch((error) => {
-                                    console.error(error);
-                                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                                    .then((response) => {
+                                        if (response) {
+                                            props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {
+                                                return {
+                                                    locationCode: item.locationCode,
+                                                    quantity: item.quantityTaken
+                                                }
+                                            }));
+                                            props.onClose();
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                                    })
+                            }
+                            if (typeExport === "LIFO") {
+                                SuggestExportLocationLIFO({
+                                    skuId: props.product!.productDetails[0].sku[0].id,
+                                    unitId: unit,
+                                    quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
+                                    typeShelf: statusProduct
                                 })
+                                    .then((response) => {
+                                        if (response) {
+                                            props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {
+                                                return {
+                                                    locationCode: item.locationCode,
+                                                    quantity: item.quantityTaken
+                                                }
+                                            }));
+                                            props.onClose();
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        console.error(error);
+                                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                                    })
+                            }
                         }
                     }}
                     className="btn btn-primary w-100 p-2"
