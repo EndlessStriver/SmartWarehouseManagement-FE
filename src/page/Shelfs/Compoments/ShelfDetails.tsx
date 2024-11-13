@@ -36,15 +36,17 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     const [resset, setResset] = React.useState(false);
 
     React.useEffect(() => {
-        GetLocationByShelfIdt(props.shelfId)
-            .then((response) => {
-                console.log(response)
-                if (response) setLocations(response);
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-            });
+        const id = setTimeout(() => {
+            GetLocationByShelfIdt(props.shelfId)
+                .then((response) => {
+                    if (response) setLocations(response);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                });
+        }, 1000);
+        return () => clearTimeout(id);
     }, [dispatch, props.shelfId, resset]);
 
     React.useEffect(() => {
