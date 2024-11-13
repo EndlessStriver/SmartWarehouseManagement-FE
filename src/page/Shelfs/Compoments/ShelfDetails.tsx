@@ -14,6 +14,7 @@ import MoveProductInLocation from "../../../services/Location/MoveProductInLocat
 import ListShelf from "../../StockEntry/compoments/ListShelf";
 import Select from 'react-select';
 import OptionType from "../../../interface/OptionType";
+import ModelLocationHistory from "./ModelLocationHistory";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -422,6 +423,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
 
     const [showOptions, setShowOptions] = React.useState(false);
     const [showMoveLocation, setShowMoveLocation] = React.useState(false);
+    const [showLocationHistory, setShowLocationHistory] = React.useState(false);
 
     return (
         <div
@@ -470,7 +472,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                         </button>
                     }
                     <button
-                        onClick={() => setShowMoveLocation(true)}
+                        onClick={() => setShowLocationHistory(true)}
                         className="btn btn-secondary"
                     >
                         Lịch sử hoạt động
@@ -485,6 +487,13 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     typeShelf={props.typeShelf}
                     categoryName={props.categoryName}
                     ressetShelf={props.ressetShelf}
+                />
+            }
+            {
+                showLocationHistory &&
+                <ModelLocationHistory
+                    onClose={() => setShowLocationHistory(false)}
+                    locationId={props.location.id}
                 />
             }
         </div>
