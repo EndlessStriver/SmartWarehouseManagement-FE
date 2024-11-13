@@ -33,6 +33,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
     const [startY, setStartY] = React.useState(0);
     const [scrollLeft, setScrollLeft] = React.useState(0);
     const [scrollTop, setScrollTop] = React.useState(0);
+    const [resset, setResset] = React.useState(false);
 
     React.useEffect(() => {
         GetLocationByShelfIdt(props.shelfId)
@@ -44,7 +45,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 console.error(error);
                 dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             });
-    }, [dispatch, props.shelfId]);
+    }, [dispatch, props.shelfId, resset]);
 
     React.useEffect(() => {
         if (props.shelfId) {
@@ -104,6 +105,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 setShowLocationDetail={setShowLocationDetail}
                 typeShelf={shelf?.typeShelf || ""}
                 categoryName={shelf?.category?.name || ""}
+                ressetShelf={() => setResset(!resset)}
             />
         );
     });
@@ -228,6 +230,7 @@ interface ModelLocationProps {
     typeShelf: string;
     categoryName: string;
     location: StorageLocation;
+    ressetShelf: () => void;
 }
 
 const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
@@ -295,6 +298,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
         })
             .then(() => {
                 dispatch({ message: "Chuyển hàng thành công", type: ActionTypeEnum.SUCCESS })
+                props.ressetShelf();
                 props.onClose();
             })
             .catch((err) => {
@@ -409,6 +413,7 @@ interface MyLocationProps {
     location: StorageLocation;
     setLocationCode: (locationCode: string) => void;
     setShowLocationDetail: (show: boolean) => void;
+    ressetShelf: () => void;
 }
 
 const MyLocation: React.FC<MyLocationProps> = (props) => {
@@ -454,12 +459,20 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     {
                         props.location.occupied &&
                         <button
-                            onClick={() => setShowMoveLocation(true)}
+                            onClick={() => {
+                                setShowMoveLocation(true)
+                            }}
                             className="btn btn-danger"
                         >
                             Chuyển hàng
                         </button>
                     }
+                    <button
+                        onClick={() => setShowMoveLocation(true)}
+                        className="btn btn-secondary"
+                    >
+                        Lịch sử hoạt động
+                    </button>
                 </div>
             }
             {
@@ -469,7 +482,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     location={props.location}
                     typeShelf={props.typeShelf}
                     categoryName={props.categoryName}
-
+                    ressetShelf={props.ressetShelf}
                 />
             }
         </div>
