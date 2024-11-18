@@ -48,7 +48,6 @@ const StatisticalOrderExport = () => {
         StatisticalOrderExportAPI(fromDate, toDate, status, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
-                    if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này" })
                     setOrderExport(res.data);
                     setPagination({
                         limit: res.limit,

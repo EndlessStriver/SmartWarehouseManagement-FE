@@ -44,7 +44,6 @@ const StaticticalStockEntry = () => {
         StatisticalStockEntryAPI(fromDate, toDate, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
-                    if (res.checkedProducts.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Nhập Trong Khoảng Thời Gian Này" })
                     setProductStockEntry(res.checkedProducts);
                     setPagination({
                         limit: res.limit,
