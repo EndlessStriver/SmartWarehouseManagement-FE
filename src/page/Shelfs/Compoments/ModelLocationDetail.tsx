@@ -87,7 +87,7 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                 <h5 className="fw-bold">Thông Tin Sản Phẩm:</h5>
                 <div className="d-flex flex-row gap-3 justify-content-between align-items-center">
                     <div className="my-2 d-flex justify-content-center" style={{ flex: 1 }}>
-                        <Image src={locationDetail?.skus?.productDetails?.product?.img || "/images/default-product-img.png"} thumbnail style={{
+                        <Image src={(locationDetail?.skus?.productDetails?.product?.img && locationDetail.occupied) ? locationDetail?.skus?.productDetails?.product?.img : "/images/default-product-img.png"} thumbnail style={{
                             width: "150px",
                             height: "auto",
                             objectFit: "cover"
@@ -97,29 +97,29 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                         <Col>
                             <div>
                                 <span className="fw-semibold">Mã SKU: </span>
-                                {locationDetail?.skus?.skuCode || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.skuCode && locationDetail.occupied) || "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">Tên sản phẩm: </span>
-                                {locationDetail?.skus?.productDetails?.product?.name || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.productDetails?.product?.name && locationDetail.occupied) || "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">Trọng lượng: </span>
-                                {(locationDetail?.skus?.weight || "Chưa có thông tin!") + " (kg)"}
+                                {((locationDetail?.skus?.weight && locationDetail?.occupied) || "Chưa có thông tin!") + " (kg)"}
                             </div>
                         </Col>
                         <Col>
                             <div>
                                 <span className="fw-semibold">Số lượng: </span>
-                                {(locationDetail?.quantity + " " + locationDetail?.skus?.productDetails?.product?.units.find((unit) => unit.isBaseUnit)?.name || "Chưa có thông tin!")}
+                                {((locationDetail?.quantity + " " + locationDetail?.skus?.productDetails?.product?.units.find((unit) => unit.isBaseUnit)?.name && locationDetail?.occupied) || "Chưa có thông tin!")}
                             </div>
                             <div>
                                 <span className="fw-semibold">Mã sản phẩm: </span>
-                                {locationDetail?.skus?.productDetails?.product?.productCode || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.productDetails?.product?.productCode && locationDetail.occupied) || "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">kích thước: </span>
-                                {(locationDetail?.skus?.dimension || "Chưa có thông tin!") + " (cm)"}
+                                {((locationDetail?.skus?.dimension && locationDetail.occupied) || "Chưa có thông tin!") + " (cm)"}
                             </div>
                         </Col>
                     </Row>
