@@ -16,6 +16,7 @@ import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
 import formatDateVietNam from "../../util/FormartDateVietnam";
+import { off } from "process";
 
 
 const StockEntry: React.FC = () => {
@@ -27,32 +28,34 @@ const StockEntry: React.FC = () => {
     const [showModelConfirmDelete, setShowModelConfirmDelete] = React.useState<boolean>(false);
     const [pagination, setPagination] = React.useState<PaginationType>({
         totalPage: 0,
-        limit: 0,
-        offset: 0,
+        limit: 10,
+        offset: 1,
         totalElementOfPage: 0
     });
     const [showFormEdit, setShowFormEdit] = React.useState<boolean>(false);
     const [ShowHandleStockEntry, setShowHandleStockEntry] = React.useState<boolean>(false);
     const [loadingDelete, setLoadingDelete] = React.useState<boolean>(false);
     React.useEffect(() => {
-        setIsLoading(true);
-        GetStockEntries()
-            .then((res) => {
-                if (res) {
-                    setStockEntry(res.data);
-                    setPagination({
-                        totalPage: res.totalPage,
-                        limit: res.limit,
-                        offset: res.offset,
-                        totalElementOfPage: res.totalElementOfPage
-                    });
-                }
-            }).catch((err) => {
-                dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
-            }).finally(() => {
-                setIsLoading(false);
-            })
-    }, [dispatch, reload]);
+        const id = setTimeout(() => {
+            setIsLoading(true);
+            GetStockEntries(pagination.limit, pagination.offset)
+                .then((res) => {
+                    if (res) {
+                        setStockEntry(res.data);
+                        setPagination({
+                            totalPage: res.totalPage,
+                            limit: res.limit,
+                            offset: res.offset,
+                            totalElementOfPage: res.totalElementOfPage
+                        });
+                    }
+                }).catch((err) => {
+                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                }).finally(() => {
+                    setIsLoading(false);
+                })
+        }, 500);
+    }, [dispatch, reload, pagination.limit, pagination.offset]);
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page });
     }
