@@ -19,6 +19,7 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
     React.useEffect(() => {
         GetLocationDetailsByCode(props.locationCode)
             .then((response) => {
+                console.log(response)
                 setLocationDetail(response)
             }).catch((error) => {
                 console.error(error)
@@ -97,29 +98,30 @@ const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
                         <Col>
                             <div>
                                 <span className="fw-semibold">Mã SKU: </span>
-                                {(locationDetail?.skus?.skuCode && locationDetail.occupied) || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.skuCode && locationDetail.occupied) ? locationDetail?.skus?.skuCode : "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">Tên sản phẩm: </span>
-                                {(locationDetail?.skus?.productDetails?.product?.name && locationDetail.occupied) || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.productDetails?.product?.name && locationDetail.occupied) ? locationDetail?.skus?.productDetails?.product?.name : "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">Trọng lượng: </span>
-                                {((locationDetail?.skus?.weight && locationDetail?.occupied) || "Chưa có thông tin!") + " (kg)"}
+                                {((locationDetail?.skus?.weight && locationDetail?.occupied) ? locationDetail?.skus?.weight : "Chưa có thông tin!") + " (kg)"}
                             </div>
                         </Col>
                         <Col>
                             <div>
                                 <span className="fw-semibold">Số lượng: </span>
-                                {((locationDetail?.quantity + " " + locationDetail?.skus?.productDetails?.product?.units.find((unit) => unit.isBaseUnit)?.name && locationDetail?.occupied) || "Chưa có thông tin!")}
+                                {((locationDetail?.quantity + " " + locationDetail?.skus?.productDetails?.product?.units.find((unit) => unit.isBaseUnit)?.name && locationDetail?.occupied) ?
+                                    locationDetail?.quantity + " " + locationDetail?.skus?.productDetails?.product?.units.find((unit) => unit.isBaseUnit)?.name : "Chưa có thông tin!")}
                             </div>
                             <div>
                                 <span className="fw-semibold">Mã sản phẩm: </span>
-                                {(locationDetail?.skus?.productDetails?.product?.productCode && locationDetail.occupied) || "Chưa có thông tin!"}
+                                {(locationDetail?.skus?.productDetails?.product?.productCode && locationDetail.occupied) ? locationDetail?.skus?.productDetails?.product?.productCode : "Chưa có thông tin!"}
                             </div>
                             <div>
                                 <span className="fw-semibold">kích thước: </span>
-                                {((locationDetail?.skus?.dimension && locationDetail.occupied) || "Chưa có thông tin!") + " (cm)"}
+                                {((locationDetail?.skus?.dimension && locationDetail.occupied) ? locationDetail?.skus?.dimension : "Chưa có thông tin!") + " (cm)"}
                             </div>
                         </Col>
                     </Row>

@@ -61,7 +61,7 @@ const ModelLocationHistory: React.FC<ModelLocationHistoryProps> = (props) => {
                             <th>Ngày tạo</th>
                             <th>Loại</th>
                             <th>Số lượng</th>
-                            <th>Điểm đến</th>
+                            <th>Vị trí mới</th>
                         </tr>
                     </thead>
                     <tbody>
