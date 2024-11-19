@@ -12,4 +12,5 @@ export default interface DataTypeCreateProductAdmin {
     dimension: string,
     weight: number,
     unitName: string,
+    exportCriteria: string
 }

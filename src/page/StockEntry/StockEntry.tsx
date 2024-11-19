@@ -16,8 +16,6 @@ import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
 import formatDateVietNam from "../../util/FormartDateVietnam";
-import { off } from "process";
-
 
 const StockEntry: React.FC = () => {
     const dispatch = useDispatchMessage();
@@ -55,6 +53,8 @@ const StockEntry: React.FC = () => {
                     setIsLoading(false);
                 })
         }, 500);
+
+        return () => clearTimeout(id);
     }, [dispatch, reload, pagination.limit, pagination.offset]);
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page });

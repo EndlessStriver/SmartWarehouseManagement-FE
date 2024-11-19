@@ -31,6 +31,7 @@ const CreateProduct = async (product: DataTypeCreateProductAdmin): Promise<void>
             formData.append("dimension", product.dimension);
             formData.append("weight", product.weight.toString());
             formData.append("unitName", product.unitName);
+            formData.append("exportCriteria", product.exportCriteria);
             const response = await axios.post(`${HOST}/products`, formData, {
                 headers: {
                     "content-type": "multipart/form-data",

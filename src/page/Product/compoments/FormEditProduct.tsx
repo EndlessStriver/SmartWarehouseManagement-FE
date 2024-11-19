@@ -48,6 +48,7 @@ interface FormDataType {
     size: OptionType | null;
     category: OptionType | null;
     supplier: OptionType | null;
+    exportCriteria: string;
 }
 
 interface TypeImagePreview {
@@ -104,6 +105,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         size: null,
         category: null,
         supplier: null,
+        exportCriteria: ""
     });
     const [formData, setFormData] = React.useState<FormDataType>({
         detailId: "",
@@ -121,6 +123,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         size: null,
         category: null,
         supplier: null,
+        exportCriteria: ""
     })
 
     const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -156,6 +159,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             size: { value: data.productDetails[0].sku[0].size.id, label: data.productDetails[0].sku[0].size.name },
             category: { value: data.category!.id, label: data.category!.name },
             supplier: { value: data.productDetails[0].sku[0].supplier.id, label: data.productDetails[0].sku[0].supplier.name },
+            exportCriteria: data.export_criteria
         }
     }
 
@@ -216,6 +220,10 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn nhà cung cấp" });
             return true;
         }
+        if (formData.exportCriteria === "") {
+            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn tiêu chí xuất kho" });
+            return true;
+        }
         return false;
     }
 
@@ -233,6 +241,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         if (props.productId) {
+            console.log(props.productId)
             GetProductById(props.productId)
                 .then((data) => {
                     if (data) {
@@ -357,6 +366,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             dimension: `${formData.length}x${formData.width}x${formData.height}`,
             weight: Number(formData.weight),
             image: getListImage(),
+            exportCriteria: formData.exportCriteria
         }
     }
 
@@ -376,20 +386,8 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             unitName: formData.unitName,
             sizeId: formData.size!.value,
             materialId: formData.model!.value,
+            exportCriteria: formData.exportCriteria
         }
-        // ở đây có lỗi chưa sửa
-        // if(formData.detailId === dataDefault.detailId) delete dataUpdate.detailId;
-        // if (formData.name === dataDefault.name) delete dataUpdate.name;
-        // if (DeepEqual(formData.category, dataDefault.category)) delete dataUpdate.categoryId;
-        // if (formData.description === dataDefault.description) delete dataUpdate.description;
-        // if (formData.productCode === dataDefault.productCode) delete dataUpdate.productCode;
-        // if (DeepEqual(formData.supplier, dataDefault.supplier)) delete dataUpdate.supplierId;
-        // if (DeepEqual(formData.color, dataDefault.color)) delete dataUpdate.colorId;
-        // if (DeepEqual(formData.size, dataDefault.size)) delete dataUpdate.sizeId;
-        // if (DeepEqual(formData.model, dataDefault.model)) delete dataUpdate.materialId;
-        // if (formData.length === dataDefault.length && formData.width === dataDefault.width && formData.height === dataDefault.height) delete dataUpdate.dimension;
-        // if (formData.weight === dataDefault.weight) delete dataUpdate.weight;
-        // if (formData.unitName === dataDefault.unitName) delete dataUpdate.unitName;
         return dataUpdate;
     }
 
@@ -406,6 +404,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     }, 1000);
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 })
                 .finally(() => {
@@ -826,6 +825,26 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
                                     />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <Row className="p-3">
+                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Xuất Kho</h5>
+                            <Col md={12}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Tiêu Chí Xuất Kho</Form.Label>
+                                    <br />
+                                    <select
+                                        disabled={props.productId !== "" && !isEdit}
+                                        className="form-select py-3"
+                                        name="exportCriteria"
+                                        onChange={handleChangeInput}
+                                        value={formData.exportCriteria}
+                                    >
+                                        <option value="">Chọn tiêu chí xuất kho...</option>
+                                        <option value="FIFO">Vào Trước - Ra Trước</option>
+                                        <option value="LIFO">Vào Sau - Ra Trước</option>
+                                    </select>
                                 </Form.Group>
                             </Col>
                         </Row>

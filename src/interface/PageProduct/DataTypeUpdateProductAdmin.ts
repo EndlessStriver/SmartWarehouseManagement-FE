@@ -12,4 +12,5 @@ export default interface DataTypeUpdateProductAdmin {
     brandId?: string,
     dimension?: string,
     weight?: number,
+    exportCriteria?: string
 }
