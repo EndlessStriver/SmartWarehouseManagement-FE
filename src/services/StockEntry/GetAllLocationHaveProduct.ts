@@ -21,6 +21,7 @@ interface ProductDetail {
     update_at: string;
     isDeleted: boolean;
     quantity: number;
+    damagedQuantity: number;
     images: Image[];
     sku: SKU[];
 }
@@ -44,6 +45,24 @@ interface SKU {
     locations: Location[];
 }
 
+interface Shelf {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    name: string;
+    maxColumns: number;
+    maxLevels: number;
+    currentCapacity: string;
+    maxCapacity: string;
+    maxWeight: string;
+    currentColumnsUsed: number;
+    totalColumns: number;
+    currentWeight: string;
+    typeShelf: string;
+}
+
+
 interface Location {
     id: string;
     create_at: string;
@@ -56,6 +75,7 @@ interface Location {
     currentWeight: string;
     quantity: number;
     occupied: boolean;
+    shelf: Shelf;
 }
 
 interface Unit {

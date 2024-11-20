@@ -45,7 +45,7 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
                         <h6>Kích thước: {product?.productDetails[0].sku[0].dimension} cm</h6>
                         <h6>Mô tả: {product?.description}</h6>
                         <h6>Số lượng tồn kho: {product?.productDetails[0].quantity} {product?.units.find((unit) => unit.isBaseUnit)?.name}</h6>
-                        <h6>Số lỗi tồn kho: {"(chưa có trong json)"} {product?.units.find((unit) => unit.isBaseUnit)?.name}</h6>
+                        <h6>Số lỗi tồn kho: {product?.productDetails[0].damagedQuantity} {product?.units.find((unit) => unit.isBaseUnit)?.name}</h6>
                     </Col>
                 </Row>
                 <div className="mt-3">
@@ -57,15 +57,19 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
                                 <th>Mã vị trí</th>
                                 <th>Số lượng</th>
                                 <th>Đơn vị tính</th>
+                                <th>Tình trạng</th>
                             </tr>
                         </thead>
                         <tbody>
                             {product?.productDetails[0].sku[0].locations.map((location, index) => (
-                                <tr key={location.id}>
+                                <tr
+                                    key={location.id}
+                                >
                                     <td>{index + 1}</td>
                                     <td>{location.locationCode}</td>
                                     <td>{location.quantity}</td>
                                     <td>{product?.units.find((unit) => unit.isBaseUnit)?.name}</td>
+                                    <td>{product.productDetails[0].sku[0].locations[0].shelf.typeShelf === "NORMAL" ? "Bình thường" : "Lỗi"}</td>
                                 </tr>
                             ))}
                         </tbody>
