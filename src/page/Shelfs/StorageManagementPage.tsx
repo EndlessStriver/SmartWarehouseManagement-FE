@@ -14,6 +14,7 @@ import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteShelf from "../../services/Location/DeleteShelf";
 import './css/StorageManagementPage.css'
+import ModelQRCodeShelf from "./Compoments/ModelQRCodeShelf";
 
 const ShelfsPage: React.FC = () => {
 
@@ -32,6 +33,8 @@ const ShelfsPage: React.FC = () => {
         totalPage: 0,
         totalElementOfPage: 0
     })
+
+    const [showQRCode, setShowQRCode] = React.useState<boolean>(false)
 
     React.useEffect(() => {
         setIsLoading(true)
@@ -163,14 +166,25 @@ const ShelfsPage: React.FC = () => {
                         <span>{shelf.totalColumns - shelf.currentColumnsUsed}</span>
                     </div>
                 </div>
-                <div
-                    className="btn btn-link"
-                    onClick={() => {
-                        setShelfId(shelf.id)
-                        setShowShelfDetails(true)
-                    }}
-                >
-                    Chi tiết
+                <div>
+                    <div
+                        className="btn btn-link"
+                        onClick={() => {
+                            setShelfId(shelf.id)
+                            setShowShelfDetails(true)
+                        }}
+                    >
+                        Chi tiết
+                    </div>
+                    <div
+                        className="btn btn-link"
+                        onClick={() => {
+                            setShelfId(shelf.id)
+                            setShowQRCode(true)
+                        }}
+                    >
+                        QR Code
+                    </div>
                 </div>
             </div>
         )
@@ -241,6 +255,16 @@ const ShelfsPage: React.FC = () => {
                     }}
                     loading={isLoadingDelete}
                     onConfirm={handleDeleteShelf}
+                />
+            }
+            {
+                showQRCode &&
+                <ModelQRCodeShelf
+                    ShelfId={shelfId}
+                    onClosed={() => {
+                        setShowQRCode(false)
+                        setShelfId('')
+                    }}
                 />
             }
         </div>
