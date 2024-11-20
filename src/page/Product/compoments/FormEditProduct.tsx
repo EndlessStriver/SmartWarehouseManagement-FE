@@ -241,19 +241,18 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         if (props.productId) {
-            console.log(props.productId)
             GetProductById(props.productId)
                 .then((data) => {
                     if (data) {
                         setFormData(FormatDataGet(data));
                         setDataDefault(FormatDataGet(data));
-                        setImagePreviews(data.productDetails[0].images.map((image) => {
+                        setImagePreviews(data.productDetails[0].images.filter((image) => !image.isDeleted).map((image) => {
                             return {
                                 key: crypto.randomUUID().toString(),
                                 url: image.url
                             }
                         }) || []);
-                        setImagePreviewsDefault(data.productDetails[0].images.map((image) => {
+                        setImagePreviewsDefault(data.productDetails[0].images.filter((image) => !image.isDeleted).map((image) => {
                             return {
                                 key: crypto.randomUUID().toString(),
                                 url: image.url
