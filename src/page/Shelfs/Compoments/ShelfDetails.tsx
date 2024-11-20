@@ -15,6 +15,7 @@ import ListShelf from "../../StockEntry/compoments/ListShelf";
 import Select from 'react-select';
 import OptionType from "../../../interface/OptionType";
 import ModelLocationHistory from "./ModelLocationHistory";
+import ModelQRCodeLocation from "./ModelQRCodeLocation";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -424,6 +425,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
     const [showOptions, setShowOptions] = React.useState(false);
     const [showMoveLocation, setShowMoveLocation] = React.useState(false);
     const [showLocationHistory, setShowLocationHistory] = React.useState(false);
+    const [showQRCode, setShowQRCode] = React.useState(false);
 
     return (
         <div
@@ -477,6 +479,12 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     >
                         Lịch sử hoạt động
                     </button>
+                    <button
+                        onClick={() => setShowQRCode(true)}
+                        className="btn btn-warning"
+                    >
+                        QR Code
+                    </button>
                 </div>
             }
             {
@@ -494,6 +502,13 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                 <ModelLocationHistory
                     onClose={() => setShowLocationHistory(false)}
                     locationId={props.location.id}
+                />
+            }
+            {
+                showQRCode &&
+                <ModelQRCodeLocation
+                    locationId={props.location.id}
+                    onClosed={() => setShowQRCode(false)}
                 />
             }
         </div>
