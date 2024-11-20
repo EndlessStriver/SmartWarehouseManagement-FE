@@ -23,7 +23,7 @@ const GetStockEntries = async (limit?: number, offset?: number): Promise<GetStoc
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/receives?limit=${limit || 10}&offset=${offset || 1}&order=DESC&orderBy=receiveDate`, {
+            const response = await axios.get(`${HOST}/receives?limit=${limit || 10}&offset=${offset || 1}&order=DESC&orderBy=create_at`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

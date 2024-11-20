@@ -19,6 +19,7 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
     React.useEffect(() => {
         GetAllLocationHaveProduct(props.productId)
             .then((res) => {
+                console.log(res);
                 if (res) setProduct(res);
             })
             .catch((err) => {
@@ -69,7 +70,7 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
                                     <td>{location.locationCode}</td>
                                     <td>{location.quantity}</td>
                                     <td>{product?.units.find((unit) => unit.isBaseUnit)?.name}</td>
-                                    <td>{product.productDetails[0].sku[0].locations[0].shelf.typeShelf === "NORMAL" ? "Bình thường" : "Lỗi"}</td>
+                                    <td>{location.shelf.typeShelf === "NORMAL" ? "Bình thường" : "Lỗi"}</td>
                                 </tr>
                             ))}
                         </tbody>
