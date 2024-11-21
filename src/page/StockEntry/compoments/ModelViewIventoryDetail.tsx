@@ -95,10 +95,10 @@ const ModelViewIventoryDetail: React.FC<ModelViewIventoryDetailProps> = (props) 
                         gap: "300px",
                     }}
                 >
-                    <p className="fw-bold mb-0">Mã Kiểm Kê: {transaction?.id}</p>
-                    <p className="fw-bold mb-0">Ngày Kiểm Kê: {formatDateVietNam(transaction?.transactionDate || "")}</p>
+                    <p className="fw-bold mb-0 h5">Mã Kiểm Kê: {transaction?.id}</p>
+                    <p className="fw-bold mb-0 h5">Ngày Kiểm Kê: {formatDateVietNam(transaction?.transactionDate || "")}</p>
                 </div>
-                <p className="fw-bold mb-3">Ghi Chú: {transaction?.note}</p>
+                <p className="fw-bold my-3 h5">Ghi Chú: {transaction?.note}</p>
                 {renderTransaction()}
             </Container>
         </OverLay >

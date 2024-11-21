@@ -33,6 +33,7 @@ export interface ProductExport {
     skuId: string;
     status: string;
     locations: { locationCode: string, quantity: number }[];
+    criteria: string,
 }
 
 const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
@@ -90,7 +91,8 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                                         quantity: location.exportQuantity
                                     };
                                 }),
-                                totalQuantity: item.quantity
+                                totalQuantity: item.quantity,
+                                criteria: item.product.export_criteria
                             };
                         }));
                     }
@@ -135,7 +137,8 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
             quantity: quantity,
             skuId: product.productDetails[0].sku[0].id,
             status: productStatus,
-            locations: locations
+            locations: locations,
+            criteria: product.export_criteria
         }
         setListProductExport((preVal) => {
             let check = false;

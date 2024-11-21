@@ -44,6 +44,7 @@ interface Product {
     description: string;
     productCode: string;
     img: string;
+    export_criteria: string;
 }
 
 interface Unit {

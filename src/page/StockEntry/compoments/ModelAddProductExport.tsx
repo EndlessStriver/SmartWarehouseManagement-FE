@@ -1,11 +1,10 @@
-import { CloseButton, FormGroup } from "react-bootstrap";
+import { CloseButton, Form, FormGroup } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
 import { Product, Unit } from "../../../services/Product/GetProductByNameAndCodeAndSupplierName";
 import React from "react";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
-import SuggestExportLocation from "../../../services/StockEntry/SuggestExportLocation";
 import { ProductExport } from "./FormEditExportProduct";
 import SuggestExportLocationFIFO from "../../../services/StockEntry/SuggestExportLocationFIFO";
 import SuggestExportLocationLIFO from "../../../services/StockEntry/SuggestExportLocationLIFO";
@@ -26,7 +25,8 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
     const [quantity, setQuantity] = React.useState<number>(0);
     const [convertValue, setConvertValue] = React.useState<number>(0);
     const [statusProduct, setStatusProduct] = React.useState<string>("");
-    const [typeExport, setTypeExport] = React.useState<string>("");
+    const [typeExport, setTypeExport] = React.useState<string>(props.product?.export_criteria || "FIFO");
+    const [disabledTypeExport, setDisabledTypeExport] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (unit !== "" && quantity > 0) {
@@ -118,8 +118,23 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                     </select>
                 </FormGroup>
                 <FormGroup className="mb-3">
-                    <label>Kiểu Xuất Kho</label>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center"
+                        }}
+                    >
+                        <label>Kiểu Xuất Kho</label>
+                        <Form.Check
+                            type="checkbox"
+                            label="Tùy chỉnh"
+                            checked={disabledTypeExport}
+                            onChange={() => setDisabledTypeExport(!disabledTypeExport)}
+                        />
+                    </div>
                     <select
+                        disabled={!disabledTypeExport}
                         value={typeExport}
                         onChange={(e) => setTypeExport(e.target.value)}
                         className="form-select p-3"
