@@ -26,6 +26,7 @@ export const Sidebar: React.FC = () => {
                             { href: "/stock-entry", lable: "Quản Lý Nhập Kho" },
                             { href: "/export-product", lable: "Quản Lý Xuất Kho" },
                             { href: "/inventory-tracking", lable: "Hàng Tồn Kho" },
+                            { href: "/inventory", lable: "Kiểm kê" },
                         ]
                     }
                 />

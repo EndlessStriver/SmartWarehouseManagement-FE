@@ -24,6 +24,7 @@ import ExportProduct from './page/StockEntry/ExportProduct';
 import StaticticalStockEntry from './page/Statistical/StatisticalStockEntry';
 import StatisticalOrderExport from './page/Statistical/StatisticalOrderExport';
 import GenerateQRCodePage from './page/QRCode/GenerateQRCodePage';
+import Iventory from './page/StockEntry/Iventory';
 
 const router = createBrowserRouter([
     {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
             {
                 path: "inventory-tracking",
                 element: <InventoryTracking />,
+            },
+            {
+                path: "inventory",
+                element: <Iventory />,
             },
             {
                 path: "profile",
