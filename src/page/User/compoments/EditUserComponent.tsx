@@ -685,34 +685,39 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                         </Form.Group>
                                         <Button variant="primary" onClick={() => handleSubmit()}
                                             className="form-control py-3 fw-bold">
-                                            Create
+                                            Tạo
                                         </Button>
                                     </>
                                 )
                             }
-                            <h5 className="fw-semibold border-bottom pb-2 mb-3">Nhật kí hoạt động</h5>
-                            <div className="border p-3"
-                                style={{
-                                    width: "100%",
-                                    height: "350px",
-                                    overflowY: "auto"
-                                }}
+                            {
+                                userId &&
+                                <div className="mt-3">
+                                    <h5 className="fw-semibold border-bottom pb-2 mb-3">Nhật kí hoạt động</h5>
+                                    <div className="border p-3"
+                                        style={{
+                                            width: "100%",
+                                            height: "350px",
+                                            overflowY: "auto"
+                                        }}
 
-                            >
-                                {
-                                    logs.map((item, index) => (
-                                        <div key={index} className="mb-3">
-                                            <p className="mb-1 fw-bold">{item.actionType}</p>
-                                            <p className="mb-1">{item.description}</p>
-                                            <p className="mb-1">{item.timestamp}</p>
-                                        </div>
-                                    ))
-                                }
-                                {
-                                    logs.length === 0 &&
-                                    <NoData lable="NGƯỜI DÙNG CHƯA CÓ HOẠT ĐỘNG NÀO" />
-                                }
-                            </div>
+                                    >
+                                        {
+                                            logs.map((item, index) => (
+                                                <div key={index} className="mb-3">
+                                                    <p className="mb-1 fw-bold">{item.actionType}</p>
+                                                    <p className="mb-1">{item.description}</p>
+                                                    <p className="mb-1">{item.timestamp}</p>
+                                                </div>
+                                            ))
+                                        }
+                                        {
+                                            logs.length === 0 &&
+                                            <NoData lable="NGƯỜI DÙNG CHƯA CÓ HOẠT ĐỘNG NÀO" />
+                                        }
+                                    </div>
+                                </div>
+                            }
                             {
                                 logs.length > 0 &&
                                 <Pagination
