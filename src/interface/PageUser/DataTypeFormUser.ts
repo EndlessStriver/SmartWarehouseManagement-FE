@@ -11,4 +11,5 @@ export interface DataTypeFormUser {
     dateOfBirth?: string;
     avatar?: string;
     confirmPassword?: string;
+    accountCode?: string;
 }

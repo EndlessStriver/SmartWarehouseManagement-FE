@@ -2,16 +2,19 @@ import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import GetProfile from "../../../util/GetProfile";
 interface SidebarItemProps {
     href?: string,
     icon: React.ReactNode,
     label: string,
     subItems?: { href: string, lable: string }[]
+    role: string[]
 }
 
-export const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, subItems }) => {
+export const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, subItems, role }) => {
 
     const location = useLocation();
+    const user = GetProfile();
     const [isOpen, setIsOpen] = React.useState(false);
     const [locationPath, setLocationPath] = React.useState(location.pathname);
 
@@ -31,7 +34,14 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, sub
         return subItems.some(subItem => locationPath.includes(subItem.href + ""));
     }
 
-    if (!subItems && href) {
+    const checkHavePermission = (role: string[]) => {
+        console.log(role);
+        console.log(user?.role.name);
+        if (role.includes(user?.role.name || "")) return true;
+        return false;
+    }
+
+    if (!subItems && href && checkHavePermission(role)) {
         return (
             <li className={"sidebar-item"}>
                 <NavLink
@@ -48,38 +58,39 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, sub
                 </NavLink>
             </li>
         )
-    }
-
-    return (
-        <li className={"sidebar-item"}>
-            <span
-                onClick={handleToggle}
-                className={`sidebar-link ${isOpen ? "focus " : ""} ${subItems && isSubItemActive(subItems) ? "active" : ""}`}
-            >
-                <div className={"sidebar-icon"}>
-                    {icon}
-                </div>
-                <span>{label}</span>
-                {subItems && (
-                    <div className={`sidebar-toggle-icon ${isOpen ? "rotate" : ""}`}>
-                        <FontAwesomeIcon icon={faChevronUp} />
+    } else if (subItems && !href && checkHavePermission(role)) {
+        return (
+            <li className={"sidebar-item"}>
+                <span
+                    onClick={handleToggle}
+                    className={`sidebar-link ${isOpen ? "focus " : ""} ${subItems && isSubItemActive(subItems) ? "active" : ""}`}
+                >
+                    <div className={"sidebar-icon"}>
+                        {icon}
                     </div>
+                    <span>{label}</span>
+                    {subItems && (
+                        <div className={`sidebar-toggle-icon ${isOpen ? "rotate" : ""}`}>
+                            <FontAwesomeIcon icon={faChevronUp} />
+                        </div>
+                    )}
+                </span>
+                {subItems && (
+                    <ul className={`sidebar-submenu ${isOpen ? "show-submenu" : ""}`}>
+                        {subItems.map((subItem, index) => (
+                            <li key={index} className="sidebar-subitem">
+                                <NavLink to={subItem.href}
+                                    className={({ isActive, isPending }) =>
+                                        `sidebar-sublink ${isActive ? "active" : ""}`
+                                    }>
+                                    {subItem.lable}
+                                </NavLink>
+                            </li>
+                        ))}
+                    </ul>
                 )}
-            </span>
-            {subItems && (
-                <ul className={`sidebar-submenu ${isOpen ? "show-submenu" : ""}`}>
-                    {subItems.map((subItem, index) => (
-                        <li key={index} className="sidebar-subitem">
-                            <NavLink to={subItem.href}
-                                className={({ isActive, isPending }) =>
-                                    `sidebar-sublink ${isActive ? "active" : ""}`
-                                }>
-                                {subItem.lable}
-                            </NavLink>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </li>
-    )
+            </li>
+        )
+    }
+    return null;
 }

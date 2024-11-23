@@ -60,6 +60,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         username: "",
         roleName: "",
         avatar: "",
+        accountCode: "",
     });
     const [formData, setFormData] = React.useState<DataTypeFormUser>({
         fullName: "",
@@ -74,6 +75,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         confirmPassword: "",
         password: "",
         avatar: "",
+        accountCode: "",
     });
     const gender: Gender[] = [Gender.Male, Gender.Female, Gender.Others];
     const [logs, setLogs] = React.useState<Action[]>([]);
@@ -305,6 +307,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
             if (!formData.dateOfBirth) throw new Error("Vui lòng nhập ngày sinh");
             if (!formData.gender) throw new Error("Vui lòng chọn giới tính");
             if (!formData.username) throw new Error("Vui lòng nhập tên tài khoản");
+            if (!formData.accountCode) throw new Error("Vui lòng nhập mã tài khoản");
             return {
                 email: formData.email,
                 password: formData.password,
@@ -316,6 +319,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                 dateOfBirth: formData.dateOfBirth,
                 gender: formData.gender,
                 username: formData.username,
+                accountCode: formData.accountCode,
             }
         } catch (error: any) {
             dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
@@ -528,7 +532,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                             >
                                                 <option value={""}>Chọn giới tính...</option>
                                                 {gender.map((item, index) => (
-                                                    <option key={index} value={item}>{item}</option>
+                                                    <option key={index} value={item}>{item === "Male" ? "Nam" : (item === "Female" ? "Nữ" : "Khác")}</option>
                                                 ))}
                                             </Form.Select>
                                         </Form.Group>
@@ -597,6 +601,20 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                     <Col md={6}>
                         <div className="p-3">
                             <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông tin tài khoản</h5>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Tên tài khoản</Form.Label>
+                                    <Form.Control
+                                        className="py-3"
+                                        type="text"
+                                        value={formData.accountCode}
+                                        name="accountCode"
+                                        disabled={userId !== ""}
+                                        placeholder="Mã tài khoản..."
+                                        onChange={handleChangeInput}
+                                    />
+                                </Form.Group>
+                            </Col>
                             <Row>
                                 <Col>
                                     <Form.Group className="mb-3">

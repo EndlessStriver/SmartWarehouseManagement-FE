@@ -9,4 +9,5 @@ export default interface DataTypeCreateUserAdmin {
     address: string;
     gender: string;
     dateOfBirth: string;
+    accountCode: string;
 }

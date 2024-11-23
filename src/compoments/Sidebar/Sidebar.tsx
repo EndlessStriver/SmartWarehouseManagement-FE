@@ -17,6 +17,7 @@ export const Sidebar: React.FC = () => {
                     href={"/"}
                     icon={<FontAwesomeIcon icon={faTachometerAlt} />}
                     label={"Bảng điều khiển"}
+                    role={["admin", "warehouse_manager", "inventory_specialist"]}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faWarehouse} />}
@@ -29,11 +30,13 @@ export const Sidebar: React.FC = () => {
                             { href: "/inventory", lable: "Kiểm kê" },
                         ]
                     }
+                    role={["admin", "warehouse_manager", "inventory_specialist"]}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faBoxes} />}
                     label={"Kệ hàng"}
                     href={"/shelfs"}
+                    role={["admin", "warehouse_manager", "inventory_specialist"]}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faBox} />}
@@ -44,21 +47,25 @@ export const Sidebar: React.FC = () => {
                             { href: "/management-Attribute", lable: "Thuộc tính sản phẩm" },
                         ]
                     }
+                    role={["admin", "warehouse_manager"]}
                 />
                 <SidebarItem
                     href={"/management-Supplier"}
                     icon={<FontAwesomeIcon icon={faTruck} />}
                     label={"Nhà cung cấp"}
+                    role={["admin", "warehouse_manager"]}
                 />
                 <SidebarItem
                     href={"/management-SKU"}
                     icon={<FontAwesomeIcon icon={faBarcode} />}
                     label={"SKU"}
+                    role={["admin", "warehouse_manager"]}
                 />
                 <SidebarItem
                     href={"/management-user"}
                     icon={<FontAwesomeIcon icon={faUser} />}
                     label={"Người dùng"}
+                    role={["admin", "warehouse_manager"]}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faChartBar} />}
@@ -69,11 +76,13 @@ export const Sidebar: React.FC = () => {
                             { href: "/statictical-order-export", lable: "Thống kê xuất kho" },
                         ]
                     }
+                    role={["admin", "warehouse_manager"]}
                 />
                 <SidebarItem
                     href={"/qr-code"}
                     icon={<FontAwesomeIcon icon={faQrcode} />}
                     label={"QR Code"}
+                    role={["admin", "warehouse_manager"]}
                 />
             </SidebarNav>
         </div>
