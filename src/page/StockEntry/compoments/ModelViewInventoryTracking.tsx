@@ -62,7 +62,7 @@ const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (p
                             </tr>
                         </thead>
                         <tbody>
-                            {product?.productDetails[0].sku[0].locations.map((location, index) => (
+                            {product?.productDetails[0].sku[0].locations.filter((location) => location.quantity > 0).map((location, index) => (
                                 <tr
                                     key={location.id}
                                 >
