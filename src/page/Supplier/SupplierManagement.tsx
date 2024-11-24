@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faRedo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Button, Table } from 'react-bootstrap';
 import GetSuppliers from '../../services/Supplier/GetSuppliers';
 import Supplier from '../../interface/Entity/Supplier';
@@ -131,9 +131,7 @@ export const SupplierManagement: React.FC = () => {
                 <td>{index + 1}</td>
                 <td>{supplier.supplierCode}</td>
                 <td>{supplier.name}</td>
-                <td>{supplier.description}</td>
                 <td style={{ width: "200px" }}>{supplier.phone}</td>
-                <td>{supplier.address}</td>
                 <td>{supplier.email}</td>
                 <td>
                     <div className="d-flex flex-row gap-2">
@@ -172,15 +170,26 @@ export const SupplierManagement: React.FC = () => {
                     }} variant="info fw-bold text-light">+ Tạo Mới</Button>
                 </div>
             </div>
+            <div className='d-flex flex-row gap-2 justify-content-end mb-3'>
+                <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Nhập từ khóa tìm kiếm..."
+                    style={{ width: "300px" }}
+                />
+                <button
+                    className='btn btn-primary'
+                >
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
+            </div>
             <Table striped hover bordered>
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Mã Nhà Cung Cấp</th>
                         <th>Tên Nhà Cung Cấp</th>
-                        <th>Mô Tả</th>
                         <th>Số Điện Thoại</th>
-                        <th>Địa Chỉ</th>
                         <th>Email</th>
                         <th>Hành Động</th>
                     </tr>

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPencilAlt, faRedo, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { EditUserComponent } from "./compoments/EditUserComponent";
 import React from "react";
 import { NoData } from "../../compoments/NoData/NoData";
@@ -179,6 +179,19 @@ export const UserManagement: React.FC = () => {
                         setShowOverlayModelUser(true);
                     }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
+            </div>
+            <div className='d-flex flex-row gap-2 justify-content-end mb-3'>
+                <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Nhập từ khóa tìm kiếm..."
+                    style={{ width: "300px" }}
+                />
+                <button
+                    className='btn btn-primary'
+                >
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
             </div>
             <Table striped bordered hover>
                 <thead>

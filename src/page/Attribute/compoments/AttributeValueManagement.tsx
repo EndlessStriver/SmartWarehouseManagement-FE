@@ -12,20 +12,18 @@ import {
     faChevronLeft,
     faCubes, faList,
     faPalette,
-    faPencilAlt, faRuler,
+    faPencilAlt, faRedo, faRuler,
     faTag,
     faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { Badge, Button, Tab, Table } from "react-bootstrap";
+import { Badge, Button, Table } from "react-bootstrap";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import DeleteAttributeValue from "../../../services/Attribute/DeleteAttributeValue";
 import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDelete";
-import GetUnits from "../../../services/Attribute/Unit/GetUnits";
 import ModelAddUnit from "./ModelAddUnit";
 import Select from 'react-select';
-import OptionType from "../../../interface/OptionType";
 import GetProductsByName, { Unit } from "../../../services/Product/GetProductsByName";
 
 interface AttributeValueManagementProps {
@@ -291,6 +289,22 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                         <Button onClick={handleAddAttributeValue} variant="info text-light fw-bold">+ Tạo Mới</Button>
                     </div>
                 </div>
+                {
+                    attributeId <= 5 &&
+                    <div className='d-flex flex-row gap-2 justify-content-end mb-3'>
+                        <input
+                            type="search"
+                            className="form-control"
+                            placeholder="Nhập từ khóa tìm kiếm..."
+                            style={{ width: "300px" }}
+                        />
+                        <button
+                            className='btn btn-primary'
+                        >
+                            <FontAwesomeIcon icon={faRedo} />
+                        </button>
+                    </div>
+                }
                 {
                     attributeId <= 5 ?
                         (
