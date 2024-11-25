@@ -35,8 +35,6 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon, label, sub
     }
 
     const checkHavePermission = (role: string[]) => {
-        console.log(role);
-        console.log(user?.role.name);
         if (role.includes(user?.role.name || "")) return true;
         return false;
     }

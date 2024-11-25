@@ -507,7 +507,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
             {
                 showQRCode &&
                 <ModelQRCodeLocation
-                    locationId={props.location.id}
+                    locationCode={props.location.locationCode}
                     onClosed={() => setShowQRCode(false)}
                 />
             }

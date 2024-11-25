@@ -76,7 +76,7 @@ export interface TransactionData {
     inventory: Inventory[];
 }
 
-interface ResponseData {
+export interface ResponseData {
     data: TransactionData[];
     totalPage: number;
     limit: number;
