@@ -99,21 +99,27 @@ const Iventory: React.FC = () => {
             </div>
             <div className='d-flex flex-row gap-3 justify-content-end align-items-center mb-3'>
                 <span className='fw-bold'>Từ ngày</span>
-                <DatePicker
-                    className="p-1"
-                    selected={from}
-                    onChange={(date) => setFrom(date)}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Chọn ngày..."
-                />
+                <div
+                    style={{ width: "230px" }}
+                >
+                    <DatePicker
+                        className="p-1"
+                        selected={from}
+                        onChange={(date) => setFrom(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
                 <span className='fw-bold'>Đến ngày</span>
-                <DatePicker
-                    className="p-1"
-                    selected={to}
-                    onChange={(date) => setTo(date)}
-                    dateFormat="dd/MM/yyyy"
-                    placeholderText="Chọn ngày..."
-                />
+                <div style={{ width: "230px" }}>
+                    <DatePicker
+                        className="p-1"
+                        selected={to}
+                        onChange={(date) => setTo(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
                 <button
                     onClick={() => {
                         handleSearch()

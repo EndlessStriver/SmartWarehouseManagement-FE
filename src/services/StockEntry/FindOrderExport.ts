@@ -1,45 +1,8 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { DataResponse } from "./GetAllOrderExport";
 
-export interface DataResponse {
-    data: ExportOrderData[];
-    totalPage: number;
-    limit: number;
-    offset: number;
-    totalElementOfPage: number;
-}
-
-export interface ExportOrderData {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    status: string;
-    exportCode: string;
-    exportDate: string;
-    description: string;
-    exportBy: string;
-    totalQuantity: number;
-    orderExportDetails: OrderExportDetail[];
-}
-
-interface OrderExportDetail {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    skuCode: string;
-    quantity: number;
-    retrievedProducts: RetrievedProduct[];
-}
-
-interface RetrievedProduct {
-    locationCode: string;
-    quantityTaken: number;
-}
-
-
-const GetAllOrderExport = async (limit?: number, offset?: number): Promise<DataResponse | undefined> => {
+const FindOrderExport = async (from: string, to: string, limit?: number, offset?: number): Promise<DataResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -51,7 +14,7 @@ const GetAllOrderExport = async (limit?: number, offset?: number): Promise<DataR
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/order-export?limit=${limit || 10}&offset=${offset || 1}`, {
+            const response = await axios.get(`${HOST}/order-export/date?limit=${limit || 10}&offset=${offset || 1}&from=${from}&to=${to}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -74,4 +37,4 @@ const GetAllOrderExport = async (limit?: number, offset?: number): Promise<DataR
     }
 }
 
-export default GetAllOrderExport;
+export default FindOrderExport;

@@ -9,9 +9,11 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import Pagination from "../../compoments/Pagination/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboardCheck, faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck, faEdit, faEye, faRedo } from "@fortawesome/free-solid-svg-icons";
 import ModelConfirmOrderExport from "./compoments/ModelConfirmOrderExport";
 import formatDateVietNam from "../../util/FormartDateVietnam";
+import DatePicker from "react-datepicker";
+import FindOrderExport from "../../services/StockEntry/FindOrderExport";
 
 const ExportProduct: React.FC = () => {
 
@@ -28,27 +30,52 @@ const ExportProduct: React.FC = () => {
     const [showModelConfirmOrderExport, setShowModelConfirmOrderExport] = React.useState<boolean>(false);
     const [exportOrderId, setExportOrderId] = React.useState<string>("");
     const [reload, setReload] = React.useState<boolean>(false);
+    const [isSearch, setIsSearch] = React.useState<boolean>(false);
+    const [from, setFrom] = React.useState<Date | null>(null);
+    const [to, setTo] = React.useState<Date | null>(null);
 
     React.useEffect(() => {
-        GetAllOrderExport(pagination.limit, pagination.offset)
-            .then((response) => {
-                if (response) {
-                    setExportProduct(response.data);
-                    setPagination({
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-            })
-            .finally(() => {
-                setIsLoading(false);
-            })
+        if (!isSearch) {
+            GetAllOrderExport(pagination.limit, pagination.offset)
+                .then((response) => {
+                    if (response) {
+                        setExportProduct(response.data);
+                        setPagination({
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                })
+        } else {
+            FindOrderExport(from!.toDateString(), to!.toDateString(), pagination.limit, pagination.offset)
+                .then((response) => {
+                    if (response) {
+                        setExportProduct(response.data);
+                        setPagination({
+                            limit: response.limit,
+                            offset: response.offset,
+                            totalPage: response.totalPage,
+                            totalElementOfPage: response.totalElementOfPage
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                })
+        }
     }, [dispatch, pagination.limit, pagination.offset, reload]);
 
     const handleChangePage = (page: number) => {
@@ -56,6 +83,32 @@ const ExportProduct: React.FC = () => {
             ...pagination,
             offset: page
         });
+    }
+
+    const handleSearch = () => {
+        const currentDate = new Date();
+        if (from === null) {
+            dispatch({ message: "Vui lòng chọn ngày bắt đầu", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (to === null) {
+            dispatch({ message: "Vui lòng chọn ngày kết thúc", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && from > to) {
+            dispatch({ message: "Ngày bắt đầu không thể lớn hơn ngày kết thúc", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && from > currentDate) {
+            dispatch({ message: "Ngày bắt đầu không thể lớn hơn ngày hiện tại", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && to > currentDate) {
+            dispatch({ message: "Ngày kết thúc không thể lớn hơn ngày hiện tại", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        setIsSearch(true);
+        setReload(!reload);
     }
 
     return (
@@ -70,6 +123,49 @@ const ExportProduct: React.FC = () => {
                         setShowFormEditExportProduct(true);
                     }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
+            </div>
+            <div className='d-flex flex-row gap-3 justify-content-end align-items-center mb-3'>
+                <span className='fw-bold'>Từ ngày</span>
+                <div
+                    style={{ width: "230px" }}
+                >
+                    <DatePicker
+                        className="p-1"
+                        selected={from}
+                        onChange={(date) => setFrom(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
+                <span className='fw-bold'>Đến ngày</span>
+                <div style={{ width: "230px" }}>
+                    <DatePicker
+                        className="p-1"
+                        selected={to}
+                        onChange={(date) => setTo(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
+                <button
+                    onClick={() => {
+                        handleSearch();
+                    }}
+                    className='btn btn-primary'
+                >
+                    Tìm kiếm
+                </button>
+                <button
+                    onClick={() => {
+                        setFrom(null);
+                        setTo(null);
+                        setIsSearch(false);
+                        setReload(!reload);
+                    }}
+                    className='btn btn-primary'
+                >
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
             </div>
             <Table striped bordered hover>
                 <thead>
@@ -93,7 +189,7 @@ const ExportProduct: React.FC = () => {
                                     <td>{formatDateVietNam(item.create_at)}</td>
                                     <td>
                                         {
-                                            item.status === "PENDING" ? <Badge bg="primary">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="success">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
+                                            item.status === "PENDING" ? <Badge bg="warning">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="primary">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
                                         }
                                     </td>
                                     <td>
