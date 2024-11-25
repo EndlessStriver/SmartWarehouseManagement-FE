@@ -15,6 +15,7 @@ import CreateCheckStockEntry from "../../../services/StockEntry/CreateCheckStock
 import { useDispatchProductCheck } from "../../../Context/ContextProductCheck"
 import GetReceiveCheckByStockEntryId from "../../../services/StockEntry/GetReceiveCheckByStockEntryId"
 import formatDateForInput from "../../../util/FormartDateInput"
+import CancleStockEntry from "../../../services/StockEntry/CancleStockEntry"
 
 interface HandleStockEntryPageProps {
     onClose: () => void
@@ -234,6 +235,18 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
         }
     }
 
+    const handleCancleStockEntry = () => {
+        CancleStockEntry(props.stockEntryId)
+            .then(() => {
+                dispatch({ type: ActionTypeEnum.SUCCESS, message: "Hủy phiếu nhập kho thành công" });
+                props.reload();
+                props.onClose();
+            })
+            .catch((error) => {
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+            });
+    }
+
     return (
         <OverLay className="disabled-padding">
             <div className="w-100 h-100 bg-light p-5">
@@ -242,19 +255,36 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                     style={{ top: "15px", right: "15px" }}
                     onClick={props.onClose}
                 />
-                <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="fw-bold">Xử lý phiếu nhập kho</h2>
-                    {
-                        stockEntry?.status === "PENDING" &&
-                        <Button
-                            variant="primary"
-                            className="text-light fw-bold"
-                            onClick={() => handleSubmit()}
-                            disabled={productChecks.length === 0}
+                <div>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h2 className="fw-bold">Xử lý phiếu nhập kho</h2>
+                        <div
+                            className="d-flex gap-3"
                         >
-                            Xác nhận
-                        </Button>
-                    }
+                            {
+                                stockEntry?.status === "PENDING" &&
+                                <Button
+                                    variant="danger"
+                                    className="text-light fw-bold"
+                                    onClick={() => handleCancleStockEntry()}
+                                    disabled={productChecks.length === 0}
+                                >
+                                    Hủy phiếu
+                                </Button>
+                            }
+                            {
+                                stockEntry?.status === "PENDING" &&
+                                <Button
+                                    variant="primary"
+                                    className="text-light fw-bold"
+                                    onClick={() => handleSubmit()}
+                                    disabled={productChecks.length === 0}
+                                >
+                                    Xác nhận
+                                </Button>
+                            }
+                        </div>
+                    </div>
                 </div>
                 <div className="d-flex flex-row gap-3 w-100 mb-3">
                     <div className="w-100">

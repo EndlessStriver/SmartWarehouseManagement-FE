@@ -26,7 +26,7 @@ const StockEntry: React.FC = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [stockEntry, setStockEntry] = React.useState<ReceiveHeader[]>([]);
     const [stockEntryId, setStockEntryId] = React.useState<string>("");
-    const [showModelConfirmDelete, setShowModelConfirmDelete] = React.useState<boolean>(false);
+    // const [showModelConfirmDelete, setShowModelConfirmDelete] = React.useState<boolean>(false);
     const [pagination, setPagination] = React.useState<PaginationType>({
         totalPage: 0,
         limit: 10,
@@ -151,12 +151,12 @@ const StockEntry: React.FC = () => {
                                 }} variant="primary" size="sm">
                                     <FontAwesomeIcon icon={faPencilAlt} />
                                 </Button>
-                                <Button onClick={() => {
+                                {/* <Button onClick={() => {
                                     setStockEntryId(stockEntry.id);
                                     setShowModelConfirmDelete(true);
                                 }} variant="danger" size="sm">
                                     <FontAwesomeIcon icon={faTrash} />
-                                </Button>
+                                </Button> */}
                             </>
                         }
                         {
@@ -306,7 +306,7 @@ const StockEntry: React.FC = () => {
                     updatePagination={updatePagination}
                 />
             }
-            {
+            {/* {
                 showModelConfirmDelete &&
                 <ModelConfirmDelete
                     message="Bạn có chắc chắn muốn xóa phiếu nhập kho này?"
@@ -320,7 +320,7 @@ const StockEntry: React.FC = () => {
                     }}
                     loading={loadingDelete}
                 />
-            }
+            } */}
             {
                 ShowHandleStockEntry &&
                 <HandleStockEntryPage
