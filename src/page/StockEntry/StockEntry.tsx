@@ -9,13 +9,16 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import FormEditStockEntry from "./compoments/FormEditStockEntry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboardCheck, faEye, faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck, faEye, faPencilAlt, faRedo, faTrash } from "@fortawesome/free-solid-svg-icons";
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
 import formatDateVietNam from "../../util/FormartDateVietnam";
+import DatePicker from "react-datepicker";
+import FindStockEntry from "../../services/StockEntry/FindStockEntry";
+import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
 
 const StockEntry: React.FC = () => {
     const dispatch = useDispatchMessage();
@@ -33,32 +36,70 @@ const StockEntry: React.FC = () => {
     const [showFormEdit, setShowFormEdit] = React.useState<boolean>(false);
     const [ShowHandleStockEntry, setShowHandleStockEntry] = React.useState<boolean>(false);
     const [loadingDelete, setLoadingDelete] = React.useState<boolean>(false);
+    const [isSearch, setIsSearch] = React.useState<boolean>(false);
+    const [from, setFrom] = React.useState<Date | null>(null);
+    const [to, setTo] = React.useState<Date | null>(null);
+
     React.useEffect(() => {
         const id = setTimeout(() => {
-            setIsLoading(true);
-            GetStockEntries(pagination.limit, pagination.offset)
-                .then((res) => {
-                    if (res) {
-                        setStockEntry(res.data);
-                        setPagination({
-                            totalPage: res.totalPage,
-                            limit: res.limit,
-                            offset: res.offset,
-                            totalElementOfPage: res.totalElementOfPage
-                        });
-                    }
-                }).catch((err) => {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
-                }).finally(() => {
-                    setIsLoading(false);
-                })
+            if (!isSearch) {
+                setIsLoading(true);
+                GetStockEntries(pagination.limit, pagination.offset)
+                    .then((res) => {
+                        if (res) {
+                            setStockEntry(res.data);
+                            setPagination({
+                                totalPage: res.totalPage,
+                                limit: res.limit,
+                                offset: res.offset,
+                                totalElementOfPage: res.totalElementOfPage
+                            });
+                        }
+                    }).catch((err) => {
+                        dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                    }).finally(() => {
+                        setIsLoading(false);
+                    })
+            } else {
+                FindStockEntry(formatDateForInputNoTime(from!.toString()), formatDateForInputNoTime(to!.toString()), pagination.limit, pagination.offset)
+                    .then((res) => {
+                        if (res) {
+                            setStockEntry(res.data.map((item) => {
+                                return {
+                                    id: item.id,
+                                    create_at: item.create_at,
+                                    update_at: item.update_at,
+                                    isDelete: item.isDeleted,
+                                    description: item.description,
+                                    receiveCode: item.receiveCode,
+                                    receiveBy: item.receiveBy,
+                                    receiveDate: item.receiveDate,
+                                    status: item.status,
+                                    totalAmount: item.totalAmount
+                                }
+                            }));
+                            setPagination({
+                                totalPage: res.totalPage,
+                                limit: res.limit,
+                                offset: res.offset,
+                                totalElementOfPage: res.totalElementOfPage
+                            });
+                        }
+                    }).catch((err) => {
+                        dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                    }).finally(() => {
+                        setIsLoading(false);
+                    })
+            }
         }, 500);
 
         return () => clearTimeout(id);
     }, [dispatch, reload, pagination.limit, pagination.offset]);
+
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page });
     }
+
     const handleDeleteStockEntry = (id: string) => {
         setLoadingDelete(true);
         RemoveStockEntry(id)
@@ -72,6 +113,7 @@ const StockEntry: React.FC = () => {
                 setLoadingDelete(false);
             });
     }
+
     const renderTypeStatus = (status: string) => {
         switch (status) {
             case "PENDING":
@@ -133,11 +175,39 @@ const StockEntry: React.FC = () => {
             </tr>
         );
     });
+
     const updateStockEntry = (response: ReceiveHeader[]) => {
         setStockEntry(response);
     }
+
     const updatePagination = (response: PaginationType) => {
         setPagination(response);
+    }
+
+    const handleSearch = () => {
+        const currentDate = new Date();
+        if (from === null) {
+            dispatch({ message: "Vui lòng chọn ngày bắt đầu", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (to === null) {
+            dispatch({ message: "Vui lòng chọn ngày kết thúc", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && from > to) {
+            dispatch({ message: "Ngày bắt đầu không thể lớn hơn ngày kết thúc", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && from > currentDate) {
+            dispatch({ message: "Ngày bắt đầu không thể lớn hơn ngày hiện tại", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        if (from && to && to > currentDate) {
+            dispatch({ message: "Ngày kết thúc không thể lớn hơn ngày hiện tại", type: ActionTypeEnum.ERROR });
+            return;
+        }
+        setIsSearch(true);
+        setReload(!reload);
     }
     return (
         <div className={"w-100 h-100"}>
@@ -151,6 +221,49 @@ const StockEntry: React.FC = () => {
                         setShowFormEdit(true);
                     }} variant="info text-light fw-bold">+ Tạo Mới</Button>
                 </div>
+            </div>
+            <div className='d-flex flex-row gap-3 justify-content-end align-items-center mb-3'>
+                <span className='fw-bold'>Từ ngày</span>
+                <div
+                    style={{ width: "230px" }}
+                >
+                    <DatePicker
+                        className="p-1"
+                        selected={from}
+                        onChange={(date) => setFrom(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
+                <span className='fw-bold'>Đến ngày</span>
+                <div style={{ width: "230px" }}>
+                    <DatePicker
+                        className="p-1"
+                        selected={to}
+                        onChange={(date) => setTo(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Chọn ngày..."
+                    />
+                </div>
+                <button
+                    onClick={() => {
+                        handleSearch();
+                    }}
+                    className='btn btn-primary'
+                >
+                    Tìm kiếm
+                </button>
+                <button
+                    onClick={() => {
+                        setFrom(null);
+                        setTo(null);
+                        setIsSearch(false);
+                        setReload(!reload);
+                    }}
+                    className='btn btn-primary'
+                >
+                    <FontAwesomeIcon icon={faRedo} />
+                </button>
             </div>
             <Table striped bordered hover>
                 <thead>
