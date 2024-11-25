@@ -13,12 +13,12 @@ export const Sidebar: React.FC = () => {
         <div className={"sidebar"}>
             <SidebarLogo logo={logo} />
             <SidebarNav>
-                <SidebarItem
+                {/* <SidebarItem
                     href={"/"}
                     icon={<FontAwesomeIcon icon={faTachometerAlt} />}
                     label={"Bảng điều khiển"}
                     role={["admin", "warehouse_manager", "inventory_specialist"]}
-                />
+                /> */}
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faWarehouse} />}
                     label={"Quản lý kho"}
