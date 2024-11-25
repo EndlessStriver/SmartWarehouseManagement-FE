@@ -9,6 +9,6 @@ export default function ValidateUsername(username: string): string {
     if (usernameRegex.test(username)) {
         return "";
     } else {
-        return "Minimum 8-20 characters, no special characters";
+        return "Tên tài khoản tối thiểu 8-20 ký tự, không có ký tự đặc biệt";
     }
 }

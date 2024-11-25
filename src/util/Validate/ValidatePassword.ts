@@ -9,6 +9,6 @@ export default function ValidatePassword(password: string): string {
     if (passwordRegex.test(password)) {
         return ""
     } else {
-        return "Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
+        return "Mật khẩu tối thiểu tám ký tự, ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt"
     }
 }

@@ -9,6 +9,6 @@ export default function validateEmail(email: string): string {
     if (emailRegex.test(email)) {
         return "";
     } else {
-        return "Email is invalid";
+        return "Email không hợp lệ";
     }
 }

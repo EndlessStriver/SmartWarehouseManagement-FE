@@ -275,6 +275,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     if (data) setColors(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);
@@ -288,6 +289,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     if (data) setBranches(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);
@@ -301,6 +303,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     if (data) setModels(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);
@@ -314,6 +317,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     setSizes(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);
@@ -327,6 +331,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     if (data) setCategories(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);
@@ -340,6 +345,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                     if (data) setSuppliers(data.map((size) => ({ value: size.id, label: size.name })));
                 })
                 .catch((error) => {
+                    console.log(error);
                     dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }, 500);

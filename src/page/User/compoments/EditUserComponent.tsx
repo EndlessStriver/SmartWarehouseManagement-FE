@@ -399,6 +399,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             }, 1000);
                         }
                     }).catch((err) => {
+                        console.log(err);
                         dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
                     }).finally(() => {
                         setIsLoadingSubmit(false);
@@ -603,7 +604,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                             <h5 className="fw-semibold border-bottom pb-2 mb-3">Thông tin tài khoản</h5>
                             <Col>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Tên tài khoản</Form.Label>
+                                    <Form.Label>Mã tài khoản</Form.Label>
                                     <Form.Control
                                         className="py-3"
                                         type="text"

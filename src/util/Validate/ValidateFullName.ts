@@ -9,6 +9,6 @@ export default function validateFullName(fullName: string): string {
     if (fullNameRegex.test(fullName)) {
         return "";
     } else {
-        return "Fullname is invalid";
+        return "Tên người dùng không hợp lệ";
     }
 }

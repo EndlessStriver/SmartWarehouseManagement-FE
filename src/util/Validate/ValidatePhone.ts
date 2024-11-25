@@ -9,6 +9,6 @@ export default function validatePhone(phone: string): string {
     if (fullNameRegex.test(phone)) {
         return "";
     } else {
-        return "Invalid phone number";
+        return "Số điện thoại không hợp lệ";
     }
 }

@@ -108,7 +108,6 @@ const StaticticalStockEntry = () => {
                     <input type="date" value={formatDateForInputNoTime(fromDate)} onChange={(e) => setFromDate(e.target.value)} className="form-control" style={{ width: "250px" }} />
                     <span>Đến ngày:</span>
                     <input type="date" value={formatDateForInputNoTime(toDate)} onChange={(e) => setToDate(e.target.value)} className="form-control" style={{ width: "250px" }} />
-                    <span>Trạng thái:</span>
                     <button
                         onClick={() => {
                             const currentDate = new Date();
