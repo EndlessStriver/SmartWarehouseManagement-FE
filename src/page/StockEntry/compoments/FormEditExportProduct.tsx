@@ -43,7 +43,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [products, setProducts] = React.useState<Product[]>([]);
     const [productName, setProductName] = React.useState<string>("");
-    const [ExportProductCode, setExportProductCode] = React.useState<string>("");
+    const [ExportProductCode, setExportProductCode] = React.useState<string>(generateExportCode());
     const [moreInfo, setMoreInfo] = React.useState<string>("");
     const [createDate, setCreateDate] = React.useState<string>("");
     const [productWantToExport, setProductWantToExport] = React.useState<Product | null>(null);
@@ -127,6 +127,17 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                 setIsLoading(false);
             })
     }, [productName, dispatch, pagination.limit, pagination.offset])
+
+    function generateExportCode() {
+        const now = new Date();
+        const timestamp = now.getFullYear().toString() +
+            (now.getMonth() + 1).toString().padStart(2, '0') +
+            now.getDate().toString().padStart(2, '0') +
+            now.getHours().toString().padStart(2, '0') +
+            now.getMinutes().toString().padStart(2, '0') +
+            now.getSeconds().toString().padStart(2, '0');
+        return `XK${timestamp}`;
+    }
 
     const addProductExport = (product: Product, unit: Unit, quantity: number, productStatus: string, locations: { locationCode: string, quantity: number }[]) => {
         const productExport: ProductExport = {
@@ -327,7 +338,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                             className={"form-control py-3"}
                             value={ExportProductCode}
                             onChange={(e) => setExportProductCode(e.target.value)}
-                            disabled={props.exportOrderId ? true : false}
+                            disabled={true}
                         />
                     </FormGroup>
                     <Col>
