@@ -13,7 +13,7 @@ enum OrderBy {
     PhoneNumber = "phoneNumber",
 }
 
-interface ResponseGetAccounts {
+export interface ResponseGetAccounts {
     data: Account[];
     totalPage: number;
     limit: number;

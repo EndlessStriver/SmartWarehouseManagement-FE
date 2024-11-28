@@ -1,9 +1,9 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
-import { Account } from "../../interface/Account";
+import { ResponseGetAccounts } from "./GetAccountsAPI";
 
-const FindAccount = async (key: string): Promise<Account[] | undefined> => {
+const FindAccount = async (key: string, offset?: number, limit?: number, order?: string): Promise<ResponseGetAccounts | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -15,7 +15,7 @@ const FindAccount = async (key: string): Promise<Account[] | undefined> => {
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/account/all-accounts?name=${key}`, {
+            const response = await axios.get(`${HOST}/account/all-accounts?name=${key}&limit=${limit || 10}&offset=${offset || 1}&order=${order || "DESC"}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

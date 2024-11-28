@@ -13,6 +13,7 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteAccountAPI from "../../services/User/DeleteAccountAPI";
+import FindAccount from "../../services/User/FindAccountAPI";
 
 export const UserManagement: React.FC = () => {
 
@@ -29,32 +30,12 @@ export const UserManagement: React.FC = () => {
         offset: 0,
         totalElementOfPage: 0
     });
-
-    React.useEffect(() => {
-        setIsLoading(true);
-        GetAccountsAPI()
-            .then((response) => {
-                if (response) {
-                    setUsers(response.data);
-                    setPagination({
-                        totalPage: response.totalPage,
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                }
-            }).catch((error) => {
-                console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-            }).finally(() => {
-                setIsLoading(false);
-            });
-    }, [dispatch]);
+    const [keySearch, setKeySearch] = React.useState<string>("");
 
     React.useEffect(() => {
         const id = setTimeout(() => {
             setIsLoading(true);
-            GetAccountsAPI({ offset: pagination.offset })
+            FindAccount(keySearch, pagination.offset)
                 .then((response) => {
                     if (response) {
                         setUsers(response.data);
@@ -73,7 +54,7 @@ export const UserManagement: React.FC = () => {
                 });
         }, 500);
         return () => clearTimeout(id);
-    }, [pagination.offset, dispatch]);
+    }, [pagination.offset, dispatch, keySearch]);
 
     const handleDeleteAccount = () => {
         if (userId) {
@@ -186,8 +167,11 @@ export const UserManagement: React.FC = () => {
                     className="form-control"
                     placeholder="Nhập từ khóa tìm kiếm..."
                     style={{ width: "300px" }}
+                    value={keySearch}
+                    onChange={(e) => setKeySearch(e.target.value)}
                 />
                 <button
+                    onClick={() => setKeySearch("")}
                     className='btn btn-primary'
                 >
                     <FontAwesomeIcon icon={faRedo} />
