@@ -25,6 +25,7 @@ import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDel
 import ModelAddUnit from "./ModelAddUnit";
 import Select from 'react-select';
 import GetProductsByName, { Unit } from "../../../services/Product/GetProductsByName";
+import GetAttributeDetailByKey from "../../../services/Attribute/GetAttributeDetailByKey";
 
 interface AttributeValueManagementProps {
     handleCancelEditAttribute: () => void;
@@ -51,6 +52,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
     const [productName, setProductName] = React.useState<string>("");
     const [productSelect, setProductSelect] = React.useState<{ label: string, value: string, units: Unit[] } | null>(null);
     const [products, setProducts] = React.useState<{ label: string, value: string, units: Unit[] }[]>([]);
+    const [keySearch, setKeySearch] = React.useState<string>("");
 
     React.useEffect(() => {
         const id = setTimeout(() => {
@@ -74,27 +76,31 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
     }, [productName, dispatch]);
 
     React.useEffect(() => {
-        if (attributeId <= 5) {
-            setIsLoading(true);
-            GetAttributeDetail({ id: attributeId, offset: pagination.offset })
-                .then((response) => {
-                    if (response) {
-                        setAttributeValues(response.data);
-                        setPagination({
-                            totalPage: response.totalPage,
-                            limit: response.limit,
-                            offset: response.offset,
-                            totalElementOfPage: response.totalElementOfPage
-                        });
-                    }
-                }).catch((error) => {
-                    console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-                }).finally(() => {
-                    setIsLoading(false);
-                })
-        }
-    }, [attributeId, pagination.offset, dispatch, reload]);
+        const id = setTimeout(() => {
+            if (attributeId <= 5) {
+                setIsLoading(true);
+                GetAttributeDetailByKey({ id: attributeId, offset: pagination.offset, key: keySearch })
+                    .then((response) => {
+                        if (response) {
+                            setAttributeValues(response.data);
+                            setPagination({
+                                totalPage: response.totalPage,
+                                limit: response.limit,
+                                offset: response.offset,
+                                totalElementOfPage: response.totalElementOfPage
+                            });
+                        }
+                    }).catch((error) => {
+                        console.error(error);
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    }).finally(() => {
+                        setIsLoading(false);
+                    })
+            }
+        }, 500);
+
+        return () => clearTimeout(id);
+    }, [attributeId, pagination.offset, dispatch, reload, keySearch]);
 
     const handelDeleteAttributeValue = () => {
         if (attributeId <= 5) {
@@ -297,8 +303,11 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
                             className="form-control"
                             placeholder="Nhập từ khóa tìm kiếm..."
                             style={{ width: "300px" }}
+                            value={keySearch}
+                            onChange={(e) => setKeySearch(e.target.value)}
                         />
                         <button
+                            onClick={() => setKeySearch("")}
                             className='btn btn-primary'
                         >
                             <FontAwesomeIcon icon={faRedo} />
