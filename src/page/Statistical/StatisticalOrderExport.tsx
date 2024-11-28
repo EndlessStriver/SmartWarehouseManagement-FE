@@ -11,9 +11,9 @@ import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import formatDateVietNam from "../../util/FormartDateVietnam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
-import * as XLSX from 'xlsx';
 import ViewPDFOrderExport from "./compoments/ViewPDFOrderExport";
 import StatisticalOrderExportALLAPI from "../../services/Statistical/StatisticalOrderExportAllAPI";
+import ExcelJS from "exceljs";
 
 interface ConvertDataToDataExcel {
     orderExportCode: string;
@@ -67,44 +67,135 @@ const StatisticalOrderExport = () => {
     }, [reload]);
 
     const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
-        const result: ConvertDataToDataExcel[] = [];
-        data.forEach((item) => {
-            result.push({
-                orderExportCode: item.exportCode,
-                createDate: formatDateVietNam(item.create_at),
-                exportBy: item.exportBy,
-                productName: item.orderExportDetails[0].product.name,
-                quantity: item.orderExportDetails[0].quantity,
-                unit: item.orderExportDetails[0].unit.name,
-                status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy"
-            })
-        })
-        return result;
+        return data.map((item, index) => (
+            item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
+                {
+                    orderExportCode: item.exportCode,
+                    createDate: formatDateVietNam(item.create_at),
+                    exportBy: item.exportBy,
+                    productName: item.orderExportDetails[0].product.name,
+                    quantity: location.exportQuantity,
+                    unit: item.orderExportDetails[0].unit.name,
+                    location: location.locationCode,
+                    status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy"
+                }
+            ))
+        )).flat()
     }
 
     const exportToExcel = () => {
         setLoadingExportExcel(true);
+
         StatisticalOrderExportALLAPI(fromDate, toDate, status)
             .then((res) => {
-                if (res) {
-                    if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này" })
-                    const data = convertDataToDataExcel(res.data);
-                    const ws = XLSX.utils.json_to_sheet(data);
-                    const wb = XLSX.utils.book_new();
-                    const headers = [["Mã Phiếu Xuất", "Ngày Xuất", "Người Xuất", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị", "Trạng Thái"]];
-                    XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
-                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-                    XLSX.writeFile(wb, 'data.xlsx');
+                if (!res || res.data.length === 0) {
+                    dispatch({
+                        type: ActionTypeEnum.ERROR,
+                        message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này",
+                    });
+                    return;
                 }
+
+                const data = convertDataToDataExcel(res.data);
+
+                const workbook = new ExcelJS.Workbook();
+                const worksheet = workbook.addWorksheet("Danh Sách Xuất Kho");
+
+                const mainTitle = "Báo Cáo Xuất Kho";
+                worksheet.mergeCells("A1:H1");
+                const mainTitleCell = worksheet.getCell("A1");
+                mainTitleCell.value = mainTitle;
+                mainTitleCell.font = {
+                    size: 16,
+                    bold: true,
+                    color: { argb: "FFFFFFFF" },
+                };
+                mainTitleCell.alignment = { horizontal: "center", vertical: "middle" };
+                mainTitleCell.fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    fgColor: { argb: "FF1976D2" },
+                };
+
+                worksheet.addRow([]);
+
+                const headers = [
+                    "Mã Phiếu Xuất",
+                    "Ngày Xuất",
+                    "Người Xuất",
+                    "Tên Sản Phẩm",
+                    "Số Lượng",
+                    "Đơn Vị",
+                    "Vị Trí",
+                    "Trạng Thái",
+                ];
+                worksheet.addRow(headers);
+
+                worksheet.getRow(3).eachCell((cell) => {
+                    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+                    cell.fill = {
+                        type: "pattern",
+                        pattern: "solid",
+                        fgColor: { argb: "FF4CAF50" },
+                    };
+                    cell.alignment = { horizontal: "center", vertical: "middle" };
+                    cell.border = {
+                        top: { style: "thin" },
+                        left: { style: "thin" },
+                        bottom: { style: "thin" },
+                        right: { style: "thin" },
+                    };
+                });
+
+                data.forEach((row: any) => {
+                    worksheet.addRow(Object.values(row));
+                });
+
+                worksheet.eachRow((row, rowIndex) => {
+                    if (rowIndex > 3) {
+                        row.eachCell((cell) => {
+                            cell.alignment = { horizontal: "center", vertical: "middle" };
+                            cell.border = {
+                                top: { style: "thin" },
+                                left: { style: "thin" },
+                                bottom: { style: "thin" },
+                                right: { style: "thin" },
+                            };
+                        });
+                    }
+                });
+
+                worksheet.columns = headers.map((header) => ({
+                    header,
+                    width: undefined,
+                }));
+
+                workbook.xlsx.writeBuffer().then((buffer) => {
+                    const blob = new Blob([buffer], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "BaoCaoXuatKho.xlsx";
+
+                    document.body.appendChild(link);
+                    link.click();
+
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                });
             })
             .catch((err) => {
                 console.error(err);
-                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
             })
             .finally(() => {
                 setLoadingExportExcel(false);
-            })
+            });
     };
+
 
     return (
         <div>

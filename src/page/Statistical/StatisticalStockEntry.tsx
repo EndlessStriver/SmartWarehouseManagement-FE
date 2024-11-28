@@ -11,7 +11,6 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../Context/ContextMessage";
 import PaginationType from "../../interface/Pagination";
 import StatisticalStockEntryAPI, { CheckedProduct } from "../../services/Statistical/StatisticalStockEntryAPI";
-import * as XLSX from 'xlsx';
 import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
 import StatisticalStockEntryAllAPI from "../../services/Statistical/StatisticalStockEntryAllAPI";
 
@@ -73,28 +72,28 @@ const StaticticalStockEntry = () => {
         })
     }
 
-    const exportToExcel = () => {
-        setLoadingExportExcel(true);
-        StatisticalStockEntryAllAPI(fromDate, toDate)
-            .then((res) => {
-                if (res) {
-                    const data = convertDataToExcel(res.checkedProducts);
-                    const ws = XLSX.utils.json_to_sheet(data);
-                    const wb = XLSX.utils.book_new();
-                    const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
-                    XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
-                    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-                    XLSX.writeFile(wb, 'data.xlsx');
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
-            })
-            .finally(() => {
-                setLoadingExportExcel(false);
-            })
-    };
+    // const exportToExcel = () => {
+    //     setLoadingExportExcel(true);
+    //     StatisticalStockEntryAllAPI(fromDate, toDate)
+    //         .then((res) => {
+    //             if (res) {
+    //                 const data = convertDataToExcel(res.checkedProducts);
+    //                 const ws = XLSX.utils.json_to_sheet(data);
+    //                 const wb = XLSX.utils.book_new();
+    //                 const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
+    //                 XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
+    //                 XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    //                 XLSX.writeFile(wb, 'data.xlsx');
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.error(err);
+    //             dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
+    //         })
+    //         .finally(() => {
+    //             setLoadingExportExcel(false);
+    //         })
+    // };
 
     return (
         <div>
@@ -142,7 +141,7 @@ const StaticticalStockEntry = () => {
                     <button
                         disabled={productStockEntry.length === 0 || loadingExportExcel}
                         className="btn btn-success"
-                        onClick={exportToExcel}
+                    // onClick={exportToExcel}
                     >
                         <FontAwesomeIcon icon={faFileExcel} className="me-1" />
                         {loadingExportExcel ? "Đang xuất..." : "Xuất Excel"}
