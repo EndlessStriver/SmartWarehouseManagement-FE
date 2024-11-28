@@ -13,6 +13,7 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import DeleteSupplierById from "../../services/Supplier/DeleteSupplierById";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
+import GetSuppliersByField from '../../services/Supplier/GetSupplierByField';
 
 export const SupplierManagement: React.FC = () => {
 
@@ -24,37 +25,17 @@ export const SupplierManagement: React.FC = () => {
     const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
     const [supplierId, setSupplierId] = React.useState<string>("");
     const [pagination, setPagination] = React.useState<PaginationType>({
-        limit: 0,
-        offset: 0,
+        limit: 10,
+        offset: 1,
         totalPage: 0,
         totalElementOfPage: 0
     });
-
-    React.useEffect(() => {
-        setIsLoading(true);
-        GetSuppliers()
-            .then((response) => {
-                if (response) {
-                    setSuppliers(response.data);
-                    setPagination({
-                        limit: response.limit,
-                        offset: response.offset,
-                        totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    });
-                }
-            }).catch((error) => {
-                console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-            }).finally(() => {
-                setIsLoading(false);
-            });
-    }, [dispatch]);
+    const [keySearch, setKeySearch] = React.useState<string>("");
 
     React.useEffect(() => {
         const id = setTimeout(() => {
             setIsLoading(true);
-            GetSuppliers({ offset: pagination.offset })
+            GetSuppliersByField({ name: keySearch, offset: pagination.offset })
                 .then((response) => {
                     if (response) {
                         setSuppliers(response.data);
@@ -71,9 +52,9 @@ export const SupplierManagement: React.FC = () => {
                 }).finally(() => {
                     setIsLoading(false);
                 });
-        }, 1000);
+        }, 500);
         return () => clearTimeout(id);
-    }, [pagination.offset, dispatch]);
+    }, [pagination.offset, dispatch, keySearch]);
 
     const handelDeleteSupplier = () => {
         if (supplierId) {
@@ -176,8 +157,11 @@ export const SupplierManagement: React.FC = () => {
                     className="form-control"
                     placeholder="Nhập từ khóa tìm kiếm..."
                     style={{ width: "300px" }}
+                    onChange={(e) => setKeySearch(e.target.value)}
+                    value={keySearch}
                 />
                 <button
+                    onClick={() => setKeySearch("")}
                     className='btn btn-primary'
                 >
                     <FontAwesomeIcon icon={faRedo} />
