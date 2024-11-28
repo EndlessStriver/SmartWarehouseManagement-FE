@@ -61,7 +61,7 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
 
     return (
         <OverLay>
-            <div className="bg-light rounded p-4 position-relative" style={{ width: "1000px" }}>
+            <div className="bg-light rounded p-4 position-relative" style={{ width: "1200px" }}>
                 <CloseButton onClick={() => props.onClose()} className="position-absolute" style={{ top: "15px", right: "15px" }} />
                 <button
                     className="btn btn-danger"
@@ -83,27 +83,31 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Đơn vị</th>
+                                <th>Vị trí</th>
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 orderExport?.data.map((item, index) => (
-                                    <tr key={item.id}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.exportCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                        <td>{item.exportBy}</td>
-                                        <td>{item.orderExportDetails[0].product.name}</td>
-                                        <td>{item.orderExportDetails[0].quantity}</td>
-                                        <td>{item.orderExportDetails[0].unit.name}</td>
-                                        <td>
-                                            {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
-                                            {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
-                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
-                                        </td>
-                                    </tr>
-                                ))
+                                    item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
+                                        <tr key={item.id}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.exportCode}</td>
+                                            <td style={{ width: "150px" }}>{formatDateVietNam(item.create_at)}</td>
+                                            <td>{item.exportBy}</td>
+                                            <td>{item.orderExportDetails[0].product.name}</td>
+                                            <td>{location.exportQuantity}</td>
+                                            <td>{item.orderExportDetails[0].unit.name}</td>
+                                            <td>{location.locationCode}</td>
+                                            <td>
+                                                {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
+                                                {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
+                                                {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )).flat()
                             }
                         </tbody>
                     </Table>

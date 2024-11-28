@@ -180,27 +180,31 @@ const StatisticalOrderExport = () => {
                                 <th>Tên sản phẩm</th>
                                 <th>Số lượng</th>
                                 <th>Đơn vị</th>
+                                <th>Vị trí</th>
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 orderExport.map((item, index) => (
-                                    <tr key={item.id}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.exportCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                        <td>{item.exportBy}</td>
-                                        <td>{item.orderExportDetails[0].product.name}</td>
-                                        <td>{item.orderExportDetails[0].quantity}</td>
-                                        <td>{item.orderExportDetails[0].unit.name}</td>
-                                        <td>
-                                            {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
-                                            {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
-                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
-                                        </td>
-                                    </tr>
-                                ))
+                                    item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
+                                        <tr key={item.id}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.exportCode}</td>
+                                            <td>{formatDateVietNam(item.create_at)}</td>
+                                            <td>{item.exportBy}</td>
+                                            <td>{item.orderExportDetails[0].product.name}</td>
+                                            <td>{location.exportQuantity}</td>
+                                            <td>{item.orderExportDetails[0].unit.name}</td>
+                                            <td>{location.locationCode}</td>
+                                            <td>
+                                                {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
+                                                {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
+                                                {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )).flat()
                             }
                         </tbody>
                     </Table>
