@@ -1,8 +1,16 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
-import { InventoryData } from "./GetAllTransactionIventory";
 
-const FindIventory = async (from: string, to: string, limit?: number, offset?: number): Promise<InventoryData | undefined> => {
+interface ShelfInventory {
+    shelfId: string;
+}
+
+interface InventoryData {
+    note: string;
+    shelfInventory: ShelfInventory[];
+}
+
+const CreateIventory = async (data: InventoryData): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -14,12 +22,11 @@ const FindIventory = async (from: string, to: string, limit?: number, offset?: n
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/whtransaction/inventory/date?limit=${limit || 10}&offset=${offset || 1}&from=${from}&to=${to}&order=DESC`, {
+            await axios.post(`${HOST}/whtransaction/inventory-check`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            return response.data.data;
         }
     } catch (error) {
         console.error(error);
@@ -37,4 +44,4 @@ const FindIventory = async (from: string, to: string, limit?: number, offset?: n
     }
 }
 
-export default FindIventory;
+export default CreateIventory;

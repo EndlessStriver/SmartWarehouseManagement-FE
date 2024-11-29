@@ -1,16 +1,46 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface Product {
+export interface InventoryData {
+    data: InventoryTransaction[];
+    totalPage: number;
+    limit: number;
+    offset: number;
+    totalElementOfPage: number;
+    pending: number;
+}
+
+export interface InventoryTransaction {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
-    name: string;
-    description: string;
-    productCode: string;
-    img: string;
-    export_criteria: string;
+    transactionType: string;
+    note: string;
+    transactionDate: string;
+    quantity: number;
+    inventory: InventoryItem[];
+}
+
+interface InventoryItem {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    status: string;
+    inventoryDetail: InventoryDetail[];
+    shelves: Shelf;
+}
+
+interface InventoryDetail {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    quantity: number;
+    isIncrease: boolean;
+    location: Location;
+    products: Product;
 }
 
 interface Location {
@@ -27,18 +57,19 @@ interface Location {
     occupied: boolean;
 }
 
-interface InventoryDetail {
+interface Product {
     id: string;
     create_at: string;
     update_at: string;
     isDeleted: boolean;
-    quantity: number;
-    isIncrease: boolean;
-    location: Location;
-    products: Product;
+    name: string;
+    description: string;
+    productCode: string;
+    img: string;
+    export_criteria: string;
 }
 
-interface Shelves {
+interface Shelf {
     id: string;
     create_at: string;
     update_at: string;
@@ -55,37 +86,9 @@ interface Shelves {
     typeShelf: string;
 }
 
-interface Inventory {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    inventoryDetail: InventoryDetail[];
-    shelves: Shelves;
-}
-
-export interface TransactionData {
-    id: string;
-    create_at: string;
-    update_at: string;
-    isDeleted: boolean;
-    transactionType: string;
-    note: string;
-    transactionDate: string;
-    quantity: number;
-    inventory: Inventory[];
-}
-
-export interface ResponseData {
-    data: TransactionData[];
-    totalPage: number;
-    limit: number;
-    offset: number;
-    totalElementOfPage: number;
-}
 
 
-const GetAllTransactionIventory = async (limit?: number, offset?: number, order?: string): Promise<ResponseData | undefined> => {
+const GetAllTransactionIventory = async (limit?: number, offset?: number, order?: string): Promise<InventoryData | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -97,7 +100,7 @@ const GetAllTransactionIventory = async (limit?: number, offset?: number, order?
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/whtransaction/transaction-inventory-check?limit=${limit || 10}&offset=${offset || 1}&order=${order || "ASC"}`, {
+            const response = await axios.get(`${HOST}/whtransaction/transaction-inventory-check?limit=${limit || 10}&offset=${offset || 1}&order=${order || "DESC"}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

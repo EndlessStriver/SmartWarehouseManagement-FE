@@ -7,6 +7,7 @@ import React from "react";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import formatDateVietNam from "../../../util/FormartDateVietnam";
+import { NoData } from "../../../compoments/NoData/NoData";
 
 interface ModelViewIventoryDetailProps {
     onClose: () => void;
@@ -69,6 +70,11 @@ const ModelViewIventoryDetail: React.FC<ModelViewIventoryDetailProps> = (props) 
                             }
                         </tbody>
                     </Table>
+                    {
+                        itemParent.inventoryDetail.length === 0 && (
+                            <NoData lable="Chưa Có Thông Tin Kiểm Kê" />
+                        )
+                    }
                 </div>
             ))
         )

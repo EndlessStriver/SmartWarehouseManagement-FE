@@ -7,13 +7,14 @@ interface ModelConfirmProps {
     onConfirm: () => void;
     onClose: () => void;
     loading: boolean;
+    lable?: string;
 }
 
-const ModelConfirmDelete: React.FC<ModelConfirmProps> = ({ onConfirm, onClose, message, loading }) => {
+const ModelConfirmDelete: React.FC<ModelConfirmProps> = ({ onConfirm, onClose, message, loading, lable }) => {
     return (
         <OverLay className="fullscreen">
             <div className="global-model">
-                <h2 className="fw-bold text-center h2">Xác nhận xóa</h2>
+                <h2 className="fw-bold text-center h2">{lable || "Xác Nhận Xóa"}</h2>
                 <p>{message}</p>
                 {
                     loading ?
@@ -21,7 +22,7 @@ const ModelConfirmDelete: React.FC<ModelConfirmProps> = ({ onConfirm, onClose, m
                         :
                         <div className="model-buttons">
                             <button className="btn btn-secondary" onClick={onClose}>Hủy</button>
-                            <button className="btn btn-danger" onClick={() => { onConfirm() }}>Xóa</button>
+                            <button className="btn btn-danger" onClick={() => { onConfirm() }}>Xác nhận</button>
                         </div>
                 }
             </div>

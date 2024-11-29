@@ -189,7 +189,7 @@ const ExportProduct: React.FC = () => {
                                     <td>{formatDateVietNam(item.create_at)}</td>
                                     <td>
                                         {
-                                            item.status === "PENDING" ? <Badge bg="warning">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="primary">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
+                                            item.status === "PENDING" ? <Badge bg="warning" text="dark">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="primary">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
                                         }
                                     </td>
                                     <td>
