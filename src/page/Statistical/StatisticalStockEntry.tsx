@@ -2,36 +2,30 @@ import React from "react";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
 import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
-import Pagination from "../../compoments/Pagination/Pagination";
 import formatDateVietNam from "../../util/FormartDateVietnam";
 import { Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../Context/ContextMessage";
-import PaginationType from "../../interface/Pagination";
-import StatisticalStockEntryAPI, { CheckedProduct } from "../../services/Statistical/StatisticalStockEntryAPI";
+import StatisticalStockEntryAPI, { Item } from "../../services/Statistical/StatisticalStockEntryAPI";
 import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
-import StatisticalStockEntryAllAPI from "../../services/Statistical/StatisticalStockEntryAllAPI";
+import ExcelJS from 'exceljs';
 
 interface CheckedProductToDataExcel {
     productCode: string;
     productName: string;
     receiveQuantity: number;
     unit: string;
+    location: string;
+    importDate: string;
 }
 
 const StaticticalStockEntry = () => {
     const dispatch = useDispatchMessage();
     const [fromDate, setFromDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
     const [toDate, setToDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
-    const [productStockEntry, setProductStockEntry] = React.useState<CheckedProduct[]>([]);
-    const [pagination, setPagination] = React.useState<PaginationType>({
-        limit: 10,
-        offset: 1,
-        totalElementOfPage: 0,
-        totalPage: 0,
-    })
+    const [productStockEntry, setProductStockEntry] = React.useState<Item[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [reload, setReload] = React.useState<boolean>(false);
     const contentRef = React.useRef(null);
@@ -40,16 +34,10 @@ const StaticticalStockEntry = () => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalStockEntryAPI(fromDate, toDate, pagination.limit, pagination.offset)
+        StatisticalStockEntryAPI(fromDate, toDate)
             .then((res) => {
                 if (res) {
-                    setProductStockEntry(res.checkedProducts);
-                    setPagination({
-                        limit: res.limit,
-                        offset: res.currentPage,
-                        totalPage: res.totalPages,
-                        totalElementOfPage: 0,
-                    });
+                    setProductStockEntry(res.checkItems);
                 }
             })
             .catch((err) => {
@@ -61,39 +49,102 @@ const StaticticalStockEntry = () => {
             })
     }, [reload]);
 
-    const convertDataToExcel = (data: CheckedProduct[]): CheckedProductToDataExcel[] => {
+    const convertDataToExcel = (data: Item[]): CheckedProductToDataExcel[] => {
         return data.map((item) => {
             return {
                 productCode: item.product.productCode,
                 productName: item.product.name,
                 receiveQuantity: item.receiveQuantity,
-                unit: item.unit ? item.unit.name : "Không có"
+                unit: item.unit ? item.unit.name : "Không có",
+                location: item.locations[0].locationCode,
+                importDate: formatDateVietNam(item.create_at),
             }
         })
     }
 
-    // const exportToExcel = () => {
-    //     setLoadingExportExcel(true);
-    //     StatisticalStockEntryAllAPI(fromDate, toDate)
-    //         .then((res) => {
-    //             if (res) {
-    //                 const data = convertDataToExcel(res.checkedProducts);
-    //                 const ws = XLSX.utils.json_to_sheet(data);
-    //                 const wb = XLSX.utils.book_new();
-    //                 const headers = [["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị"]];
-    //                 XLSX.utils.sheet_add_aoa(ws, headers, { origin: "A1" });
-    //                 XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    //                 XLSX.writeFile(wb, 'data.xlsx');
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.error(err);
-    //             dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
-    //         })
-    //         .finally(() => {
-    //             setLoadingExportExcel(false);
-    //         })
-    // };
+    const exportToExcel = async () => {
+        try {
+            const data = convertDataToExcel(productStockEntry);
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Sheet1');
+
+            worksheet.mergeCells('A1:F1');
+            const titleCell = worksheet.getCell('A1');
+            titleCell.value = 'Báo Cáo Nhập Kho';
+            titleCell.font = { size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+            titleCell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FF4CAF50' },
+            };
+
+            const headers = ["Mã Sản Phẩm", "Tên Sản Phẩm", "Số Lượng", "Đơn Vị", "Vị Trí", "Ngày Nhập"];
+            worksheet.addRow(headers);
+
+            const headerRow = worksheet.getRow(2);
+            headerRow.eachCell((cell) => {
+                cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+                cell.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FF2196F3' },
+                };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            });
+
+            data.forEach((item) => {
+                worksheet.addRow([
+                    item.productCode,
+                    item.productName,
+                    item.receiveQuantity,
+                    item.unit,
+                    item.location,
+                    item.importDate,
+                ]);
+            });
+
+            worksheet.columns = [
+                { width: 15 },
+                { width: 30 },
+                { width: 10 },
+                { width: 10 },
+                { width: 15 },
+                { width: 15 },
+            ];
+
+            worksheet.eachRow((row, rowNumber) => {
+                if (rowNumber > 2) {
+                    row.eachCell((cell) => {
+                        cell.border = {
+                            top: { style: 'thin' },
+                            left: { style: 'thin' },
+                            bottom: { style: 'thin' },
+                            right: { style: 'thin' },
+                        };
+                    });
+                }
+            });
+
+            const buffer = await workbook.xlsx.writeBuffer();
+
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Báo_Cáo_Nhập_Kho_${new Date().toISOString().split('T')[0]}.xlsx`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            console.error("Error exporting to Excel:", error);
+        }
+    };
+
 
     return (
         <div>
@@ -141,7 +192,7 @@ const StaticticalStockEntry = () => {
                     <button
                         disabled={productStockEntry.length === 0 || loadingExportExcel}
                         className="btn btn-success"
-                    // onClick={exportToExcel}
+                        onClick={exportToExcel}
                     >
                         <FontAwesomeIcon icon={faFileExcel} className="me-1" />
                         {loadingExportExcel ? "Đang xuất..." : "Xuất Excel"}
@@ -160,6 +211,8 @@ const StaticticalStockEntry = () => {
                                 <th>Tên Sản Phẩm</th>
                                 <th>Số Lượng Nhập</th>
                                 <th>Đơn vị</th>
+                                <th>Vị trí</th>
+                                <th>Ngày Nhập</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -171,22 +224,14 @@ const StaticticalStockEntry = () => {
                                         <td>{item.product.name}</td>
                                         <td>{item.receiveQuantity}</td>
                                         <td>{item.unit ? item.unit.name : "Không có"}</td>
+                                        <td>{item.locations[0].locationCode}</td>
+                                        <td>{formatDateVietNam(item.create_at)}</td>
                                     </tr>
                                 ))
                             }
                         </tbody>
                     </Table>
                 </div>
-                {
-                    productStockEntry.length > 0 &&
-                    <Pagination
-                        currentPage={pagination.offset}
-                        totalPages={pagination.totalPage}
-                        onPageChange={(page) => {
-                            setPagination({ ...pagination, offset: page });
-                        }}
-                    />
-                }
                 {
                     productStockEntry.length === 0 &&
                     <NoData />

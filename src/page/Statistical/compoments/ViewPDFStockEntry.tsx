@@ -10,6 +10,7 @@ import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import StatisticalStockEntryAllAPI, { ProductCheckResponse } from "../../../services/Statistical/StatisticalStockEntryAllAPI";
+import StatisticalStockEntryAPI, { Item } from "../../../services/Statistical/StatisticalStockEntryAPI";
 
 interface ViewPDFStockEntryProps {
     onClose: () => void;
@@ -20,16 +21,16 @@ interface ViewPDFStockEntryProps {
 const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
 
     const dispatch = useDispatchMessage();
-    const [productStockEntry, setProductStockEntry] = React.useState<ProductCheckResponse>();
+    const [productStockEntry, setProductStockEntry] = React.useState<Item[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const contentRef = React.useRef(null);
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalStockEntryAllAPI(props.fromDate, props.toDate)
+        StatisticalStockEntryAPI(props.fromDate, props.toDate)
             .then((res) => {
                 if (res) {
-                    setProductStockEntry(res);
+                    setProductStockEntry(res.checkItems);
                 }
             })
             .catch((err) => {
@@ -79,27 +80,26 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
                                 <th>Tên Sản Phẩm</th>
                                 <th>Số Lượng Nhập</th>
                                 <th>Đơn vị</th>
+                                <th>Vị Trí</th>
+                                <th>Ngày Nhập</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
-                                productStockEntry?.checkedProducts.map((item, index) => (
+                                productStockEntry.map((item, index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{item.product.productCode}</td>
                                         <td>{item.product.name}</td>
                                         <td>{item.receiveQuantity}</td>
                                         <td>{item.unit ? item.unit.name : "Không có"}</td>
+                                        <td>{item.locations[0].locationCode}</td>
+                                        <td>{formatDateVietNam(item.create_at)}</td>
                                     </tr>
                                 ))
                             }
                         </tbody>
                     </Table>
-                    <div className="d-flex flex-row justify-content-between">
-                        <h6>Tổng số sản phẩm: <span className="fw-bold">{productStockEntry?.totalProducts}</span></h6>
-                        <h6>Tổng số lượng dự kiến: <span className="fw-bold">{productStockEntry?.totalExpectQuantity}</span></h6>
-                        <h6>Tổng số lượng nhập: <span className="fw-bold">{productStockEntry?.totalReceiveQuantity}</span></h6>
-                    </div>
                 </div>
                 {
                     loading &&

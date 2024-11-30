@@ -1,6 +1,20 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
+interface Location {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    locationCode: string;
+    maxCapacity: string;
+    currentCapacity: string;
+    maxWeight: string;
+    currentWeight: string;
+    quantity: number;
+    occupied: boolean;
+}
+
 interface Product {
     id: string;
     create_at: string;
@@ -10,6 +24,7 @@ interface Product {
     description: string;
     productCode: string;
     img: string;
+    export_criteria: string;
 }
 
 interface Unit {
@@ -21,28 +36,35 @@ interface Unit {
     isBaseUnit: boolean;
 }
 
-export interface CheckedProduct {
-    product: Product;
+export interface Item {
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
     expectQuantity: number;
     receiveQuantity: number;
-    unit: Unit | null;
+    itemStatus: boolean;
+    location: string;
+    product: Product;
+    unit: Unit;
+    locations: Location[];
 }
 
-interface ProductCheckResponse {
-    startDate: string;
-    endDate: string;
-    checkedProducts: CheckedProduct[];
-    totalCheckedProducts: number;
+interface StatisticalStockEntryResponse {
+    checkItems: Item[];
+    id: string;
+    create_at: string;
+    update_at: string;
+    isDeleted: boolean;
+    receiveDate: string;
+    receiveBy: string;
     totalExpectQuantity: number;
     totalReceiveQuantity: number;
-    currentPage: number;
-    totalPages: number;
-    limit: number;
 }
 
 
 
-const StatisticalStockEntryAPI = async (from: string, to: string, limit?: number, offset?: number): Promise<ProductCheckResponse | undefined> => {
+const StatisticalStockEntryAPI = async (from: string, to: string): Promise<StatisticalStockEntryResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -54,12 +76,12 @@ const StatisticalStockEntryAPI = async (from: string, to: string, limit?: number
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/receive-check/date/pagination?offset=${offset || 1}&limit=${limit || 10}&startDate=${from}&endDate=${to}`, {
+            const response = await axios.get(`${HOST}/receive-check/date/not-pagination?startDate=${from}&endDate=${to}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            return response.data.data;
+            return response.data.data[0]
         }
     } catch (error) {
         console.error(error);
