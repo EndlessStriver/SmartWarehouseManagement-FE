@@ -14,6 +14,7 @@ import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import ViewPDFOrderExport from "./compoments/ViewPDFOrderExport";
 import StatisticalOrderExportALLAPI from "../../services/Statistical/StatisticalOrderExportAllAPI";
 import ExcelJS from "exceljs";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ConvertDataToDataExcel {
     orderExportCode: string;
@@ -48,6 +49,7 @@ const StatisticalOrderExport = () => {
         StatisticalOrderExportAPI(fromDate, toDate, status, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
+                    console.log(res.data.length);
                     setOrderExport(res.data);
                     setPagination({
                         limit: res.limit,
@@ -67,25 +69,24 @@ const StatisticalOrderExport = () => {
     }, [reload]);
 
     const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
-        return data.map((item, index) => (
-            item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
-                {
+        return data.map((item) => {
+            return item.orderExportDetails.map((location) => {
+                return {
                     orderExportCode: item.exportCode,
                     createDate: formatDateVietNam(item.create_at),
                     exportBy: item.exportBy,
                     productName: item.orderExportDetails[0].product.name,
-                    quantity: location.exportQuantity,
+                    quantity: location.locationExport[0].exportQuantity,
                     unit: item.orderExportDetails[0].unit.name,
-                    location: location.locationCode,
-                    status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy"
+                    location: location.locationExport[0].locationCode,
+                    status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy",
                 }
-            ))
-        )).flat()
+            })
+        }).flat()
     }
 
     const exportToExcel = () => {
         setLoadingExportExcel(true);
-
         StatisticalOrderExportALLAPI(fromDate, toDate, status)
             .then((res) => {
                 if (!res || res.data.length === 0) {
@@ -264,7 +265,6 @@ const StatisticalOrderExport = () => {
                     <Table striped bordered hover responsive className="mt-4">
                         <thead>
                             <tr>
-                                <th>STT</th>
                                 <th>Mã Phiếu Xuất</th>
                                 <th>Ngày xuất</th>
                                 <th>Người xuất</th>
@@ -277,17 +277,16 @@ const StatisticalOrderExport = () => {
                         </thead>
                         <tbody>
                             {
-                                orderExport.map((item, index) => (
-                                    item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
-                                        <tr key={item.id}>
-                                            <td>{index + 1}</td>
+                                orderExport.map((item) => (
+                                    item.orderExportDetails.map((location) => (
+                                        <tr key={uuidv4().toString()}>
                                             <td>{item.exportCode}</td>
                                             <td>{formatDateVietNam(item.create_at)}</td>
                                             <td>{item.exportBy}</td>
                                             <td>{item.orderExportDetails[0].product.name}</td>
-                                            <td>{location.exportQuantity}</td>
+                                            <td>{location.locationExport[0].exportQuantity}</td>
                                             <td>{item.orderExportDetails[0].unit.name}</td>
-                                            <td>{location.locationCode}</td>
+                                            <td>{location.locationExport[0].locationCode}</td>
                                             <td>
                                                 {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
                                                 {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}

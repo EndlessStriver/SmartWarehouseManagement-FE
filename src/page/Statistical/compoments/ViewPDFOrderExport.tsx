@@ -10,6 +10,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ViewPDFOrderExportProps {
     onClose: () => void;
@@ -76,7 +77,6 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                     <Table striped bordered hover responsive className="mt-4">
                         <thead>
                             <tr>
-                                <th>STT</th>
                                 <th>Mã Phiếu Xuất</th>
                                 <th>Ngày xuất</th>
                                 <th>Người xuất</th>
@@ -89,17 +89,16 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                         </thead>
                         <tbody>
                             {
-                                orderExport?.data.map((item, index) => (
-                                    item.orderExportDetails[0].locationExport.map((location, indexLocation) => (
-                                        <tr key={item.id}>
-                                            <td>{index + 1}</td>
+                                orderExport?.data.map((item) => (
+                                    item.orderExportDetails.map((location) => (
+                                        <tr key={uuidv4().toString()}>
                                             <td>{item.exportCode}</td>
-                                            <td style={{ width: "150px" }}>{formatDateVietNam(item.create_at)}</td>
+                                            <td>{formatDateVietNam(item.create_at)}</td>
                                             <td>{item.exportBy}</td>
                                             <td>{item.orderExportDetails[0].product.name}</td>
-                                            <td>{location.exportQuantity}</td>
+                                            <td>{location.locationExport[0].exportQuantity}</td>
                                             <td>{item.orderExportDetails[0].unit.name}</td>
-                                            <td>{location.locationCode}</td>
+                                            <td>{location.locationExport[0].locationCode}</td>
                                             <td>
                                                 {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
                                                 {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}

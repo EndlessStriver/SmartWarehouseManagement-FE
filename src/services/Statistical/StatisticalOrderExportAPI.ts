@@ -1,7 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-interface ExportOrderResponse {
+interface ExportData {
     data: ExportOrder[];
     totalPage: number;
     limit: number;
@@ -21,10 +21,10 @@ export interface ExportOrder {
     description: string;
     exportBy: string;
     totalQuantity: number;
-    orderExportDetails: OrderExportDetail[];
+    orderExportDetails: ExportDetail[];
 }
 
-interface OrderExportDetail {
+interface ExportDetail {
     id: string;
     create_at: string;
     update_at: string;
@@ -32,13 +32,13 @@ interface OrderExportDetail {
     skuCode: string;
     quantity: number;
     itemStatus: boolean;
-    locationExport: LocationExport[];
+    locationExport: ExportLocation[];
     product: Product;
     unit: Unit;
     sku: SKU;
 }
 
-interface LocationExport {
+interface ExportLocation {
     locationCode: string;
     exportQuantity: number;
     availableQuantity: number;
@@ -53,6 +53,7 @@ interface Product {
     description: string;
     productCode: string;
     img: string;
+    export_criteria: string;
 }
 
 interface Unit {
@@ -77,7 +78,8 @@ interface SKU {
 }
 
 
-const StatisticalOrderExportAPI = async (from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportOrderResponse | undefined> => {
+
+const StatisticalOrderExportAPI = async (from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportData | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
