@@ -36,7 +36,7 @@ interface Unit {
     isBaseUnit: boolean;
 }
 
-export interface Item {
+interface Item {
     id: string;
     create_at: string;
     update_at: string;
@@ -50,7 +50,7 @@ export interface Item {
     locations: Location[];
 }
 
-interface StatisticalStockEntryResponse {
+export interface StatisticalStockEntryResponse {
     checkItems: Item[];
     id: string;
     create_at: string;
@@ -64,7 +64,7 @@ interface StatisticalStockEntryResponse {
 
 
 
-const StatisticalStockEntryAPI = async (from: string, to: string): Promise<StatisticalStockEntryResponse | undefined> => {
+const StatisticalStockEntryAPI = async (from: string, to: string): Promise<StatisticalStockEntryResponse[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
@@ -81,7 +81,7 @@ const StatisticalStockEntryAPI = async (from: string, to: string): Promise<Stati
                     Authorization: `Bearer ${token}`
                 }
             });
-            return response.data.data[0]
+            return response.data.data
         }
     } catch (error) {
         console.error(error);

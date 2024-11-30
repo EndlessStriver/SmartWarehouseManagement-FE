@@ -9,8 +9,8 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
-import StatisticalStockEntryAllAPI, { ProductCheckResponse } from "../../../services/Statistical/StatisticalStockEntryAllAPI";
-import StatisticalStockEntryAPI, { Item } from "../../../services/Statistical/StatisticalStockEntryAPI";
+import StatisticalStockEntryAPI, { StatisticalStockEntryResponse } from "../../../services/Statistical/StatisticalStockEntryAPI";
+import { v4 as uuidv4 } from 'uuid';
 
 interface ViewPDFStockEntryProps {
     onClose: () => void;
@@ -21,7 +21,7 @@ interface ViewPDFStockEntryProps {
 const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
 
     const dispatch = useDispatchMessage();
-    const [productStockEntry, setProductStockEntry] = React.useState<Item[]>([]);
+    const [productStockEntry, setProductStockEntry] = React.useState<StatisticalStockEntryResponse[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const contentRef = React.useRef(null);
 
@@ -30,7 +30,7 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
         StatisticalStockEntryAPI(props.fromDate, props.toDate)
             .then((res) => {
                 if (res) {
-                    setProductStockEntry(res.checkItems);
+                    setProductStockEntry(res);
                 }
             })
             .catch((err) => {
@@ -75,7 +75,6 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
                     <Table striped bordered responsive className="mt-4">
                         <thead>
                             <tr>
-                                <th>STT</th>
                                 <th>Mã Sản Phẩm</th>
                                 <th>Tên Sản Phẩm</th>
                                 <th>Số Lượng Nhập</th>
@@ -86,17 +85,18 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
                         </thead>
                         <tbody>
                             {
-                                productStockEntry.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.product.productCode}</td>
-                                        <td>{item.product.name}</td>
-                                        <td>{item.receiveQuantity}</td>
-                                        <td>{item.unit ? item.unit.name : "Không có"}</td>
-                                        <td>{item.locations[0].locationCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                    </tr>
-                                ))
+                                productStockEntry.map((item) => {
+                                    return item.checkItems.map((item1) => (
+                                        <tr key={uuidv4()}>
+                                            <td>{item1.product.productCode}</td>
+                                            <td>{item1.product.name}</td>
+                                            <td>{item1.receiveQuantity}</td>
+                                            <td>{item1.unit ? item1.unit.name : "Không có"}</td>
+                                            <td>{item1.locations[0].locationCode}</td>
+                                            <td>{formatDateVietNam(item1.create_at)}</td>
+                                        </tr>
+                                    ))
+                                }).flat()
                             }
                         </tbody>
                     </Table>

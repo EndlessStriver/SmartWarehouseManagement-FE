@@ -61,8 +61,8 @@ const ModelViewIventoryDetail: React.FC<ModelViewIventoryDetailProps> = (props) 
                                     <tr key={item.id}>
                                         <td>{item.location.locationCode}</td>
                                         <td>{item.products.name}</td>
-                                        <td style={{ textAlign: "center" }}>{item.location.quantity}</td>
                                         <td style={{ textAlign: "center" }}>{(item.quantity !== 0 && (item.isIncrease ? item.location.quantity - item.quantity : item.location.quantity + item.quantity)) || item.location.quantity}</td>
+                                        <td style={{ textAlign: "center" }}>{item.location.quantity}</td>
                                         <td style={{ textAlign: "center" }}>{item.quantity}</td>
                                         <td style={{ textAlign: "center" }}>{item.quantity === 0 ? "------" : (item.isIncrease ? "Tăng" : "Giảm")}</td>
                                     </tr>

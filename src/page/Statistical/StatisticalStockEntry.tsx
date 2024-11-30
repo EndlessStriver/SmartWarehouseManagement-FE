@@ -8,9 +8,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import { useDispatchMessage } from "../../Context/ContextMessage";
-import StatisticalStockEntryAPI, { Item } from "../../services/Statistical/StatisticalStockEntryAPI";
+import StatisticalStockEntryAPI, { StatisticalStockEntryResponse } from "../../services/Statistical/StatisticalStockEntryAPI";
 import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
 import ExcelJS from 'exceljs';
+import { v4 as uuidv4 } from 'uuid';
 
 interface CheckedProductToDataExcel {
     productCode: string;
@@ -25,7 +26,7 @@ const StaticticalStockEntry = () => {
     const dispatch = useDispatchMessage();
     const [fromDate, setFromDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
     const [toDate, setToDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
-    const [productStockEntry, setProductStockEntry] = React.useState<Item[]>([]);
+    const [productStockEntry, setProductStockEntry] = React.useState<StatisticalStockEntryResponse[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [reload, setReload] = React.useState<boolean>(false);
     const contentRef = React.useRef(null);
@@ -37,7 +38,7 @@ const StaticticalStockEntry = () => {
         StatisticalStockEntryAPI(fromDate, toDate)
             .then((res) => {
                 if (res) {
-                    setProductStockEntry(res.checkItems);
+                    setProductStockEntry(res);
                 }
             })
             .catch((err) => {
@@ -49,17 +50,19 @@ const StaticticalStockEntry = () => {
             })
     }, [reload]);
 
-    const convertDataToExcel = (data: Item[]): CheckedProductToDataExcel[] => {
+    const convertDataToExcel = (data: StatisticalStockEntryResponse[]): CheckedProductToDataExcel[] => {
         return data.map((item) => {
-            return {
-                productCode: item.product.productCode,
-                productName: item.product.name,
-                receiveQuantity: item.receiveQuantity,
-                unit: item.unit ? item.unit.name : "Không có",
-                location: item.locations[0].locationCode,
-                importDate: formatDateVietNam(item.create_at),
-            }
-        })
+            return item.checkItems.map((item1) => {
+                return {
+                    productCode: item1.product.productCode,
+                    productName: item1.product.name,
+                    receiveQuantity: item1.receiveQuantity,
+                    unit: item1.unit ? item1.unit.name : "Không có",
+                    location: item1.locations[0].locationCode,
+                    importDate: formatDateVietNam(item.create_at),
+                }
+            })
+        }).flat();
     }
 
     const exportToExcel = async () => {
@@ -206,7 +209,6 @@ const StaticticalStockEntry = () => {
                     <Table striped bordered responsive className="mt-4">
                         <thead>
                             <tr>
-                                <th>STT</th>
                                 <th>Mã Sản Phẩm</th>
                                 <th>Tên Sản Phẩm</th>
                                 <th>Số Lượng Nhập</th>
@@ -217,17 +219,18 @@ const StaticticalStockEntry = () => {
                         </thead>
                         <tbody>
                             {
-                                productStockEntry.map((item, index) => (
-                                    <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.product.productCode}</td>
-                                        <td>{item.product.name}</td>
-                                        <td>{item.receiveQuantity}</td>
-                                        <td>{item.unit ? item.unit.name : "Không có"}</td>
-                                        <td>{item.locations[0].locationCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                    </tr>
-                                ))
+                                productStockEntry.map((item) => {
+                                    return item.checkItems.map((item1) => (
+                                        <tr key={uuidv4()}>
+                                            <td>{item1.product.productCode}</td>
+                                            <td>{item1.product.name}</td>
+                                            <td>{item1.receiveQuantity}</td>
+                                            <td>{item1.unit ? item1.unit.name : "Không có"}</td>
+                                            <td>{item1.locations[0].locationCode}</td>
+                                            <td>{formatDateVietNam(item1.create_at)}</td>
+                                        </tr>
+                                    ))
+                                }).flat()
                             }
                         </tbody>
                     </Table>
