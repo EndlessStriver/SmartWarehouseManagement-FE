@@ -40,6 +40,7 @@ const Iventory: React.FC = () => {
                 GetAllTransactionIventory()
                     .then((res) => {
                         if (res) {
+                            console.log(res);
                             setTransactionData(res.data);
                             setPagination({ limit: res.limit, offset: res.offset, totalPage: res.totalPage });
                         }

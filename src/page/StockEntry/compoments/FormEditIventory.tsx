@@ -32,6 +32,7 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
             GetShelfByNameAndCategoryName({ keySearch, offset: pagination.offset })
                 .then((res) => {
                     if (res) {
+                        console.log(res);
                         setShelfs(res.data);
                         setPagination({ limit: res.limit, offset: res.offset, totalPage: res.totalPage });
                     }
@@ -159,6 +160,7 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
                                 <th>#</th>
                                 <th>Tên Kệ</th>
                                 <th>Loại Kệ</th>
+                                <th>Loại Hàng</th>
                                 <th>Chức Năng</th>
                             </tr>
                         </thead>
@@ -167,6 +169,7 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
                                 <tr key={shelf.id}>
                                     <td>{index + 1}</td>
                                     <td>{shelf.name}</td>
+                                    <td>{shelf.typeShelf !== "DAMAGED" ? "Kệ Thường" : "Kệ Chứa Hàng Lỗi"}</td>
                                     <td>{shelf.category.name}</td>
                                     <td>
                                         {shelfSelect.some((item) => item.value === shelf.id) ? (
@@ -180,6 +183,8 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
                                             </Button>
                                         ) : (
                                             <Button
+                                                style={{ cursor: (Number(shelf.currentCapacity) <= 0 || Number(shelf.currentWeight) <= 0) ? "not-allowed" : "pointer" }}
+                                                disabled={Number(shelf.currentCapacity) <= 0 || Number(shelf.currentWeight) <= 0}
                                                 onClick={() =>
                                                     setShelfSelect([...shelfSelect, { lable: shelf.name, value: shelf.id }])
                                                 }
