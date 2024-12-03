@@ -1,14 +1,14 @@
 import React from "react";
-import { OverLay } from "../../../compoments/OverLay/OverLay"
-import { Badge, CloseButton, Col, Row } from "react-bootstrap";
-import GetLocationByShelfIdt, { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
-import { useDispatchMessage } from "../../../Context/ContextMessage";
+import {OverLay} from "../../../compoments/OverLay/OverLay"
+import {Badge, CloseButton, Col, Row} from "react-bootstrap";
+import GetLocationByShelfIdt, {StorageLocation} from "../../../services/Location/GetLocationByShelfIdt";
+import {useDispatchMessage} from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import ModelLocationDetail from "./ModelLocationDetail";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faLocationDot} from "@fortawesome/free-solid-svg-icons";
 import SuggestInbound from "../../../services/StockEntry/SuggestInbound";
 import MoveProductInLocation from "../../../services/Location/MoveProductInLocation";
 import ListShelf from "../../StockEntry/compoments/ListShelf";
@@ -45,7 +45,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 })
                 .catch((error) => {
                     console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 1000);
         return () => clearTimeout(id);
@@ -59,7 +59,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 })
                 .catch((error) => {
                     console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }
     }, [dispatch, props.shelfId]);
@@ -164,26 +164,37 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 </Row>
                 <Row>
                     <Col>
-                        <h5><span className="fw-bold">Không gian đối đa: </span>{Number(shelf?.maxCapacity).toLocaleString()} cm3</h5>
+                        <h5><span
+                            className="fw-bold">Không gian đối đa: </span>{Number(shelf?.maxCapacity).toLocaleString()} cm3
+                        </h5>
                     </Col>
                     <Col>
-                        <h5><span className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3</h5>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <h5><span className="fw-bold">Khối lượng chứa đối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg</h5>
-                    </Col>
-                    <Col>
-                        <h5><span className="fw-bold">Khối lượng đang chứa :</span>{Number(shelf?.currentWeight).toLocaleString()} kg</h5>
+                        <h5><span
+                            className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3
+                        </h5>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <h5><span className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (shelf?.currentColumnsUsed || 0)} Vị trí</h5>
+                        <h5><span
+                            className="fw-bold">Khối lượng chứa đối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg
+                        </h5>
                     </Col>
                     <Col>
-                        <h5><span className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
+                        <h5><span
+                            className="fw-bold">Khối lượng đang chứa :</span>{Number(shelf?.currentWeight).toLocaleString()} kg
+                        </h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <h5><span
+                            className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (locations.filter((location) => location.occupied).length || 0)} Vị
+                            trí</h5>
+                    </Col>
+                    <Col>
+                        <h5><span
+                            className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
                             return location.occupied ? currentVal + 1 : currentVal
                         }, 0) || 0} Vị trí</h5>
                     </Col>
@@ -208,9 +219,11 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
                 }}
             >
                 <CloseButton
-                    onClick={() => { props.close() }}
+                    onClick={() => {
+                        props.close()
+                    }}
                     className="position-fixed bg-light"
-                    style={{ top: "15px", right: "15px", zIndex: "3000" }}
+                    style={{top: "15px", right: "15px", zIndex: "3000"}}
                 />
                 {renderGrid}
             </div>
@@ -257,7 +270,10 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
             })
                 .then((res) => {
                     if (res) {
-                        if (res.length === 0) dispatch({ message: "Không tìm thấy vị trí phù hợp", type: ActionTypeEnum.ERROR })
+                        if (res.length === 0) dispatch({
+                            message: "Không tìm thấy vị trí phù hợp",
+                            type: ActionTypeEnum.ERROR
+                        })
                         setSuggestedLocation(res.map((location) => {
                             return {
                                 value: location.locationId,
@@ -268,7 +284,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                 })
                 .catch((err) => {
                     console.error(err)
-                    dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
+                    dispatch({message: err.message, type: ActionTypeEnum.ERROR})
                 })
         }
     })
@@ -282,15 +298,15 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
 
     const handleSubmit = () => {
         if (quantity === 0) {
-            dispatch({ message: "Số lượng sản phẩm cần chuyển phải lớn hơn 0", type: ActionTypeEnum.ERROR })
+            dispatch({message: "Số lượng sản phẩm cần chuyển phải lớn hơn 0", type: ActionTypeEnum.ERROR})
             return;
         }
         if (unitId === "") {
-            dispatch({ message: "Chưa chọn đơn vị tính", type: ActionTypeEnum.ERROR })
+            dispatch({message: "Chưa chọn đơn vị tính", type: ActionTypeEnum.ERROR})
             return;
         }
         if (newLocation === undefined || newLocation?.value === "") {
-            dispatch({ message: "Chưa chọn vị trí mới", type: ActionTypeEnum.ERROR })
+            dispatch({message: "Chưa chọn vị trí mới", type: ActionTypeEnum.ERROR})
             return;
         }
         setLoading(true)
@@ -301,29 +317,31 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
             unitId: unitId
         })
             .then(() => {
-                dispatch({ message: "Chuyển hàng thành công", type: ActionTypeEnum.SUCCESS })
+                dispatch({message: "Chuyển hàng thành công", type: ActionTypeEnum.SUCCESS})
                 props.ressetShelf();
                 props.onClose();
             })
             .catch((err) => {
                 console.error(err)
-                dispatch({ message: err.message, type: ActionTypeEnum.ERROR })
+                dispatch({message: err.message, type: ActionTypeEnum.ERROR})
             })
             .finally(() => setLoading(false))
     }
 
     const updateNewLocation = (id: string, value: string) => {
-        setNewLocation({ value: id, label: value })
+        setNewLocation({value: id, label: value})
     }
 
     return (
         <OverLay className="disabled-padding">
-            <div className="p-4 bg-light rounded position-relative" style={{ width: "550px" }}>
-                <CloseButton onClick={() => props.onClose()} className="position-absolute" style={{ top: "15px", right: "15px" }} />
+            <div className="p-4 bg-light rounded position-relative" style={{width: "550px"}}>
+                <CloseButton onClick={() => props.onClose()} className="position-absolute"
+                             style={{top: "15px", right: "15px"}}/>
                 <h2 className="text-start">Chuyển Hàng</h2>
                 <div className="mb-3 text-start">
                     <label>Vị trí hiện tại</label>
-                    <input type="text" value={props.location.locationCode} className="form-control p-3" placeholder="Vị trí cần chuyển..." readOnly />
+                    <input type="text" value={props.location.locationCode} className="form-control p-3"
+                           placeholder="Vị trí cần chuyển..." readOnly/>
                 </div>
                 <div className="mb-3 text-start">
                     <label>Số lượng sản phẩm cần chuyển</label>
@@ -375,10 +393,10 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                         <button
                             disabled={quantity > 0 && unitId !== '' && props.location.skus.id && props.typeShelf ? false : true}
                             onClick={() => setShowListShelf(true)}
-                            style={{ width: "57px", height: "57px" }}
+                            style={{width: "57px", height: "57px"}}
                             className="btn btn-primary"
                         >
-                            <FontAwesomeIcon icon={faLocationDot} />
+                            <FontAwesomeIcon icon={faLocationDot}/>
                         </button>
                     </div>
                 </div>
@@ -439,7 +457,8 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                     props.location.occupied && (
                         <>
                             <div className="h6 text-info">{props.location.skus.productDetails.product.name}</div>
-                            <div className="h6">Số lượng: {props.location.quantity} {props.location.skus.productDetails.product.units?.find((unit) => unit.isBaseUnit)?.name || ""}</div>
+                            <div className="h6">Số
+                                lượng: {props.location.quantity} {props.location.skus.productDetails.product.units?.find((unit) => unit.isBaseUnit)?.name || ""}</div>
                         </>
                     )
                 }
@@ -452,7 +471,8 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
             }
             {
                 showOptions &&
-                <div className="position-absolute w-100 h-100 bg-light d-flex flex-column justify-content-center gap-1 p-2 rounded">
+                <div
+                    className="position-absolute w-100 h-100 bg-light d-flex flex-column justify-content-center gap-1 p-2 rounded">
                     <button
                         onClick={() => {
                             props.setLocationCode(props.location.locationCode)

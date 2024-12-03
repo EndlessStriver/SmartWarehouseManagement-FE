@@ -1,14 +1,15 @@
 import React from "react";
-import { OverLay } from "../../../compoments/OverLay/OverLay"
-import { Badge, CloseButton, Col, Row } from "react-bootstrap";
-import GetLocationByShelfIdt, { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
-import { useDispatchMessage } from "../../../Context/ContextMessage";
+import {OverLay} from "../../../compoments/OverLay/OverLay"
+import {Badge, CloseButton, Col, Row} from "react-bootstrap";
+import GetLocationByShelfIdt, {StorageLocation} from "../../../services/Location/GetLocationByShelfIdt";
+import {useDispatchMessage} from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
 import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
-import { useProductCheck } from "../../../Context/ContextProductCheck";
+import {useProductCheck} from "../../../Context/ContextProductCheck";
+import {Location} from "./ModelAddItemCheck";
 
 interface ListLocationProps {
     locationMoveId?: string;
@@ -18,9 +19,10 @@ interface ListLocationProps {
     productId: string
     unitId: string
     weight: number
-    addLocation: (id: string, name: string) => void;
+    addLocation: (locationId: string, locationName: string, maxQuantity: number) => void;
     close: () => void;
     closeAll: () => void;
+    temporaryLocation?: Location[]
 }
 
 const ListLocation: React.FC<ListLocationProps> = (props) => {
@@ -44,9 +46,9 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             .then((response) => {
                 if (response) setLocations(response)
             }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-            })
+            console.error(error)
+            dispatch({type: ActionTypeEnum.ERROR, message: error.message})
+        })
     }, [dispatch, props.shelfId]);
 
     React.useEffect(() => {
@@ -57,7 +59,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 })
                 .catch((error) => {
                     console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }
     }, [dispatch, props.shelfId]);
@@ -71,7 +73,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             })
             .catch((error) => {
                 console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                dispatch({type: ActionTypeEnum.ERROR, message: error.message});
             });
     }, [dispatch, props.quantity, props.unitId]);
 
@@ -114,10 +116,11 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     const checkLocationIsNotOk = (location: StorageLocation): boolean => {
         if (props.locationMoveId && props.locationMoveId === location.id) return true;
         if (location.occupied && location.skus.productDetails.product.id !== props.productId) return true;
-        if (returnValueCountIsUsed(location) < props.quantity) {
-            return true;
-        }
+        // if (returnValueCountIsUsed(location) < props.quantity) {
+        //     return true;
+        // }
         if (checkLocationIsChoose(location)) return true;
+        if (checkLocationIsChooseTemporary(location)) return true;
         return false
     }
 
@@ -127,16 +130,23 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
         return countUsedWidthVolume < countUsedWidthWeight ? countUsedWidthVolume : countUsedWidthWeight
     }
 
-    const checkLocationIsChoose = (location: StorageLocation): boolean => {
-
+    const checkLocationIsChooseTemporary = (location: StorageLocation): boolean => {
         let check = false;
+        if (props.temporaryLocation) {
+            for (let lct of props.temporaryLocation) {
+                if (lct.value === location.id) check = true;
+            }
+        }
+        return check;
+    }
 
+    const checkLocationIsChoose = (location: StorageLocation): boolean => {
+        let check = false;
         productCheck.forEach((product) => {
             product.listAddLocation.forEach((locationAdd) => {
                 if (locationAdd.location.value === location.id) check = true;
             })
         })
-
         return check;
     }
 
@@ -149,12 +159,12 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             >
                 <div>
                     <div className="h5 fw-bold">{location.locationCode}</div>
-                    <div className="h6">Còn trống: {(100 - (Number(location.currentCapacity) / Number(location.maxCapacity)) * 100).toFixed(2)}%</div>
                     {
                         location.occupied && (
                             <>
                                 <div className="h6">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
-                                <div className="h6">Số lượng: {location.quantity} {location.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name}</div>
+                                <div className="h6">Số
+                                    lượng: {location.quantity} {location.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name}</div>
                             </>
                         )
                     }
@@ -171,10 +181,13 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         <div
                             onClick={() => {
                                 if ((Number(location.maxCapacity) / props.volume) < props.quantity) {
-                                    dispatch({ type: ActionTypeEnum.ERROR, message: "Vị trí này không thể chứa đủ số lượng yêu cầu vui lòng giảm số lượng hoặc chọn một vị trí khác" })
+                                    dispatch({
+                                        type: ActionTypeEnum.ERROR,
+                                        message: "Vị trí này không thể chứa đủ số lượng yêu cầu vui lòng giảm số lượng hoặc chọn một vị trí khác"
+                                    })
                                     return;
                                 }
-                                props.addLocation(location.id, location.locationCode)
+                                props.addLocation(location.id, location.locationCode, returnValueCountIsUsed(location))
                                 props.closeAll()
                             }}
                             className={`btn btn-link ${checkLocationIsNotOk(location) ? "text-light" : "text-danger"}`}
@@ -189,14 +202,15 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         :
                         <Badge className="position-absolute top-0 end-0" bg="primary">Đang trống</Badge>
                 }
-                <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể chứa: <span>{returnValueCountIsUsed(location)}</span></Badge>
+                <Badge className="position-absolute top-100 start-50 translate-middle" bg="success">Số lượng có thể
+                    chứa: <span>{returnValueCountIsUsed(location)}</span></Badge>
                 {
                     checkLocationIsChoose(location) &&
                     <div className="position-absolute top-50 start-50 translate-middle">
                         <h3 className="fw-bold text-light">ĐÃ ĐƯỢC CHỌN</h3>
                     </div>
                 }
-            </button >
+            </button>
         )
     })
 
@@ -250,26 +264,37 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 </Row>
                 <Row>
                     <Col>
-                        <h5><span className="fw-bold">Không gian đối đa: </span>{Number(shelf?.maxCapacity).toLocaleString()} cm3</h5>
+                        <h5><span
+                            className="fw-bold">Không gian đối đa: </span>{Number(shelf?.maxCapacity).toLocaleString()} cm3
+                        </h5>
                     </Col>
                     <Col>
-                        <h5><span className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3</h5>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <h5><span className="fw-bold">Khối lượng tối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg</h5>
-                    </Col>
-                    <Col>
-                        <h5><span className="fw-bold">Khối lượng đang lưu trữ :</span>{Number(shelf?.currentWeight).toLocaleString()} kg</h5>
+                        <h5><span
+                            className="fw-bold">Không gian đã sử dụng :</span>{Number(shelf?.currentCapacity).toLocaleString()} cm3
+                        </h5>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <h5><span className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (shelf?.currentColumnsUsed || 0)} Vị trí</h5>
+                        <h5><span
+                            className="fw-bold">Khối lượng tối đa: </span>{Number(shelf?.maxWeight).toLocaleString()} kg
+                        </h5>
                     </Col>
                     <Col>
-                        <h5><span className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
+                        <h5><span
+                            className="fw-bold">Khối lượng đang lưu trữ :</span>{Number(shelf?.currentWeight).toLocaleString()} kg
+                        </h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <h5><span
+                            className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (shelf?.currentColumnsUsed || 0)} Vị
+                            trí</h5>
+                    </Col>
+                    <Col>
+                        <h5><span
+                            className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
                             if (location.occupied) return currentVal + 1;
                             return currentVal;
                         }, 0) || 0} Vị trí</h5>
@@ -295,9 +320,11 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 }}
             >
                 <CloseButton
-                    onClick={() => { props.close() }}
+                    onClick={() => {
+                        props.close()
+                    }}
                     className="position-fixed bg-light"
-                    style={{ top: "15px", right: "15px", zIndex: "3000" }}
+                    style={{top: "15px", right: "15px", zIndex: "3000"}}
                 />
                 {renderGrid}
             </div>

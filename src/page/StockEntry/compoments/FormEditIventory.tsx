@@ -28,11 +28,11 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
     const [pagination, setPagination] = React.useState({ limit: 10, offset: 1, totalPage: 1 });
 
     React.useEffect(() => {
+        console.log("useEffect");
         const id = setTimeout(() => {
             GetShelfByNameAndCategoryName({ keySearch, offset: pagination.offset })
                 .then((res) => {
                     if (res) {
-                        console.log(res);
                         setShelfs(res.data);
                         setPagination({ limit: res.limit, offset: res.offset, totalPage: res.totalPage });
                     }

@@ -15,6 +15,7 @@ import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete
 import DeleteShelf from "../../services/Location/DeleteShelf";
 import './css/StorageManagementPage.css'
 import ModelQRCodeShelf from "./Compoments/ModelQRCodeShelf";
+import GetLocationByShelfIdt from "../../services/Location/GetLocationByShelfIdt";
 
 const ShelfsPage: React.FC = () => {
 
@@ -33,55 +34,49 @@ const ShelfsPage: React.FC = () => {
         totalPage: 0,
         totalElementOfPage: 0
     })
-
     const [showQRCode, setShowQRCode] = React.useState<boolean>(false)
 
     React.useEffect(() => {
-        setIsLoading(true)
-        GetShelfs()
-            .then((response) => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const response = await GetShelfs({ offset: pagination.offset });
                 if (response) {
-                    setShelfList(response.data)
+                    const updatedShelfs = await Promise.all(
+                        response.data.map(async (shelf) => {
+                            try {
+                                const locations = await GetLocationByShelfIdt(shelf.id);
+                                if (locations) {
+                                    shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
+                                }
+                            } catch (error) {
+                                console.error(`Error fetching locations for shelf ID ${shelf.id}:`, error);
+                            }
+                            return shelf;
+                        })
+                    );
+                    setShelfList(updatedShelfs);
                     setPagination({
                         limit: Number(response.limit),
                         offset: Number(response.offset),
                         totalPage: response.totalPage,
-                        totalElementOfPage: response.totalElementOfPage
-                    })
+                        totalElementOfPage: response.totalElementOfPage,
+                    });
                 }
-            }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-            }).finally(() => {
-                setIsLoading(false)
-            })
-    }, [dispatch])
+            } catch (error) {
+                console.error(error);
+                dispatch({ type: ActionTypeEnum.ERROR, message: "Lỗi trong quá trình lấy danh sách kệ" });
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    React.useEffect(() => {
         const id = setTimeout(() => {
-            setIsLoading(true)
-            GetShelfs({ offset: pagination.offset })
-                .then((response) => {
-                    if (response) {
-                        setShelfList(response.data)
-                        setPagination({
-                            limit: Number(response.limit),
-                            offset: Number(response.offset),
-                            totalPage: response.totalPage,
-                            totalElementOfPage: response.totalElementOfPage
-                        })
-                    }
-                }).catch((error) => {
-                    console.error(error)
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-                }).finally(() => {
-                    setIsLoading(false)
-                })
-        }, 500)
+            fetchData();
+        }, 500);
 
-        return () => clearTimeout(id)
-
-    }, [dispatch, pagination.offset])
+        return () => clearTimeout(id);
+    }, [dispatch, pagination.offset]);
 
     const handleChangePage = (page: number) => {
         setPagination({ ...pagination, offset: page })
@@ -102,7 +97,17 @@ const ShelfsPage: React.FC = () => {
                 return GetShelfs()
             }).then((res) => {
                 if (res) {
-                    setShelfList(res.data)
+                    setShelfList(res.data.map((shelf) => {
+                        GetLocationByShelfIdt(shelf.id)
+                            .then((res) => {
+                                if (res) {
+                                    shelf.currentColumnsUsed = res.filter((lolcation) => lolcation.occupied).length
+                                }
+                            }).catch((error) => {
+                                console.error(error)
+                            })
+                        return shelf;
+                    }))
                     setPagination({
                         limit: Number(res.limit),
                         offset: Number(res.offset),
@@ -146,12 +151,6 @@ const ShelfsPage: React.FC = () => {
                         <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
                             {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
                         </Badge>
-                    </div>
-                </div>
-                <div className="d-flex w-100">
-                    <div style={{ flex: 1 }} className="text-end">Còn trống: &nbsp;</div>
-                    <div style={{ flex: 1 }} className="fw-bold text-start">
-                        {(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%
                     </div>
                 </div>
                 <div className="d-flex w-100">

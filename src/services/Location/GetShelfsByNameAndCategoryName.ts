@@ -31,7 +31,7 @@ const GetShelfByNameAndCategoryName = async (data: GetShelfByCategoryNameProps):
             localStorage.removeItem('profile');
             window.location.href = "/session-expired";
         } else {
-            const response = await axios.get(`${HOST}/shelf/name?name=${data.keySearch}&limit=${data?.limit || 10}&offset=${data?.limit || 1}&order=${data.order || "ASC"}&orderBy=${data.orderBy || "name"}`, {
+            const response = await axios.get(`${HOST}/shelf/name?name=${data.keySearch}&limit=${data?.limit || 10}&offset=${data?.offset || 1}&order=${data.order || "ASC"}&orderBy=${data.orderBy || "name"}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
