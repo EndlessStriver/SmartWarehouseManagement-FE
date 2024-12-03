@@ -1,13 +1,13 @@
-import {CloseButton, FormGroup} from "react-bootstrap"
-import {OverLay} from "../../../compoments/OverLay/OverLay"
+import { CloseButton, FormGroup } from "react-bootstrap"
+import { OverLay } from "../../../compoments/OverLay/OverLay"
 import React from "react"
 import ListShelf from "./ListShelf"
-import {useDispatchMessage} from "../../../Context/ContextMessage"
+import { useDispatchMessage } from "../../../Context/ContextMessage"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import SuggestInbound from "../../../services/StockEntry/SuggestInbound"
-import {useProductCheck} from "../../../Context/ContextProductCheck"
-import {NoData} from "../../../compoments/NoData/NoData";
-import {AddLocationType} from "./HandleStockEntryPage";
+import { useProductCheck } from "../../../Context/ContextProductCheck"
+import { NoData } from "../../../compoments/NoData/NoData";
+import { AddLocationType } from "./HandleStockEntryPage";
 
 interface ModelAddItemCheckProps {
     onClose: () => void
@@ -52,7 +52,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
         })
         setLocations((prevState) => prevState.map((lct) => {
             if (lct.value === locationId) {
-                return {...lct, isChecked: true}
+                return { ...lct, isChecked: true }
             }
             return lct
         }))
@@ -106,7 +106,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                 }
             } catch (error: any) {
                 console.error(error);
-                dispatch({message: error.message, type: ActionTypeEnum.ERROR});
+                dispatch({ message: error.message, type: ActionTypeEnum.ERROR });
             }
         };
         fetchSuggestedLocations();
@@ -121,7 +121,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
             for (let lct of locations) {
                 let exists = newLocationChoose.find((itemFind) => itemFind.value === lct.value);
                 if (exists && lct.isChecked) {
-                    exists = {...lct}
+                    exists = { ...lct }
                 } else if (exists && !lct.isChecked) {
                     newLocationChoose = newLocationChoose.filter((location) => location.value !== lct.value)
                 } else if (!exists && lct.isChecked) {
@@ -134,10 +134,10 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
 
     return (
         <OverLay>
-            <div className="position-relative bg-white shadow-sm rounded p-5" style={{width: "1350px"}}>
+            <div className="position-relative bg-white shadow-sm rounded p-5" style={{ width: "1350px" }}>
                 <CloseButton
                     className="position-absolute text-secondary"
-                    style={{top: "15px", right: "15px"}}
+                    style={{ top: "15px", right: "15px" }}
                     onClick={props.onClose}
                 />
                 <h2 className="fw-bold mb-4 text-primary">Thêm Mục</h2>
@@ -191,14 +191,14 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                                     const selectedLocations = locationChoose
                                         .map((location) => ({
                                             status: status,
-                                            location: {label: location.label, value: location.value},
+                                            location: { label: location.label, value: location.value },
                                             quantity: location.currentQuantity
                                         }));
                                     props.addItem(props.productCheckId, selectedLocations);
                                     props.onClose();
                                 }
                             } catch (error: any) {
-                                dispatch({type: ActionTypeEnum.ERROR, message: error.message});
+                                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                             }
                         }}
                         className="btn btn-primary p-3 fw-bold"
@@ -209,7 +209,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                 </div>
 
                 <div className={"d-flex flex-row gap-5"}>
-                    <FormGroup className="mb-4" style={{flex: 1}}>
+                    <FormGroup className="mb-4" style={{ flex: 1 }}>
                         <div className="d-flex align-items-center justify-content-between">
                             <label className="fw-semibold h5">Vị trí đề xuất:</label>
                             <button
@@ -234,11 +234,11 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                         </div>
                         <div>
                             {filterRecomandLocationIsCheck().length === 0 ? (
-                                <NoData lable={"Không tìm thấy vị trí phù hợp!"}/>
+                                <NoData lable={"Không tìm thấy vị trí phù hợp!"} />
                             ) : (
                                 <div className="d-flex flex-wrap align-items-center justify-content-start">
                                     {filterRecomandLocationIsCheck().map((location, index) => (
-                                        <div key={index} className="p-2" style={{width: "200px"}}>
+                                        <div key={index} className="p-2" style={{ width: "200px" }}>
                                             <div
                                                 className="d-flex flex-row align-items-center justify-content-between p-2 border rounded">
                                                 <span>{location.label}</span>
@@ -262,30 +262,34 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                             )}
                         </div>
                     </FormGroup>
-                    <FormGroup className="mb-4" style={{flex: 1}}>
+                    <FormGroup className="mb-4" style={{ flex: 1 }}>
                         <div className="d-flex align-items-center justify-content-between">
                             <label className="fw-semibold mb-2 h5">Danh sách vị trí đã chọn:</label>
                         </div>
                         <div>
                             {locationChoose.length === 0 ? (
-                                <NoData lable={"Chưa có vị trí nào được chọn"}/>
+                                <NoData lable={"Chưa có vị trí nào được chọn"} />
                             ) : (
                                 <div className="d-flex flex-wrap align-items-center justify-content-start gap-1">
                                     {locationChoose.map((mylct, index) => (
-                                        <div key={index} className="p-2 shadow rounded" style={{width: "190px"}}>
+                                        <div key={index} className="p-2 shadow rounded" style={{ width: "190px" }}>
                                             <div
                                                 className="d-flex flex-row align-items-center justify-content-between p-2 border rounded">
                                                 <span>{mylct.label}</span>
                                                 <CloseButton
-                                                    style={{backgroundColor: "gray"}}
+                                                    style={{ backgroundColor: "gray" }}
                                                     onClick={() => {
-                                                        setLocations((prevState) => prevState.map((data) => {
-                                                            if (data.value === mylct.value) {
-                                                                return {...data, isChecked: false};
-                                                            } else {
-                                                                return data;
-                                                            }
-                                                        }))
+                                                        if (locations.find((location) => location.value === mylct.value)) {
+                                                            setLocations((prevState) => prevState.map((data) => {
+                                                                if (data.value === mylct.value) {
+                                                                    return { ...data, isChecked: false };
+                                                                } else {
+                                                                    return data;
+                                                                }
+                                                            }))
+                                                        } else {
+                                                            setLocationChoose((prevState) => prevState.filter((data) => data.value !== mylct.value));
+                                                        }
                                                     }}
                                                 />
                                             </div>
@@ -302,7 +306,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                                                     }
                                                     return lctc
                                                 }))}
-                                                className="form-control mt-2" placeholder="Số lượng nhập"/>
+                                                className="form-control mt-2" placeholder="Số lượng nhập" />
                                         </div>
                                     ))}
                                 </div>

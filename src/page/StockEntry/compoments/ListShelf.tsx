@@ -1,17 +1,18 @@
 import React from "react";
-import {OverLay} from "../../../compoments/OverLay/OverLay"
+import { OverLay } from "../../../compoments/OverLay/OverLay"
 import Shelf from "../../../interface/Entity/Shelf";
 import PaginationType from "../../../interface/Pagination";
 import GetShelfs from "../../../services/Location/GetShelfs";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
-import {useDispatchMessage} from "../../../Context/ContextMessage";
-import {Badge, CloseButton, Form} from "react-bootstrap";
+import { useDispatchMessage } from "../../../Context/ContextMessage";
+import { Badge, CloseButton, Form } from "react-bootstrap";
 import Pagination from "../../../compoments/Pagination/Pagination";
 import ListLocation from "./ListLocation";
-import {NoData} from "../../../compoments/NoData/NoData";
+import { NoData } from "../../../compoments/NoData/NoData";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import GetShelfByCategoryNameAndTypeShelf from "../../../services/Location/GetShelfsByCategoryName";
-import {Location} from "./ModelAddItemCheck";
+import { Location } from "./ModelAddItemCheck";
+import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelfIdt";
 
 interface ListShelfProps {
     onClose: () => void
@@ -45,42 +46,73 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     React.useEffect(() => {
         if (!getAllShelf) {
             setIsLoading(true)
-            GetShelfByCategoryNameAndTypeShelf({categoryName: props.categoryName, typeShelf: props.status})
+            GetShelfByCategoryNameAndTypeShelf({ categoryName: props.categoryName, typeShelf: props.status })
                 .then((response) => {
                     if (response) {
-                        setShelfs(response.data)
                         setPagination({
                             limit: Number(response.limit),
                             offset: Number(response.offset),
                             totalPage: response.totalPage,
                             totalElementOfPage: response.totalElementOfPage
                         })
+                        return Promise.all(
+                            response.data.map(async (shelf) => {
+                                try {
+                                    const locations = await GetLocationByShelfIdt(shelf.id);
+                                    if (locations) {
+                                        shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
+                                    }
+                                } catch (error) {
+                                    console.error(`Error fetching locations for shelf ID ${shelf.id}:`, error);
+                                }
+                                return shelf;
+                            })
+                        )
                     }
-                }).catch((error) => {
-                console.error(error)
-                dispatch({type: ActionTypeEnum.ERROR, message: error.message})
-            }).finally(() => {
-                setIsLoading(false)
-            })
+                })
+                .then((shelfs) => {
+                    setShelfs(shelfs || []);
+                })
+                .catch((error) => {
+                    console.error(error)
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                }).finally(() => {
+                    setIsLoading(false)
+                })
         } else {
             setIsLoading(true)
             GetShelfs()
                 .then((response) => {
                     if (response) {
-                        setShelfs(response.data)
                         setPagination({
                             limit: Number(response.limit),
                             offset: Number(response.offset),
                             totalPage: response.totalPage,
                             totalElementOfPage: response.totalElementOfPage
                         })
+                        return Promise.all(
+                            response.data.map(async (shelf) => {
+                                try {
+                                    const locations = await GetLocationByShelfIdt(shelf.id);
+                                    if (locations) {
+                                        shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
+                                    }
+                                } catch (error) {
+                                    console.error(`Error fetching locations for shelf ID ${shelf.id}:`, error);
+                                }
+                                return shelf;
+                            })
+                        )
                     }
+                })
+                .then((shelfs) => {
+                    setShelfs(shelfs || []);
                 }).catch((error) => {
-                console.error(error)
-                dispatch({type: ActionTypeEnum.ERROR, message: error.message})
-            }).finally(() => {
-                setIsLoading(false)
-            })
+                    console.error(error)
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                }).finally(() => {
+                    setIsLoading(false)
+                })
         }
     }, [dispatch, props.categoryName, getAllShelf, props.status])
 
@@ -89,23 +121,38 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
         if (getAllShelf) {
             id = setTimeout(() => {
                 setIsLoading(true)
-                GetShelfs({offset: pagination.offset})
+                GetShelfs({ offset: pagination.offset })
                     .then((response) => {
                         if (response) {
-                            setShelfs(response.data)
                             setPagination({
                                 limit: Number(response.limit),
                                 offset: Number(response.offset),
                                 totalPage: response.totalPage,
                                 totalElementOfPage: response.totalElementOfPage
                             })
+                            return Promise.all(
+                                response.data.map(async (shelf) => {
+                                    try {
+                                        const locations = await GetLocationByShelfIdt(shelf.id);
+                                        if (locations) {
+                                            shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
+                                        }
+                                    } catch (error) {
+                                        console.error(`Error fetching locations for shelf ID ${shelf.id}:`, error);
+                                    }
+                                    return shelf;
+                                })
+                            )
                         }
+                    })
+                    .then((shelfs) => {
+                        setShelfs(shelfs || []);
                     }).catch((error) => {
-                    console.error(error)
-                    dispatch({type: ActionTypeEnum.ERROR, message: error.message})
-                }).finally(() => {
-                    setIsLoading(false)
-                })
+                        console.error(error)
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                    }).finally(() => {
+                        setIsLoading(false)
+                    })
             }, 500)
         } else {
             setIsLoading(true)
@@ -117,20 +164,35 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 })
                     .then((response) => {
                         if (response) {
-                            setShelfs(response.data)
                             setPagination({
                                 limit: Number(response.limit),
                                 offset: Number(response.offset),
                                 totalPage: response.totalPage,
                                 totalElementOfPage: response.totalElementOfPage
                             })
+                            return Promise.all(
+                                response.data.map(async (shelf) => {
+                                    try {
+                                        const locations = await GetLocationByShelfIdt(shelf.id);
+                                        if (locations) {
+                                            shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
+                                        }
+                                    } catch (error) {
+                                        console.error(`Error fetching locations for shelf ID ${shelf.id}:`, error);
+                                    }
+                                    return shelf;
+                                })
+                            )
                         }
+                    })
+                    .then((shelfs) => {
+                        setShelfs(shelfs || []);
                     }).catch((error) => {
-                    console.error(error)
-                    dispatch({type: ActionTypeEnum.ERROR, message: error.message})
-                }).finally(() => {
-                    setIsLoading(false)
-                })
+                        console.error(error)
+                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+                    }).finally(() => {
+                        setIsLoading(false)
+                    })
             }, 500)
         }
         return () => clearTimeout(id)
@@ -142,15 +204,15 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 <div
                     className="d-flex gap-1 flex-column justify-content-center align-items-center shadow btn btn-light position-relative"
                     key={index}
-                    style={{height: "250px"}}
+                    style={{ height: "250px" }}
                 >
                     <div className="d-flex w-100">
-                        <div style={{flex: 1}} className="text-end">Tên kệ: &nbsp;</div>
-                        <div style={{flex: 1}} className="fw-bold text-start">{shelf.name}</div>
+                        <div style={{ flex: 1 }} className="text-end">Tên kệ: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">{shelf.name}</div>
                     </div>
                     <div className="d-flex w-100">
-                        <div style={{flex: 1}} className="text-end">Loại kệ: &nbsp;</div>
-                        <div style={{flex: 1}} className="fw-bold text-start">
+                        <div style={{ flex: 1 }} className="text-end">Loại kệ: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
                             <Badge
                                 bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
                                 {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
@@ -158,20 +220,14 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         </div>
                     </div>
                     <div className="d-flex w-100">
-                        <div style={{flex: 1}} className="text-end">Còn trống: &nbsp;</div>
-                        <div style={{flex: 1}} className="fw-bold text-start">
-                            {(((Number(shelf.maxCapacity) - Number(shelf.currentCapacity)) / Number(shelf.maxCapacity)) * 100).toLocaleString()}%
-                        </div>
-                    </div>
-                    <div className="d-flex w-100">
-                        <div style={{flex: 1}} className="text-end">Loại hàng: &nbsp;</div>
-                        <div style={{flex: 1}} className="fw-bold text-start">
+                        <div style={{ flex: 1 }} className="text-end">Loại hàng: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
                             <span>{shelf.category?.name || ""}</span>
                         </div>
                     </div>
                     <div className="d-flex w-100">
-                        <div style={{flex: 1}} className="text-end">Vị trí trống: &nbsp;</div>
-                        <div style={{flex: 1}} className="fw-bold text-start">
+                        <div style={{ flex: 1 }} className="text-end">Vị trí trống: &nbsp;</div>
+                        <div style={{ flex: 1 }} className="fw-bold text-start">
                             <span>{shelf.totalColumns - shelf.currentColumnsUsed}</span>
                         </div>
                     </div>
@@ -190,7 +246,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     }
 
     const handleChangePage = (page: number) => {
-        setPagination({...pagination, offset: page})
+        setPagination({ ...pagination, offset: page })
     }
 
     return (
@@ -198,11 +254,11 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
             <CloseButton
                 onClick={() => props.onClose()}
                 className="position-fixed bg-white"
-                style={{top: "15px", right: "15px"}}
+                style={{ top: "15px", right: "15px" }}
             />
             <div
                 className="bg-white d-flex flex-column justify-content-center align-items-center p-5 rounded position-relative"
-                style={{minWidth: "800px", minHeight: "300px"}}>
+                style={{ minWidth: "800px", minHeight: "300px" }}>
                 <Form.Check
                     type="switch"
                     label="Lấy tẩt cả kệ"
@@ -241,11 +297,11 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 }
                 {
                     isLoading &&
-                    <SpinnerLoading/>
+                    <SpinnerLoading />
                 }
                 {
                     shelfs.length === 0 &&
-                    <NoData lable="Không tìm thấy kệ chứa phù hợp"/>
+                    <NoData lable="Không tìm thấy kệ chứa phù hợp" />
                 }
             </div>
             {

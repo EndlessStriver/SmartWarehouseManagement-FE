@@ -1,15 +1,15 @@
 import React from "react";
-import {OverLay} from "../../../compoments/OverLay/OverLay"
-import {Badge, CloseButton, Col, Row} from "react-bootstrap";
-import GetLocationByShelfIdt, {StorageLocation} from "../../../services/Location/GetLocationByShelfIdt";
-import {useDispatchMessage} from "../../../Context/ContextMessage";
+import { OverLay } from "../../../compoments/OverLay/OverLay"
+import { Badge, CloseButton, Col, Row } from "react-bootstrap";
+import GetLocationByShelfIdt, { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
+import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import Shelf from "../../../interface/Entity/Shelf";
 import GetShelfById from "../../../services/Location/GetShelfById";
 import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
-import {useProductCheck} from "../../../Context/ContextProductCheck";
-import {Location} from "./ModelAddItemCheck";
+import { useProductCheck } from "../../../Context/ContextProductCheck";
+import { Location } from "./ModelAddItemCheck";
 
 interface ListLocationProps {
     locationMoveId?: string;
@@ -46,9 +46,9 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             .then((response) => {
                 if (response) setLocations(response)
             }).catch((error) => {
-            console.error(error)
-            dispatch({type: ActionTypeEnum.ERROR, message: error.message})
-        })
+                console.error(error)
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
+            })
     }, [dispatch, props.shelfId]);
 
     React.useEffect(() => {
@@ -59,7 +59,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 })
                 .catch((error) => {
                     console.error(error);
-                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
+                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
                 });
         }
     }, [dispatch, props.shelfId]);
@@ -73,7 +73,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
             })
             .catch((error) => {
                 console.error(error);
-                dispatch({type: ActionTypeEnum.ERROR, message: error.message});
+                dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
             });
     }, [dispatch, props.quantity, props.unitId]);
 
@@ -127,7 +127,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     const returnValueCountIsUsed = (location: StorageLocation): number => {
         let countUsedWidthVolume = Math.floor((Number(location.maxCapacity) - Number(location.currentCapacity)) / (props.volume * valueConvert))
         let countUsedWidthWeight = Math.floor((Number(location.maxWeight) - Number(location.currentWeight)) / (props.weight * valueConvert))
-        return countUsedWidthVolume < countUsedWidthWeight ? countUsedWidthVolume : countUsedWidthWeight
+        return Math.min(countUsedWidthVolume <= 0 ? 0 : countUsedWidthVolume, countUsedWidthWeight <= 0 ? 0 : countUsedWidthWeight)
     }
 
     const checkLocationIsChooseTemporary = (location: StorageLocation): boolean => {
@@ -158,13 +158,12 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 className={`btn btn-light shadow shelf-item d-flex justify-content-center align-items-center position-relative ${checkLocationIsNotOk(location) ? "bg-warning" : "bg-light"}`}
             >
                 <div>
-                    <div className="h5 fw-bold">{location.locationCode}</div>
+                    <div className="h4 fw-bold">{location.locationCode}</div>
                     {
                         location.occupied && (
                             <>
-                                <div className="h6">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
-                                <div className="h6">Số
-                                    lượng: {location.quantity} {location.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name}</div>
+                                <div className="h6 text-info">Tên sản phẩm: {location.skus.productDetails.product.name}</div>
+                                <div className="h6">Số lượng: {location.quantity} {location.skus.productDetails.product.units.find((unit) => unit.isBaseUnit)?.name}</div>
                             </>
                         )
                     }
@@ -289,15 +288,17 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                 <Row>
                     <Col>
                         <h5><span
-                            className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (shelf?.currentColumnsUsed || 0)} Vị
-                            trí</h5>
+                            className="fw-bold">Vị trí còn trống: </span>{(shelf?.totalColumns || 0) - (locations.reduce((currentVal, location) => {
+                                if (location.occupied) return currentVal + 1;
+                                return currentVal;
+                            }, 0) || 0)} Vị trí</h5>
                     </Col>
                     <Col>
                         <h5><span
                             className="fw-bold">Vị trí đang sử dụng: </span>{locations.reduce((currentVal, location) => {
-                            if (location.occupied) return currentVal + 1;
-                            return currentVal;
-                        }, 0) || 0} Vị trí</h5>
+                                if (location.occupied) return currentVal + 1;
+                                return currentVal;
+                            }, 0) || 0} Vị trí</h5>
                     </Col>
                 </Row>
             </div>
@@ -324,7 +325,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
                         props.close()
                     }}
                     className="position-fixed bg-light"
-                    style={{top: "15px", right: "15px", zIndex: "3000"}}
+                    style={{ top: "15px", right: "15px", zIndex: "3000" }}
                 />
                 {renderGrid}
             </div>
