@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
@@ -79,7 +80,7 @@ interface SKU {
 
 
 
-const StatisticalOrderExportAPI = async (from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportData | undefined> => {
+const StatisticalOrderExportAPI = async (navigate: NavigateFunction, from: string, to: string, status: string, limit?: number, offset?: number): Promise<ExportData | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

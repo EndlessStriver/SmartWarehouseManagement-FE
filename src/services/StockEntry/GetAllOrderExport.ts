@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
@@ -39,7 +40,7 @@ interface RetrievedProduct {
 }
 
 
-const GetAllOrderExport = async (limit?: number, offset?: number): Promise<DataResponse | undefined> => {
+const GetAllOrderExport = async (navigate: NavigateFunction, limit?: number, offset?: number): Promise<DataResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

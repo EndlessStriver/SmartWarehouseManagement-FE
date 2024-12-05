@@ -7,6 +7,7 @@ import { OverLay } from "../../../compoments/OverLay/OverLay";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { useNavigate } from "react-router-dom";
 
 interface ModelConfirmDeleteSupplierProps {
     supplierId: string;
@@ -17,14 +18,15 @@ interface ModelConfirmDeleteSupplierProps {
 
 const ModelConfirmDeleteSupplier: React.FC<ModelConfirmDeleteSupplierProps> = ({ closeModelConfirmDelete, supplierId, updatePagination, updateSuppliers }) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [isLoading, setIsLoading] = React.useState(false);
 
     const handelDeleteSupplier = () => {
         setIsLoading(true);
-        DeleteSupplierById(supplierId)
+        DeleteSupplierById(supplierId, navigate)
             .then(() => {
-                return GetSuppliers();
+                return GetSuppliers(navigate);
             }).then((response) => {
                 if (response) {
                     updateSuppliers(response.data);

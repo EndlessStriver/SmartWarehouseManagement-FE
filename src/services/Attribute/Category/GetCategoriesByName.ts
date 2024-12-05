@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface Category {
     id: string;
@@ -8,7 +9,7 @@ interface Category {
     description: string;
 }
 
-const GetCategoriesByName = async (name: string): Promise<Category[] | undefined> => {
+const GetCategoriesByName = async (name: string, navigate: NavigateFunction): Promise<Category[] | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

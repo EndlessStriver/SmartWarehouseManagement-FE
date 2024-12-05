@@ -13,6 +13,7 @@ import UpdateAttributeValue from "../../../services/Attribute/UpdateAttributeVal
 import validateVietnamese from "../../../util/Validate/ValidateVietnamese";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { useNavigate } from "react-router-dom";
 
 interface EditAttributeValueProps {
     hideOverlay: () => void;
@@ -30,6 +31,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
     updatePagination
 }) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [formData, setFormData] = React.useState<Attribute>({
         name: "",
@@ -42,7 +44,7 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
     React.useEffect(() => {
         if (attributeDetailId) {
             setLoading(true);
-            GetAttributeValueById(attributeId, attributeDetailId)
+            GetAttributeValueById(attributeId, attributeDetailId, navigate)
                 .then((response) => {
                     if (response)
                         setFormData({
@@ -69,9 +71,9 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
     const handleSubmit = () => {
         setLoading(true);
         if (attributeDetailId) {
-            UpdateAttributeValue(attributeId, attributeDetailId, formData)
+            UpdateAttributeValue(attributeId, attributeDetailId, formData, navigate)
                 .then(() => {
-                    return GetAttributeDetail({ id: attributeId });
+                    return GetAttributeDetail({ id: attributeId }, navigate);
                 }).then((response) => {
                     if (response) {
                         updateAttributeValues(response.data);
@@ -91,9 +93,9 @@ export const FormEditAttributes: React.FC<EditAttributeValueProps> = ({
                     setLoading(false);
                 })
         } else {
-            AddAttributeValue(attributeId, formData)
+            AddAttributeValue(attributeId, formData, navigate)
                 .then(() => {
-                    return GetAttributeDetail({ id: attributeId });
+                    return GetAttributeDetail({ id: attributeId }, navigate);
                 }).then((response) => {
                     if (response) {
                         updateAttributeValues(response.data);

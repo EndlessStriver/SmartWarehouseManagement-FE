@@ -1,5 +1,6 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 export interface ExportOrder {
     id: string;
@@ -69,7 +70,7 @@ interface SKU {
 }
 
 
-const GetOrderExportById = async (orderExportId: string): Promise<ExportOrder | undefined> => {
+const GetOrderExportById = async (orderExportId: string, navigate: NavigateFunction): Promise<ExportOrder | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

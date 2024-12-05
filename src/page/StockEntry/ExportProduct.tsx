@@ -14,9 +14,11 @@ import ModelConfirmOrderExport from "./compoments/ModelConfirmOrderExport";
 import formatDateVietNam from "../../util/FormartDateVietnam";
 import DatePicker from "react-datepicker";
 import FindOrderExport from "../../services/StockEntry/FindOrderExport";
+import { useNavigate } from "react-router-dom";
 
 const ExportProduct: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [showFormEditExportProduct, setShowFormEditExportProduct] = React.useState<boolean>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -36,7 +38,7 @@ const ExportProduct: React.FC = () => {
 
     React.useEffect(() => {
         if (!isSearch) {
-            GetAllOrderExport(pagination.limit, pagination.offset)
+            GetAllOrderExport(navigate, pagination.limit, pagination.offset)
                 .then((response) => {
                     if (response) {
                         setExportProduct(response.data);
@@ -56,7 +58,7 @@ const ExportProduct: React.FC = () => {
                     setIsLoading(false);
                 })
         } else {
-            FindOrderExport(from!.toDateString(), to!.toDateString(), pagination.limit, pagination.offset)
+            FindOrderExport(navigate, from!.toDateString(), to!.toDateString(), pagination.limit, pagination.offset)
                 .then((response) => {
                     if (response) {
                         setExportProduct(response.data);

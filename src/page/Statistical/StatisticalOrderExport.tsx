@@ -15,6 +15,7 @@ import ViewPDFOrderExport from "./compoments/ViewPDFOrderExport";
 import StatisticalOrderExportALLAPI from "../../services/Statistical/StatisticalOrderExportAllAPI";
 import ExcelJS from "exceljs";
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
 
 interface ConvertDataToDataExcel {
     orderExportCode: string;
@@ -28,6 +29,7 @@ interface ConvertDataToDataExcel {
 
 const StatisticalOrderExport = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [fromDate, setFromDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
     const [toDate, setToDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
@@ -46,7 +48,7 @@ const StatisticalOrderExport = () => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalOrderExportAPI(fromDate, toDate, status, pagination.limit, pagination.offset)
+        StatisticalOrderExportAPI(navigate, fromDate, toDate, status, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
                     console.log(res.data.length);
@@ -87,7 +89,7 @@ const StatisticalOrderExport = () => {
 
     const exportToExcel = () => {
         setLoadingExportExcel(true);
-        StatisticalOrderExportALLAPI(fromDate, toDate, status)
+        StatisticalOrderExportALLAPI(fromDate, toDate, status, navigate)
             .then((res) => {
                 if (!res || res.data.length === 0) {
                     dispatch({

@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
@@ -8,7 +9,7 @@ interface Color {
     description: string;
 }
 
-const GetColorsByName = async (name: string): Promise<Color[] | undefined> => {
+const GetColorsByName = async (name: string, navigate: NavigateFunction): Promise<Color[] | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface Brand {
     id: string;
@@ -8,7 +9,7 @@ interface Brand {
     description: string;
 }
 
-const GetBrandsByName = async (name: string): Promise<Brand[] | undefined> => {
+const GetBrandsByName = async (name: string, navigate: NavigateFunction): Promise<Brand[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

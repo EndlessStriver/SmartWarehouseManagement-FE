@@ -25,6 +25,7 @@ import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDel
 import '../css/FormEditProduct.css'
 import AddImagesProduct from "../../../services/Product/AddImagesProduct";
 import OptionType from "../../../interface/OptionType";
+import { useNavigate } from "react-router-dom";
 
 interface FormEditProductProps {
     handleClose: () => void;
@@ -63,6 +64,7 @@ interface TypeImageUpload {
 
 const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const uploadRef = React.useRef<HTMLInputElement>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
@@ -241,7 +243,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         if (props.productId) {
-            GetProductById(props.productId)
+            GetProductById(props.productId, navigate)
                 .then((data) => {
                     if (data) {
                         setFormData(FormatDataGet(data));
@@ -270,7 +272,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetColorsByName(color)
+            GetColorsByName(color, navigate)
                 .then((data) => {
                     if (data) setColors(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -284,7 +286,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetBrandsByName(branch)
+            GetBrandsByName(branch, navigate)
                 .then((data) => {
                     if (data) setBranches(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -298,7 +300,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetMaterialsByName(model)
+            GetMaterialsByName(model, navigate)
                 .then((data) => {
                     if (data) setModels(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -312,7 +314,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetSizesByName(size)
+            GetSizesByName(size, navigate)
                 .then((data) => {
                     setSizes(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -326,7 +328,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetCategoriesByName(category)
+            GetCategoriesByName(category, navigate)
                 .then((data) => {
                     if (data) setCategories(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -340,7 +342,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetSuppliersByName(supplier)
+            GetSuppliersByName(supplier, navigate)
                 .then((data) => {
                     if (data) setSuppliers(data.map((size) => ({ value: size.id, label: size.name })));
                 })
@@ -400,7 +402,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         if (validate1()) return;
         setLoading(true);
         if (!props.productId) {
-            CreateProduct(formatDataCreate())
+            CreateProduct(formatDataCreate(), navigate)
                 .then(() => {
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo sản phẩm thành công" });
                     setTimeout(() => {
@@ -421,7 +423,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 dispatch({ type: ActionTypeEnum.ERROR, message: "Không có dữ liệu thay đổi" });
                 setLoading(false);
             } else {
-                UpdateProductByProductId(props.productId, dataUpdate)
+                UpdateProductByProductId(props.productId, dataUpdate, navigate)
                     .then((response) => {
                         if (response) {
                             setFormData(FormatDataGet(response));
@@ -469,7 +471,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
             const image = imagePreviews.find((image) => image.key === key);
             if (image) {
                 setLoading(true);
-                DeleteImageByProductId(props.productId, image.url)
+                DeleteImageByProductId(props.productId, image.url, navigate)
                     .then(() => {
                         const newPreviews = imagePreviews.filter((image) => image.key !== key);
                         setImagePreviews(newPreviews);
@@ -515,7 +517,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
     const handleAddNewImage = () => {
         if (images.length > 0) {
             setLoading(true);
-            AddImagesProduct(props.productId!, getListImage())
+            AddImagesProduct(props.productId!, getListImage(), navigate)
                 .then(() => {
                     setReload(!reload);
                     setImages([]);

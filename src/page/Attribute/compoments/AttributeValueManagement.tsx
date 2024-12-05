@@ -26,6 +26,7 @@ import ModelAddUnit from "./ModelAddUnit";
 import Select from 'react-select';
 import GetProductsByName, { Unit } from "../../../services/Product/GetProductsByName";
 import GetAttributeDetailByKey from "../../../services/Attribute/GetAttributeDetailByKey";
+import { useNavigate } from "react-router-dom";
 
 interface AttributeValueManagementProps {
     handleCancelEditAttribute: () => void;
@@ -34,6 +35,7 @@ interface AttributeValueManagementProps {
 
 export const AttributeValueManagement: React.FC<AttributeValueManagementProps> = ({ handleCancelEditAttribute, attributeId }) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [attributeValues, setAttributeValues] = React.useState<AttributeDetailType[]>([]);
     const [units, setUnits] = React.useState<Unit[]>([]);
@@ -56,7 +58,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetProductsByName(productName)
+            GetProductsByName(navigate, productName)
                 .then((response) => {
                     if (response) {
                         setProducts(response.map((product) => {
@@ -79,7 +81,7 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         const id = setTimeout(() => {
             if (attributeId <= 5) {
                 setIsLoading(true);
-                GetAttributeDetailByKey({ id: attributeId, offset: pagination.offset, key: keySearch })
+                GetAttributeDetailByKey({ id: attributeId, offset: pagination.offset, key: keySearch }, navigate)
                     .then((response) => {
                         if (response) {
                             setAttributeValues(response.data);
@@ -106,9 +108,9 @@ export const AttributeValueManagement: React.FC<AttributeValueManagementProps> =
         if (attributeId <= 5) {
             if (attributeValueId) {
                 setIsLoadingDelete(true);
-                DeleteAttributeValue(attributeId, attributeValueId)
+                DeleteAttributeValue(attributeId, attributeValueId, navigate)
                     .then(() => {
-                        return GetAttributeDetail({ id: attributeId });
+                        return GetAttributeDetail({ id: attributeId }, navigate);
                     }).then((response) => {
                         if (response) {
                             updateAttributeValues(response.data);

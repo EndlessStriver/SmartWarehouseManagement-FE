@@ -8,6 +8,7 @@ import SuggestInbound from "../../../services/StockEntry/SuggestInbound"
 import { useProductCheck } from "../../../Context/ContextProductCheck"
 import { NoData } from "../../../compoments/NoData/NoData";
 import { AddLocationType } from "./HandleStockEntryPage";
+import { useNavigate } from "react-router-dom"
 
 interface ModelAddItemCheckProps {
     onClose: () => void
@@ -32,6 +33,7 @@ export interface Location {
 
 const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const productChecks = useProductCheck();
     const [quantity, setQuantity] = React.useState<number>(0)
@@ -87,7 +89,7 @@ const ModelAddItemCheck: React.FC<ModelAddItemCheckProps> = (props) => {
                         skuId: props.skuId,
                         typeShelf: status,
                         unitId: props.unitId,
-                    });
+                    }, navigate);
 
                     if (response) {
                         const formattedLocations = response.map((location) => ({

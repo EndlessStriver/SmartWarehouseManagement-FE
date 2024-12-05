@@ -1,8 +1,9 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const DeleteAccountAPI = async (userId: string) => {
+const DeleteAccountAPI = async (userId: string, navigate: NavigateFunction) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

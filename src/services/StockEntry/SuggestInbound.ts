@@ -1,5 +1,6 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 export interface Location {
     locationCode: string;
@@ -14,7 +15,7 @@ interface SuggestInboundProps {
     quantity: number;
 }
 
-const SuggestInbound = async (data: SuggestInboundProps): Promise<Location[] | undefined> => {
+const SuggestInbound = async (data: SuggestInboundProps, navigate: NavigateFunction): Promise<Location[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

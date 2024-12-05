@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import Supplier from "../../interface/Entity/Supplier";
@@ -25,7 +26,7 @@ interface GetSuppliersProps {
     orderBy?: OrderBy;
 }
 
-const GetSuppliers = async (data?: GetSuppliersProps): Promise<GetSuppliersResponse | undefined> => {
+const GetSuppliers = async (navigate: NavigateFunction, data?: GetSuppliersProps): Promise<GetSuppliersResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

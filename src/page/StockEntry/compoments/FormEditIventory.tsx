@@ -10,6 +10,7 @@ import Pagination from "../../../compoments/Pagination/Pagination";
 import CreateIventory from "../../../services/StockEntry/CreateIventory";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { useNavigate } from "react-router-dom";
 
 interface FormEditIventoryProps {
     onClose: () => void;
@@ -18,6 +19,7 @@ interface FormEditIventoryProps {
 
 const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
 
+    const navigate = useNavigate();
     const profile = GetProfile();
     const dispatch = useDispatchMessage();
     const [loading, setLoading] = React.useState<boolean>(false);
@@ -30,7 +32,7 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
     React.useEffect(() => {
         console.log("useEffect");
         const id = setTimeout(() => {
-            GetShelfByNameAndCategoryName({ keySearch, offset: pagination.offset })
+            GetShelfByNameAndCategoryName({ keySearch, offset: pagination.offset }, navigate)
                 .then((res) => {
                     if (res) {
                         setShelfs(res.data);
@@ -53,7 +55,7 @@ const FormEditIventory: React.FC<FormEditIventoryProps> = (props) => {
             shelfInventory: shelfSelect.map((item) => {
                 return { shelfId: item.value }
             })
-        })
+        }, navigate)
             .then(() => {
                 dispatch({ message: "Tạo phiếu kiểm kê thành công", type: ActionTypeEnum.SUCCESS });
                 props.onClose();

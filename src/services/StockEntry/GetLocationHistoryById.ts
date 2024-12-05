@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
@@ -37,7 +38,7 @@ interface PaginatedResponse {
 }
 
 
-const GetLocationHistoryById = async (locationId: string, limit?: number, offset?: number, order?: string): Promise<PaginatedResponse | undefined> => {
+const GetLocationHistoryById = async (navigate: NavigateFunction, locationId: string, limit?: number, offset?: number, order?: string): Promise<PaginatedResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

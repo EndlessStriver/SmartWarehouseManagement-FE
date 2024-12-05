@@ -1,12 +1,13 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface LogoutResponse {
     message: string;
 }
 
-const LogoutAPI = async (): Promise<LogoutResponse | undefined> => {
+const LogoutAPI = async (navigate: NavigateFunction): Promise<LogoutResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");

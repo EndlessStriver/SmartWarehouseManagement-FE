@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface CreateSupplierProps {
     name: string;
@@ -18,7 +19,7 @@ interface CreateSupplierProps {
     isActive: boolean;
 }
 
-const CreateSupplier = async (data: CreateSupplierProps): Promise<void> => {
+const CreateSupplier = async (data: CreateSupplierProps, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

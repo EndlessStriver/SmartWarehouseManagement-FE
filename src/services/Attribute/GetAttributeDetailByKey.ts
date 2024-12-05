@@ -4,6 +4,7 @@ import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
 import Order from "../../enum/Order";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface GetAttributeDetailResponse {
     data: AttributeDetailType[];
@@ -21,7 +22,7 @@ interface GetAttributeDetailProps {
     order?: Order;
 }
 
-const GetAttributeDetailByKey = async (data: GetAttributeDetailProps): Promise<GetAttributeDetailResponse | undefined> => {
+const GetAttributeDetailByKey = async (data: GetAttributeDetailProps, navigate: NavigateFunction): Promise<GetAttributeDetailResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

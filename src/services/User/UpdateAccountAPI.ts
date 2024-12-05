@@ -3,8 +3,9 @@ import { ResponseError } from "../../interface/ResponseError";
 import DataTypeUpdateUserAdmin from "../../interface/PageUser/DataTypeUpdateUserAdmin";
 import User from "../../interface/Entity/User";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const UpdateAccountAPI = async (userId: string, dataUpdateUser: DataTypeUpdateUserAdmin): Promise<User | undefined> => {
+const UpdateAccountAPI = async (userId: string, dataUpdateUser: DataTypeUpdateUserAdmin, navigate: NavigateFunction): Promise<User | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

@@ -2,8 +2,9 @@ import axios from "axios";
 import DataTypeCreateProductAdmin from "../../interface/PageProduct/DataTypeCreateProductAdmin";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const CreateProduct = async (product: DataTypeCreateProductAdmin): Promise<void> => {
+const CreateProduct = async (product: DataTypeCreateProductAdmin, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

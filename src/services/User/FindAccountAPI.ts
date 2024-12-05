@@ -1,9 +1,10 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
 import { ResponseGetAccounts } from "./GetAccountsAPI";
 
-const FindAccount = async (key: string, offset?: number, limit?: number, order?: string): Promise<ResponseGetAccounts | undefined> => {
+const FindAccount = async (navigate: NavigateFunction, key: string, offset?: number, limit?: number, order?: string): Promise<ResponseGetAccounts | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

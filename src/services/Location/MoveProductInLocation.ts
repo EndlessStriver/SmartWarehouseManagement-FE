@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 interface MoveProductInLocationProps {
     locationCurrentId: string;
@@ -9,7 +10,7 @@ interface MoveProductInLocationProps {
     unitId: string;
 }
 
-const MoveProductInLocation = async (data: MoveProductInLocationProps) => {
+const MoveProductInLocation = async (data: MoveProductInLocationProps, navigate: NavigateFunction) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

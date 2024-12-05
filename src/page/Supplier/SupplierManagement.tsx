@@ -14,9 +14,11 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import DeleteSupplierById from "../../services/Supplier/DeleteSupplierById";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import GetSuppliersByField from '../../services/Supplier/GetSupplierByField';
+import { useNavigate } from 'react-router-dom';
 
 export const SupplierManagement: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -35,7 +37,7 @@ export const SupplierManagement: React.FC = () => {
     React.useEffect(() => {
         const id = setTimeout(() => {
             setIsLoading(true);
-            GetSuppliersByField({ name: keySearch, offset: pagination.offset })
+            GetSuppliersByField(navigate, { name: keySearch, offset: pagination.offset })
                 .then((response) => {
                     if (response) {
                         setSuppliers(response.data);
@@ -59,9 +61,9 @@ export const SupplierManagement: React.FC = () => {
     const handelDeleteSupplier = () => {
         if (supplierId) {
             setIsLoadingDelete(true);
-            DeleteSupplierById(supplierId)
+            DeleteSupplierById(supplierId, navigate)
                 .then(() => {
-                    return GetSuppliers();
+                    return GetSuppliers(navigate);
                 }).then((response) => {
                     if (response) {
                         updateSuppliers(response.data);

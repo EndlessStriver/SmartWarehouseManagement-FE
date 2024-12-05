@@ -1,8 +1,9 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
 import { ResponseError } from "../../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
-const DeleteUnitById = async (id: string) => {
+const DeleteUnitById = async (id: string, navigate: NavigateFunction) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");

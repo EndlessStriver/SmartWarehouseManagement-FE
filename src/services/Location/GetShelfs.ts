@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import Shelf from "../../interface/Entity/Shelf";
@@ -19,7 +20,7 @@ interface GetShelfsProps {
     orderBy?: string;
 }
 
-const GetShelfs = async (data?: GetShelfsProps): Promise<GetShelfsResponse | undefined> => {
+const GetShelfs = async (navigate: NavigateFunction, data?: GetShelfsProps): Promise<GetShelfsResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

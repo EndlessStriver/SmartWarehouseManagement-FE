@@ -1,3 +1,4 @@
+import { NavigateFunction } from "react-router-dom";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import axios from "axios";
 
@@ -97,7 +98,7 @@ interface Category {
     categoryCode: string;
 }
 
-const GetAllLocationHaveProduct = async (productId: string): Promise<Product | undefined> => {
+const GetAllLocationHaveProduct = async (productId: string, navigate: NavigateFunction): Promise<Product | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

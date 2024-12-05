@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
@@ -78,7 +79,7 @@ interface GetProductBySupplierRequestPage {
 }
 
 
-const GetProductsBySupplier = async (supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<PaginatedProductResponse | undefined> => {
+const GetProductsBySupplier = async (navigate: NavigateFunction, supplierId: string, pageRequest?: GetProductBySupplierRequestPage): Promise<PaginatedProductResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

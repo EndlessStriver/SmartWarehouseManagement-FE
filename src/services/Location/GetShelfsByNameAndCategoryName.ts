@@ -2,6 +2,7 @@ import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import Shelf from "../../interface/Entity/Shelf";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 export interface GetShelfByCategoryNameResponse {
     data: Shelf[];
@@ -19,7 +20,7 @@ interface GetShelfByCategoryNameProps {
     order?: "ASC" | "DESC";
 }
 
-const GetShelfByNameAndCategoryName = async (data: GetShelfByCategoryNameProps): Promise<GetShelfByCategoryNameResponse | undefined> => {
+const GetShelfByNameAndCategoryName = async (data: GetShelfByCategoryNameProps, navigate: NavigateFunction): Promise<GetShelfByCategoryNameResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

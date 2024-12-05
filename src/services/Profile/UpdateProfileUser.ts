@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Profile } from "../../interface/Profile";
@@ -12,7 +13,7 @@ interface DataTypeUpdateProfile {
     address?: string,
 }
 
-const UpdateProfileUser = async (data: DataTypeUpdateProfile): Promise<Profile | undefined> => {
+const UpdateProfileUser = async (data: DataTypeUpdateProfile, navigate: NavigateFunction): Promise<Profile | undefined> => {
 
     console.log(data);
 

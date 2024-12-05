@@ -14,6 +14,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import validatePhone from '../../../util/Validate/ValidatePhone';
 import validateEmail from '../../../util/Validate/ValidateEmail';
+import { useNavigate } from 'react-router-dom';
 
 interface SupplierDetailProps {
     supplierId: string;
@@ -24,6 +25,7 @@ interface SupplierDetailProps {
 
 const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverlay, updatePagination, updateSuppliers }) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -126,7 +128,7 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
     React.useEffect(() => {
         if (supplierId) {
             setIsLoading(true);
-            GetSupplierById(supplierId)
+            GetSupplierById(supplierId, navigate)
                 .then((response) => {
                     if (response) {
                         setFormData({
@@ -170,9 +172,9 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
         if (!validate1() && !valdiate2()) {
             setIsSaving(true);
             if (supplierId) {
-                UpdateSupplierById(supplierId, formData)
+                UpdateSupplierById(supplierId, formData, navigate)
                     .then(() => {
-                        return GetSuppliers();
+                        return GetSuppliers(navigate);
                     }).then((response) => {
                         if (response) {
                             updateSuppliers(response.data);
@@ -207,9 +209,9 @@ const FormEditSupplier: React.FC<SupplierDetailProps> = ({ supplierId, hideOverl
                     website: formData.website,
                     taxId: formData.taxId,
                     isActive: formData.isActive
-                })
+                }, navigate)
                     .then(() => {
-                        return GetSuppliers();
+                        return GetSuppliers(navigate);
                     }).then((response) => {
                         if (response) {
                             updateSuppliers(response.data);

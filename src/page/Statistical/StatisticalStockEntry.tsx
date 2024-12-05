@@ -12,6 +12,7 @@ import StatisticalStockEntryAPI, { StatisticalStockEntryResponse } from "../../s
 import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
 import ExcelJS from 'exceljs';
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
 
 interface CheckedProductToDataExcel {
     productCode: string;
@@ -23,6 +24,8 @@ interface CheckedProductToDataExcel {
 }
 
 const StaticticalStockEntry = () => {
+
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [fromDate, setFromDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
     const [toDate, setToDate] = React.useState<string>(new Date().toISOString().split("T")[0]);
@@ -35,7 +38,7 @@ const StaticticalStockEntry = () => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalStockEntryAPI(fromDate, toDate)
+        StatisticalStockEntryAPI(fromDate, toDate, navigate)
             .then((res) => {
                 if (res) {
                     setProductStockEntry(res);

@@ -2,8 +2,9 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import FormDataSupplier from "../../interface/FormDataSupplier";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const UpdateSupplierById = async (supplierID: string, data: FormDataSupplier): Promise<void> => {
+const UpdateSupplierById = async (supplierID: string, data: FormDataSupplier, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

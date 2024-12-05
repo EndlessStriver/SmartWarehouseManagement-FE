@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import StatisticalStockEntryAPI, { StatisticalStockEntryResponse } from "../../../services/Statistical/StatisticalStockEntryAPI";
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
 
 interface ViewPDFStockEntryProps {
     onClose: () => void;
@@ -20,6 +21,7 @@ interface ViewPDFStockEntryProps {
 
 const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [productStockEntry, setProductStockEntry] = React.useState<StatisticalStockEntryResponse[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
@@ -27,7 +29,7 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalStockEntryAPI(props.fromDate, props.toDate)
+        StatisticalStockEntryAPI(props.fromDate, props.toDate, navigate)
             .then((res) => {
                 if (res) {
                     setProductStockEntry(res);

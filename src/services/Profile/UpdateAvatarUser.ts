@@ -1,8 +1,9 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
-const UpdateAvatarUser = async (avatar: File) => {
+const UpdateAvatarUser = async (avatar: File, navigate: NavigateFunction) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

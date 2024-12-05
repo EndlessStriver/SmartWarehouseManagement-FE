@@ -1,5 +1,6 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface Location {
     id: string;
@@ -64,7 +65,7 @@ export interface StatisticalStockEntryResponse {
 
 
 
-const StatisticalStockEntryAPI = async (from: string, to: string): Promise<StatisticalStockEntryResponse[] | undefined> => {
+const StatisticalStockEntryAPI = async (from: string, to: string, navigate: NavigateFunction): Promise<StatisticalStockEntryResponse[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

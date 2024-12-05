@@ -1,8 +1,9 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
-import {Profile} from "../../interface/Profile";
+import { Profile } from "../../interface/Profile";
 
-const GetProfileByTokenAPI = async (token: string): Promise<Profile> => {
+const GetProfileByTokenAPI = async (token: string, navigate: NavigateFunction): Promise<Profile> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const response = await axios.get(`${HOST}/account/profile`, {
@@ -13,7 +14,7 @@ const GetProfileByTokenAPI = async (token: string): Promise<Profile> => {
         return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

@@ -9,9 +9,11 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import { SKU } from "../../interface/Entity/Product";
+import { useNavigate } from "react-router-dom";
 
 export const SKUManagement: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage()
     const [skuData, setSkuData] = React.useState<SKU[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -24,7 +26,7 @@ export const SKUManagement: React.FC = () => {
 
     React.useEffect(() => {
         setIsLoading(true);
-        GetSKUs()
+        GetSKUs(navigate)
             .then((data) => {
                 if (data) {
                     setSkuData(data.data);
@@ -44,7 +46,7 @@ export const SKUManagement: React.FC = () => {
 
     React.useEffect(() => {
         setIsLoading(true);
-        GetSKUs({ offset: pagination.offset })
+        GetSKUs(navigate, { offset: pagination.offset })
             .then((data) => {
                 if (data) {
                     setSkuData(data.data);

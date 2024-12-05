@@ -8,6 +8,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import formatDateVietNam from "../../../util/FormartDateVietnam";
 import { NoData } from "../../../compoments/NoData/NoData";
+import { useNavigate } from "react-router-dom";
 
 interface ModelViewIventoryDetailProps {
     onClose: () => void;
@@ -16,11 +17,12 @@ interface ModelViewIventoryDetailProps {
 
 const ModelViewIventoryDetail: React.FC<ModelViewIventoryDetailProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [transaction, setTransaction] = React.useState<Transaction>();
 
     React.useEffect(() => {
-        GetIventoryById(props.iventoryId)
+        GetIventoryById(props.iventoryId, navigate)
             .then((res) => {
                 if (res) {
                     setTransaction(res);

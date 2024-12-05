@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import Order from "../../enum/Order";
@@ -29,7 +30,7 @@ interface GetProductsProps {
     orderBy?: string
 }
 
-const GetProducts = async (data?: GetProductsProps): Promise<GetProductsResponse | undefined> => {
+const GetProducts = async (navigate: NavigateFunction, data?: GetProductsProps): Promise<GetProductsResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

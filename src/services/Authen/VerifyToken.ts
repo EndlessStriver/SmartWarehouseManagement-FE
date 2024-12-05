@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface VerifyTokenResponse {
     userId: string;
@@ -11,7 +12,7 @@ interface VerifyTokenResponse {
     exp: number;
 }
 
-const VerifyToken = async (): Promise<VerifyTokenResponse | undefined> => {
+const VerifyToken = async (navigate: NavigateFunction): Promise<VerifyTokenResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_API_HOST;
         const token = localStorage.getItem("token");

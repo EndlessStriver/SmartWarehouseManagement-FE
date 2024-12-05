@@ -1,8 +1,9 @@
 import axios from "axios"
 import { Product } from "../../interface/Entity/Product";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const GetProductById = async (productId: string): Promise<Product | undefined> => {
+const GetProductById = async (productId: string, navigate: NavigateFunction): Promise<Product | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token')

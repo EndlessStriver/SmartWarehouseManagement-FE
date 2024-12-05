@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Account } from "../../interface/Account";
@@ -28,7 +29,7 @@ interface GetAccountsAPIProps {
     orderBy?: OrderBy;
 }
 
-const GetAccountsAPI = async (input?: GetAccountsAPIProps): Promise<ResponseGetAccounts | undefined> => {
+const GetAccountsAPI = async (navigate: NavigateFunction, input?: GetAccountsAPIProps): Promise<ResponseGetAccounts | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

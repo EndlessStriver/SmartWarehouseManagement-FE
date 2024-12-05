@@ -4,6 +4,7 @@ import React from "react";
 import UpdateAvatarUser from "../../../services/Profile/UpdateAvatarUser";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { useNavigate } from "react-router-dom";
 
 interface ChangeAvatarModelProps {
     onClose: () => void;
@@ -12,6 +13,7 @@ interface ChangeAvatarModelProps {
 
 const ChangeAvatarModel: React.FC<ChangeAvatarModelProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const fileRef = React.useRef<HTMLInputElement>(null);
     const [file, setFile] = React.useState<File | null>(null);
@@ -28,7 +30,7 @@ const ChangeAvatarModel: React.FC<ChangeAvatarModelProps> = (props) => {
 
     const handOnSave = () => {
         setLoading(true);
-        UpdateAvatarUser(file as File)
+        UpdateAvatarUser(file as File, navigate)
             .then(() => {
                 dispatch({ message: "Update avatar successfully", type: ActionTypeEnum.SUCCESS });
                 props.onClose();

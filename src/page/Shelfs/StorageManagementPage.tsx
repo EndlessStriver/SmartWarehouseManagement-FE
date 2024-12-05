@@ -16,9 +16,11 @@ import DeleteShelf from "../../services/Location/DeleteShelf";
 import './css/StorageManagementPage.css'
 import ModelQRCodeShelf from "./Compoments/ModelQRCodeShelf";
 import GetLocationByShelfIdt from "../../services/Location/GetLocationByShelfIdt";
+import { useNavigate } from "react-router-dom";
 
 const ShelfsPage: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [shelfId, setShelfId] = React.useState<string>('')
     const [showShelfDetails, setShowShelfDetails] = React.useState<boolean>(false)
@@ -40,12 +42,12 @@ const ShelfsPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const response = await GetShelfs({ offset: pagination.offset });
+                const response = await GetShelfs(navigate, { offset: pagination.offset });
                 if (response) {
                     const updatedShelfs = await Promise.all(
                         response.data.map(async (shelf) => {
                             try {
-                                const locations = await GetLocationByShelfIdt(shelf.id);
+                                const locations = await GetLocationByShelfIdt(shelf.id, navigate);
                                 if (locations) {
                                     shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
                                 }
@@ -92,13 +94,13 @@ const ShelfsPage: React.FC = () => {
 
     const handleDeleteShelf = () => {
         setIsLoadingDelete(true)
-        DeleteShelf(shelfId)
+        DeleteShelf(shelfId, navigate)
             .then(() => {
-                return GetShelfs()
+                return GetShelfs(navigate)
             }).then((res) => {
                 if (res) {
                     setShelfList(res.data.map((shelf) => {
-                        GetLocationByShelfIdt(shelf.id)
+                        GetLocationByShelfIdt(shelf.id, navigate)
                             .then((res) => {
                                 if (res) {
                                     shelf.currentColumnsUsed = res.filter((lolcation) => lolcation.occupied).length

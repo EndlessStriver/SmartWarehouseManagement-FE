@@ -5,6 +5,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import { Badge, CloseButton, Col, Image, Row } from "react-bootstrap";
 import { StorageLocation } from "../../../services/Location/GetLocationByShelfIdt";
+import { useNavigate } from "react-router-dom";
 
 interface ModelLocationDetailProps {
     onClose: () => void;
@@ -13,11 +14,12 @@ interface ModelLocationDetailProps {
 
 const ModelLocationDetail: React.FC<ModelLocationDetailProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [locationDetail, setLocationDetail] = React.useState<StorageLocation>();
 
     React.useEffect(() => {
-        GetLocationDetailsByCode(props.locationCode)
+        GetLocationDetailsByCode(props.locationCode, navigate)
             .then((response) => {
                 console.log(response)
                 setLocationDetail(response)

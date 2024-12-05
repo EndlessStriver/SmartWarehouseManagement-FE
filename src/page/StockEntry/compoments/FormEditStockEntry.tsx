@@ -23,6 +23,7 @@ import ReceiveHeader from "../../../interface/Entity/ReceiveHeader";
 import GetStockEntries from "../../../services/StockEntry/GetStockEntries";
 import Pagination from '../../../compoments/Pagination/Pagination';
 import formatDateForInput from "../../../util/FormartDateInput";
+import { useNavigate } from "react-router-dom";
 
 interface FormEditStockEntryProps {
     handleClose: () => void;
@@ -42,6 +43,7 @@ interface ProductItem {
 
 const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, stockEntryId, updatePagination, updateStockEntry }) => {
 
+    const navigate = useNavigate();
     const profile = GetProfile();
     const dispatch = useDispatchMessage();
 
@@ -88,7 +90,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
 
     React.useEffect(() => {
         if (stockEntryId) {
-            GetStockEntryById(stockEntryId)
+            GetStockEntryById(stockEntryId, navigate)
                 .then((res) => {
                     if (res) {
                         setCreateDate(getVietnamTime(new Date(res.receiveDate)));
@@ -126,7 +128,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     React.useEffect(() => {
         const id = setTimeout(() => {
             setLoadingSuppliers(true);
-            GetSuppliersByName(supplierName)
+            GetSuppliersByName(supplierName, navigate)
                 .then((res) => {
                     if (res) {
                         setSuppliers(res.map((supplier) => ({
@@ -147,7 +149,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     React.useEffect(() => {
         if (supplierSelected) {
             setLoadingProducts(true);
-            GetProductsBySupplier(supplierSelected.value)
+            GetProductsBySupplier(navigate, supplierSelected.value)
                 .then((res) => {
                     if (res) {
                         setProducts(res.data);
@@ -169,7 +171,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
     React.useEffect(() => {
         if (supplierSelected) {
             setLoadingProducts(true);
-            GetProductsBySupplier(supplierSelected.value, { offset: pagination.offset })
+            GetProductsBySupplier(navigate, supplierSelected.value, { offset: pagination.offset })
                 .then((res) => {
                     if (res) {
                         setProducts(res.data);
@@ -197,7 +199,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
 
     React.useEffect(() => {
         if (supplierSelected) {
-            GetSupplierById(supplierSelected.value)
+            GetSupplierById(supplierSelected.value, navigate)
                 .then((res) => {
                     if (res) {
                         setAddress(res.address);
@@ -385,10 +387,10 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     unitId: item.unit,
                     skuId: item.skuId
                 }))
-            }).then(() => {
+            }, navigate).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu nhập kho thành công" });
                 handleClose();
-                return GetStockEntries()
+                return GetStockEntries(navigate)
             }).then((res) => {
                 if (res) {
                     updateStockEntry(res.data);
@@ -416,7 +418,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     unitId: item.unit,
                     skuId: item.skuId
                 }))
-            }).then((res) => {
+            }, navigate).then((res) => {
                 if (res) {
                     setDescription(res.description);
                     setDescriptionDefault(res.description);
@@ -442,7 +444,7 @@ const FormEditStockEntry: React.FC<FormEditStockEntryProps> = ({ handleClose, st
                     })));
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu nhập kho thành công" });
                     handleClose();
-                    return GetStockEntries()
+                    return GetStockEntries(navigate)
                 }
             }).then((res) => {
                 if (res) {

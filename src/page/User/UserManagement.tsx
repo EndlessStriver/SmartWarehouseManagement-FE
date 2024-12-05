@@ -14,9 +14,11 @@ import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteAccountAPI from "../../services/User/DeleteAccountAPI";
 import FindAccount from "../../services/User/FindAccountAPI";
+import { useNavigate } from "react-router-dom";
 
 export const UserManagement: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [users, setUsers] = React.useState<Account[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -35,7 +37,7 @@ export const UserManagement: React.FC = () => {
     React.useEffect(() => {
         const id = setTimeout(() => {
             setIsLoading(true);
-            FindAccount(keySearch, pagination.offset)
+            FindAccount(navigate, keySearch, pagination.offset)
                 .then((response) => {
                     if (response) {
                         setUsers(response.data);
@@ -59,9 +61,9 @@ export const UserManagement: React.FC = () => {
     const handleDeleteAccount = () => {
         if (userId) {
             setIsLoadingDelete(true);
-            DeleteAccountAPI(userId)
+            DeleteAccountAPI(userId, navigate)
                 .then(() => {
-                    return GetAccountsAPI();
+                    return GetAccountsAPI(navigate);
                 }).then((response) => {
                     if (response) {
                         setUsers(response.data);

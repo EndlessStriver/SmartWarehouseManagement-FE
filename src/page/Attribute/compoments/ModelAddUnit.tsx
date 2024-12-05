@@ -6,6 +6,7 @@ import GetProductsByName, { Product } from "../../../services/Product/GetProduct
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import CreateUnit from "../../../services/Attribute/Unit/CreateUnit";
+import { useNavigate } from "react-router-dom";
 
 interface ModelAddUnitProps {
     onClose: () => void
@@ -28,6 +29,7 @@ interface Products {
 
 const ModelAddUnit: React.FC<ModelAddUnitProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [unitName, setUnitName] = React.useState<string>("")
     const [products, setProducts] = React.useState<Products[]>([])
@@ -37,7 +39,7 @@ const ModelAddUnit: React.FC<ModelAddUnitProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetProductsByName(productName)
+            GetProductsByName(navigate, productName)
                 .then((response) => {
                     if (response) setProducts(response.map((product: Product) => ({ value: product.id, label: product.name, units: product.units })))
                 })
@@ -72,7 +74,7 @@ const ModelAddUnit: React.FC<ModelAddUnitProps> = (props) => {
                 unitFromName: unitName,
                 conversionFactor: conversionfactor,
                 toUnitId: productSelect!.units.find((unit) => unit.isBaseUnit)!.id
-            })
+            }, navigate)
                 .then(() => {
                     dispatch({ type: ActionTypeEnum.SUCCESS, message: "Thêm đơn vị tính thành công" })
                     props.reLoad()

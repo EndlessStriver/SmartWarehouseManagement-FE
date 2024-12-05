@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
@@ -37,7 +38,7 @@ export interface ProductCheckResponse {
     totalReceiveQuantity: number;
 }
 
-const StatisticalStockEntryAllAPI = async (from: string, to: string): Promise<ProductCheckResponse | undefined> => {
+const StatisticalStockEntryAllAPI = async (from: string, to: string, navigate: NavigateFunction): Promise<ProductCheckResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

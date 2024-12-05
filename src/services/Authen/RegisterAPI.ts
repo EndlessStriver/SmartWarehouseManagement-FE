@@ -1,9 +1,10 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import DataTypeCreateUserAdmin from "../../interface/PageUser/DataTypeCreateUserAdmin";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 
-const RegisterAPI = async (data: DataTypeCreateUserAdmin | null): Promise<void> => {
+const RegisterAPI = async (navigate: NavigateFunction, data: DataTypeCreateUserAdmin | null): Promise<void> => {
 
     try {
 

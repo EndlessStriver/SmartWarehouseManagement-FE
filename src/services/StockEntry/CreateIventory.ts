@@ -1,5 +1,6 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface ShelfInventory {
     shelfId: string;
@@ -10,7 +11,7 @@ interface InventoryData {
     shelfInventory: ShelfInventory[];
 }
 
-const CreateIventory = async (data: InventoryData): Promise<void> => {
+const CreateIventory = async (data: InventoryData, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

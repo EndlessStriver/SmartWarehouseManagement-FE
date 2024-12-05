@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import Order from "../../enum/Order";
@@ -19,7 +20,7 @@ interface GetSKUsProps {
     orderBy?: string;
 }
 
-const GetSKUs = async (data?: GetSKUsProps): Promise<GetSKUsResponse | undefined> => {
+const GetSKUs = async (navigate: NavigateFunction, data?: GetSKUsProps): Promise<GetSKUsResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

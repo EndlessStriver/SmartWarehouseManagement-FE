@@ -19,8 +19,11 @@ import formatDateVietNam from "../../util/FormartDateVietnam";
 import DatePicker from "react-datepicker";
 import FindStockEntry from "../../services/StockEntry/FindStockEntry";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
+import { useNavigate } from "react-router-dom";
 
 const StockEntry: React.FC = () => {
+
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [reload, setReload] = React.useState<boolean>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -44,7 +47,7 @@ const StockEntry: React.FC = () => {
         const id = setTimeout(() => {
             if (!isSearch) {
                 setIsLoading(true);
-                GetStockEntries(pagination.limit, pagination.offset)
+                GetStockEntries(navigate, pagination.limit, pagination.offset)
                     .then((res) => {
                         if (res) {
                             setStockEntry(res.data);
@@ -61,7 +64,7 @@ const StockEntry: React.FC = () => {
                         setIsLoading(false);
                     })
             } else {
-                FindStockEntry(formatDateForInputNoTime(from!.toString()), formatDateForInputNoTime(to!.toString()), pagination.limit, pagination.offset)
+                FindStockEntry(navigate, formatDateForInputNoTime(from!.toString()), formatDateForInputNoTime(to!.toString()), pagination.limit, pagination.offset)
                     .then((res) => {
                         if (res) {
                             setStockEntry(res.data.map((item) => {
@@ -102,7 +105,7 @@ const StockEntry: React.FC = () => {
 
     const handleDeleteStockEntry = (id: string) => {
         setLoadingDelete(true);
-        RemoveStockEntry(id)
+        RemoveStockEntry(id, navigate)
             .then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa phiếu nhập kho thành công" });
                 setStockEntry(stockEntry.filter(item => item.id !== id));

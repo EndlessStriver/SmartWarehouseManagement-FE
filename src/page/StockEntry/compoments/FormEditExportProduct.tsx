@@ -17,6 +17,7 @@ import GetOrderExportById from "../../../services/StockEntry/GetOrderExportById"
 import UpdateOrderExport from "../../../services/StockEntry/UpdateOrderExport";
 import ModelRecomedLocationOrderExport from "./ModelRecomandLocationOrderExport";
 import formatDateForInput from "../../../util/FormartDateInput";
+import { useNavigate } from "react-router-dom";
 
 interface FormEditExportProductProps {
     onClose: () => void;
@@ -38,6 +39,7 @@ export interface ProductExport {
 
 const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const profile = GetProfile();
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -70,7 +72,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
 
     React.useEffect(() => {
         if (props.exportOrderId) {
-            GetOrderExportById(props.exportOrderId)
+            GetOrderExportById(props.exportOrderId, navigate)
                 .then((response) => {
                     if (response) {
                         setExportProductCode(response.exportCode);
@@ -109,7 +111,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
 
     React.useEffect(() => {
         setIsLoading(true);
-        GetProductsByNameAndCodeAndSupplierName(productName, pagination.limit, pagination.offset)
+        GetProductsByNameAndCodeAndSupplierName(navigate, productName, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
                     setProducts(res.data);
@@ -222,7 +224,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         totalQuantity: item.locations.reduce((total, location) => total + location.quantity, 0)
                     }
                 })
-            }).then(() => {
+            }, navigate).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo phiếu xuất kho thành công" });
                 props.reload();
                 props.onClose();
@@ -255,7 +257,7 @@ const FormEditExportProduct: React.FC<FormEditExportProductProps> = (props) => {
                         totalQuantity: item.locations.reduce((total, location) => total + location.quantity, 0)
                     }
                 })
-            }).then(() => {
+            }, navigate).then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật phiếu xuất kho thành công" });
                 props.reload();
                 props.onClose();

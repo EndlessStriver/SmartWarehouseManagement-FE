@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import StockEntry from "../../interface/Entity/StockEntry";
+import { NavigateFunction } from "react-router-dom";
 
 export interface UpdateStockEntryProps {
     receiveDate: string;
@@ -16,7 +17,7 @@ interface ReceiveItem {
     skuId: string;
 }
 
-const UpdateStockEntryById = async (id: string, data: UpdateStockEntryProps): Promise<StockEntry | undefined> => {
+const UpdateStockEntryById = async (id: string, data: UpdateStockEntryProps, navigate: NavigateFunction): Promise<StockEntry | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

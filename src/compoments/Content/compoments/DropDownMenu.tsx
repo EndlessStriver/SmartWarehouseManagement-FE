@@ -14,7 +14,7 @@ export const DropDownMenu: React.FC<DropDownMenuProps> = ({ openModelLogout }) =
                 <FontAwesomeIcon icon={faUserCircle} className="dropdown-icon" />
                 Thông tin cá nhân
             </Link>
-            <Link to="/" onClick={openModelLogout}>
+            <Link to="/login" onClick={openModelLogout}>
                 <FontAwesomeIcon icon={faSignOutAlt} className="dropdown-icon" />
                 Đăng xuất
             </Link>

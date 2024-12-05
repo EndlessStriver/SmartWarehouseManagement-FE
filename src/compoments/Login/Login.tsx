@@ -64,13 +64,13 @@ const Login: React.FC = () => {
             .then((responseLogin) => {
                 const token = responseLogin.token;
                 localStorage.setItem("token", token);
-                return GetProfileByTokenAPI(token);
+                return GetProfileByTokenAPI(token, navigate);
             }).then((responseGetProfile) => {
                 localStorage.setItem("profile", JSON.stringify(responseGetProfile));
                 navigate("/");
                 return
             }).catch((error) => {
-                setGlobalError(error.message);
+                setGlobalError("Tài khoản hoặc mật khẩu không chính xác");
             }).finally(() => {
                 setLoading(false);
             });

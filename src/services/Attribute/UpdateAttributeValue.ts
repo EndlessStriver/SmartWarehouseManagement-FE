@@ -3,8 +3,9 @@ import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
 import Attribute from "../../interface/Attribute";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const UpdateAttributeValue = async (id: number, attributeValueId: string, data: Attribute): Promise<void> => {
+const UpdateAttributeValue = async (id: number, attributeValueId: string, data: Attribute, navigate: NavigateFunction): Promise<void> => {
 
     const customData: Attribute = {
         ...data

@@ -5,6 +5,7 @@ import UpdateAccountAPI from '../../../services/User/UpdateAccountAPI';
 import { OverLay } from '../../../compoments/OverLay/OverLay';
 import { useDispatchMessage } from '../../../Context/ContextMessage';
 import ActionTypeEnum from '../../../enum/ActionTypeEnum';
+import { useNavigate } from 'react-router-dom';
 
 interface ChangePasswordFormProps {
   userId: string;
@@ -13,6 +14,7 @@ interface ChangePasswordFormProps {
 
 const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ userId, hideOver }) => {
 
+  const navigate = useNavigate();
   const dispatch = useDispatchMessage();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [newPassword, setNewPassword] = useState<string>('');
@@ -28,7 +30,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ userId, hideOve
       dispatch({ type: ActionTypeEnum.ERROR, message: ValidatePassword(newPassword) });
     } else {
       setIsLoading(true);
-      UpdateAccountAPI(userId, { password: newPassword })
+      UpdateAccountAPI(userId, { password: newPassword }, navigate)
         .then(() => {
           dispatch({ type: ActionTypeEnum.SUCCESS, message: 'Change password successfully!' });
           hideOver();

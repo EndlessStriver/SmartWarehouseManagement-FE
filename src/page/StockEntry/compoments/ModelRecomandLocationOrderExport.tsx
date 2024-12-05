@@ -4,6 +4,7 @@ import React from "react";
 import SuggestExportLocations from "../../../services/StockEntry/SuggestExportLocations";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
+import { useNavigate } from "react-router-dom";
 
 interface ModelRecomandLocationOrderExportProps {
     onClose: () => void,
@@ -25,6 +26,7 @@ interface Location {
 
 const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExportProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [locations, setLocations] = React.useState<Location[]>([]);
 
@@ -34,7 +36,7 @@ const ModelRecomedLocationOrderExport: React.FC<ModelRecomandLocationOrderExport
             skuId: props.skuId,
             typeShelf: props.typeShelf,
             unitId: props.unitId
-        }).then((data) => {
+        }, navigate).then((data) => {
             if (data) {
                 console.log(data);
                 setLocations(() => {

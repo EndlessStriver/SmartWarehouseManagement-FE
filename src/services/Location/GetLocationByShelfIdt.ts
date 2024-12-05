@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 interface Unit {
     id: string;
@@ -68,7 +69,7 @@ export interface StorageLocation {
 }
 
 
-const GetLocationByShelfIdt = async (shelfIdt: string): Promise<StorageLocation[] | undefined> => {
+const GetLocationByShelfIdt = async (shelfIdt: string, navigate: NavigateFunction): Promise<StorageLocation[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');

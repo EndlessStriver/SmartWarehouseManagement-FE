@@ -1,6 +1,6 @@
 import { Button, CloseButton, Container, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import { OverLay } from "../../../compoments/OverLay/OverLay";
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import React from "react";
 import UpdatePasswordUser from "../../../services/Profile/UpdatePasswordUser";
 import { useDispatchMessage } from "../../../Context/ContextMessage";
@@ -13,6 +13,7 @@ interface FormChangePasswordProps {
 
 const FormChangePassword: React.FC<FormChangePasswordProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [password, setPassword] = React.useState<string>('');
     const [newPassword, setNewPassword] = React.useState<string>('');
@@ -35,7 +36,7 @@ const FormChangePassword: React.FC<FormChangePasswordProps> = (props) => {
         }
 
         setIsLoading(true);
-        UpdatePasswordUser({ oldPassword: password, password: newPassword })
+        UpdatePasswordUser({ oldPassword: password, password: newPassword }, navigate)
             .then(() => {
                 dispatch({ message: 'Change password successfully', type: ActionTypeEnum.SUCCESS });
                 props.closeModel();

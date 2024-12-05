@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface Material {
     id: string;
@@ -8,7 +9,7 @@ interface Material {
     description: string;
 }
 
-const GetMaterialsByName = async (name: string): Promise<Material[] | undefined> => {
+const GetMaterialsByName = async (name: string, navigate: NavigateFunction): Promise<Material[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

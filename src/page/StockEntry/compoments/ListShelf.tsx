@@ -13,6 +13,7 @@ import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import GetShelfByCategoryNameAndTypeShelf from "../../../services/Location/GetShelfsByCategoryName";
 import { Location } from "./ModelAddItemCheck";
 import GetLocationByShelfIdt from "../../../services/Location/GetLocationByShelfIdt";
+import { useNavigate } from "react-router-dom";
 
 interface ListShelfProps {
     onClose: () => void
@@ -30,6 +31,7 @@ interface ListShelfProps {
 
 const ListShelf: React.FC<ListShelfProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [shelfId, setShelfId] = React.useState<string>("");
     const [shelfs, setShelfs] = React.useState<Shelf[]>([]);
@@ -46,7 +48,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
     React.useEffect(() => {
         if (!getAllShelf) {
             setIsLoading(true)
-            GetShelfByCategoryNameAndTypeShelf({ categoryName: props.categoryName, typeShelf: props.status })
+            GetShelfByCategoryNameAndTypeShelf({ categoryName: props.categoryName, typeShelf: props.status }, navigate)
                 .then((response) => {
                     if (response) {
                         setPagination({
@@ -58,7 +60,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         return Promise.all(
                             response.data.map(async (shelf) => {
                                 try {
-                                    const locations = await GetLocationByShelfIdt(shelf.id);
+                                    const locations = await GetLocationByShelfIdt(shelf.id, navigate);
                                     if (locations) {
                                         shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
                                     }
@@ -81,7 +83,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                 })
         } else {
             setIsLoading(true)
-            GetShelfs()
+            GetShelfs(navigate)
                 .then((response) => {
                     if (response) {
                         setPagination({
@@ -93,7 +95,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                         return Promise.all(
                             response.data.map(async (shelf) => {
                                 try {
-                                    const locations = await GetLocationByShelfIdt(shelf.id);
+                                    const locations = await GetLocationByShelfIdt(shelf.id, navigate);
                                     if (locations) {
                                         shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
                                     }
@@ -121,7 +123,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
         if (getAllShelf) {
             id = setTimeout(() => {
                 setIsLoading(true)
-                GetShelfs({ offset: pagination.offset })
+                GetShelfs(navigate, { offset: pagination.offset })
                     .then((response) => {
                         if (response) {
                             setPagination({
@@ -133,7 +135,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                             return Promise.all(
                                 response.data.map(async (shelf) => {
                                     try {
-                                        const locations = await GetLocationByShelfIdt(shelf.id);
+                                        const locations = await GetLocationByShelfIdt(shelf.id, navigate);
                                         if (locations) {
                                             shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
                                         }
@@ -161,7 +163,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                     categoryName: props.categoryName,
                     typeShelf: props.status,
                     offset: pagination.offset
-                })
+                }, navigate)
                     .then((response) => {
                         if (response) {
                             setPagination({
@@ -173,7 +175,7 @@ const ListShelf: React.FC<ListShelfProps> = (props) => {
                             return Promise.all(
                                 response.data.map(async (shelf) => {
                                     try {
-                                        const locations = await GetLocationByShelfIdt(shelf.id);
+                                        const locations = await GetLocationByShelfIdt(shelf.id, navigate);
                                         if (locations) {
                                             shelf.currentColumnsUsed = locations.filter((location) => location.occupied).length;
                                         }

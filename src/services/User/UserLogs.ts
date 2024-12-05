@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
@@ -18,7 +19,7 @@ interface ResponseData {
 }
 
 
-const GetLogsUser = async (userId: string, limit?: number, offset?: number): Promise<ResponseData | undefined> => {
+const GetLogsUser = async (navigate: NavigateFunction, userId: string, limit?: number, offset?: number): Promise<ResponseData | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

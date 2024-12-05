@@ -6,6 +6,7 @@ import { useDispatchMessage } from "../../../Context/ContextMessage"
 import ActionTypeEnum from "../../../enum/ActionTypeEnum"
 import formatDateVietNam from "../../../util/FormartDateVietnam"
 import Pagination from "../../../compoments/Pagination/Pagination"
+import { useNavigate } from "react-router-dom"
 
 interface ModelLocationHistoryProps {
     onClose: () => void
@@ -14,6 +15,7 @@ interface ModelLocationHistoryProps {
 
 const ModelLocationHistory: React.FC<ModelLocationHistoryProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [historyLocations, setHistoryLocations] = React.useState<Transaction[]>([])
     const [pagination, setPagination] = React.useState({
@@ -23,7 +25,7 @@ const ModelLocationHistory: React.FC<ModelLocationHistoryProps> = (props) => {
     })
 
     React.useEffect(() => {
-        GetLocationHistoryById(props.locationId, pagination.limit, pagination.offset)
+        GetLocationHistoryById(navigate, props.locationId, pagination.limit, pagination.offset)
             .then((data) => {
                 if (data) {
                     setHistoryLocations(data.data)

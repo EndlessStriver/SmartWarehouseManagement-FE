@@ -16,6 +16,7 @@ import Select from 'react-select';
 import OptionType from "../../../interface/OptionType";
 import ModelLocationHistory from "./ModelLocationHistory";
 import ModelQRCodeLocation from "./ModelQRCodeLocation";
+import { useNavigate } from "react-router-dom";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -24,6 +25,7 @@ interface ShelfDetailsProps {
 
 const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [shelf, setShelf] = React.useState<Shelf>();
     const [locations, setLocations] = React.useState<StorageLocation[]>([]);
@@ -39,7 +41,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetLocationByShelfIdt(props.shelfId)
+            GetLocationByShelfIdt(props.shelfId, navigate)
                 .then((response) => {
                     if (response) setLocations(response);
                 })
@@ -53,7 +55,7 @@ const ShelfDetails: React.FC<ShelfDetailsProps> = (props) => {
 
     React.useEffect(() => {
         if (props.shelfId) {
-            GetShelfById(props.shelfId)
+            GetShelfById(props.shelfId, navigate)
                 .then((response) => {
                     if (response) setShelf(response);
                 })
@@ -252,6 +254,7 @@ interface ModelLocationProps {
 
 const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [quantity, setQuantity] = React.useState(props.location.quantity);
     const [suggestedLocation, setSuggestedLocation] = React.useState<{ value: string, label: string }[]>();
@@ -267,7 +270,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
                 skuId: props.location.skus.id,
                 typeShelf: props.typeShelf,
                 unitId: unitId
-            })
+            }, navigate)
                 .then((res) => {
                     if (res) {
                         if (res.length === 0) dispatch({
@@ -315,7 +318,7 @@ const ModelMoveLocation: React.FC<ModelLocationProps> = (props) => {
             locationDestinationId: newLocation?.value || "",
             quantity: quantity,
             unitId: unitId
-        })
+        }, navigate)
             .then(() => {
                 dispatch({ message: "Chuyển hàng thành công", type: ActionTypeEnum.SUCCESS })
                 props.ressetShelf();

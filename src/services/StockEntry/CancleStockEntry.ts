@@ -1,7 +1,8 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const CancleStockEntry = async (stockentry: string): Promise<void> => {
+const CancleStockEntry = async (stockentry: string, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");

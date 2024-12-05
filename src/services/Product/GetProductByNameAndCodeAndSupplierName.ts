@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
@@ -73,7 +74,7 @@ export interface Unit {
     isBaseUnit: boolean;
 }
 
-const GetProductsByNameAndCodeAndSupplierName = async (key: string, limit?: number, offset?: number): Promise<ProductResponse | undefined> => {
+const GetProductsByNameAndCodeAndSupplierName = async (navigate: NavigateFunction, key: string, limit?: number, offset?: number): Promise<ProductResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

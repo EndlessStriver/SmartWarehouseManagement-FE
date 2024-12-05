@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
 import { ResponseError } from "../../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 interface interfaceData {
     productId: string,
@@ -9,7 +10,7 @@ interface interfaceData {
     conversionFactor: number,
 }
 
-const CreateUnit = async (data: interfaceData): Promise<void> => {
+const CreateUnit = async (data: interfaceData, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

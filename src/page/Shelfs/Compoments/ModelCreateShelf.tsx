@@ -9,6 +9,7 @@ import GetShelfs from "../../../services/Location/GetShelfs";
 import OptionType from "../../../interface/OptionType";
 import Select from 'react-select';
 import GetCategoriesByName from "../../../services/Attribute/Category/GetCategoriesByName";
+import { useNavigate } from "react-router-dom";
 
 interface ModelCreateShelfProps {
     onClose: () => void;
@@ -18,6 +19,7 @@ interface ModelCreateShelfProps {
 
 const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [shelfName, setShelfName] = React.useState('');
     const [maxColumn, setMaxColumn] = React.useState(0);
@@ -57,8 +59,8 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
                 maxLevels: Number(maxLevel),
                 typeShelf: typeShelf,
                 categoryId: categorySelect?.value || ''
-            }).then(() => {
-                return GetShelfs();
+            }, navigate).then(() => {
+                return GetShelfs(navigate);
             }).then((response) => {
                 if (response) {
                     props.updateShelfList(response.data);
@@ -81,7 +83,7 @@ const ModelCreateShelf: React.FC<ModelCreateShelfProps> = (props) => {
 
     React.useEffect(() => {
         const id = setTimeout(() => {
-            GetCategoriesByName(categoryName)
+            GetCategoriesByName(categoryName, navigate)
                 .then((response) => {
                     if (response) {
                         setCategories(response.map((cate) => {

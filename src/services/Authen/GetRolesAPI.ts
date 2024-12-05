@@ -2,8 +2,9 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Role } from "../../interface/Role";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const GetRolesAPI = async (): Promise<Role[] | undefined> => {
+const GetRolesAPI = async (navigate: NavigateFunction): Promise<Role[] | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");

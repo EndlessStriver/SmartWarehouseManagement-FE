@@ -8,6 +8,7 @@ import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import { ProductExport } from "./FormEditExportProduct";
 import SuggestExportLocationFIFO from "../../../services/StockEntry/SuggestExportLocationFIFO";
 import SuggestExportLocationLIFO from "../../../services/StockEntry/SuggestExportLocationLIFO";
+import { useNavigate } from "react-router-dom";
 
 interface ModelAddProductExportProps {
     onClose: () => void;
@@ -20,6 +21,7 @@ interface ModelAddProductExportProps {
 
 const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [unit, setUnit] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<number>(0);
@@ -30,7 +32,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
 
     React.useEffect(() => {
         if (unit !== "" && quantity > 0) {
-            ConvertUnit(unit, quantity)
+            ConvertUnit(unit, quantity, navigate)
                 .then((response) => {
                     if (response) {
                         setConvertValue(response)
@@ -165,7 +167,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                                     unitId: unit,
                                     quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
                                     typeShelf: statusProduct
-                                })
+                                }, navigate)
                                     .then((response) => {
                                         if (response) {
                                             props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {
@@ -188,7 +190,7 @@ const ModelAddProductExport: React.FC<ModelAddProductExportProps> = (props) => {
                                     unitId: unit,
                                     quantity: checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity,
                                     typeShelf: statusProduct
-                                })
+                                }, navigate)
                                     .then((response) => {
                                         if (response) {
                                             props.addProductExport(props.product!, props.product!.units.find(u => u.id === unit)!, checkProductExport(props.product!.id, unit, statusProduct) ? (checkProductExport(props.product!.id, unit, statusProduct)!.quantity + quantity) : quantity, statusProduct, response.map((item) => {

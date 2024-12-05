@@ -10,12 +10,15 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import UpdateProfileUser from "../../services/Profile/UpdateProfileUser";
 import SpinnerLoadingOverLayer from "../../compoments/Loading/SpinnerLoadingOverLay";
 import ChangeAvatarModel from "./compoments/ChangeAvatarModel";
+import { useNavigate } from "react-router-dom";
 
 interface FormDataType extends Omit<Profile, 'role'> {
     role: string;
 }
 
 const ProfilePage: React.FC = () => {
+
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [profileDefault, setProfileDefault] = React.useState<FormDataType>({
         id: "",
@@ -59,7 +62,7 @@ const ProfilePage: React.FC = () => {
     React.useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            GetProfileByTokenAPI(token)
+            GetProfileByTokenAPI(token, navigate)
                 .then((responseProfile) => {
                     setProfile({
                         ...responseProfile,
@@ -123,7 +126,7 @@ const ProfilePage: React.FC = () => {
         if (profileDefault?.address === profile?.address) delete dataUpdate.address;
 
         setloading(true);
-        UpdateProfileUser(dataUpdate)
+        UpdateProfileUser(dataUpdate, navigate)
             .then((responseProfile) => {
                 if (responseProfile) {
                     setProfile({

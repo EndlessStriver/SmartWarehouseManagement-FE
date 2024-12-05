@@ -57,7 +57,7 @@ const ContentHeader: React.FC = () => {
 
     const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        LogoutAPI()
+        LogoutAPI(navigate)
             .then(() => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("profile");

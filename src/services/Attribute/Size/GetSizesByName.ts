@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ResponseError } from "../../../interface/ResponseError";
-import {checkTokenExpired} from "../../../util/DecodeJWT";
+import { checkTokenExpired } from "../../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
 interface Size {
     id: string;
@@ -8,7 +9,7 @@ interface Size {
     description: string;
 }
 
-const GetSizesByName = async (name: string): Promise<Size[]> => {
+const GetSizesByName = async (name: string, navigate: NavigateFunction): Promise<Size[]> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
@@ -29,7 +30,7 @@ const GetSizesByName = async (name: string): Promise<Size[]> => {
         return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
-            if(error.response.status === 401) {
+            if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
                 window.location.href = "/session-expired";

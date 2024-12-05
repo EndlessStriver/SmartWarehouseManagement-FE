@@ -3,8 +3,9 @@ import { ResponseError } from "../../interface/ResponseError";
 import returnNameAttribute from "../../util/ReturnNameAttribute";
 import AttributeDetailType from "../../interface/AttributeDetail";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const GetAttributeValueById = async (id: number, attributeValueId: string): Promise<AttributeDetailType | undefined> => {
+const GetAttributeValueById = async (id: number, attributeValueId: string, navigate: NavigateFunction): Promise<AttributeDetailType | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

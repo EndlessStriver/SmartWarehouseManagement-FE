@@ -11,6 +11,7 @@ import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
 
 interface ViewPDFOrderExportProps {
     onClose: () => void;
@@ -21,6 +22,7 @@ interface ViewPDFOrderExportProps {
 
 const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [orderExport, setOrderExport] = React.useState<ExportOrderResponse>();
     const [loading, setLoading] = React.useState<boolean>(false);
@@ -28,7 +30,7 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
 
     React.useEffect(() => {
         setLoading(true);
-        StatisticalOrderExportALLAPI(props.fromDate, props.toDate, props.status)
+        StatisticalOrderExportALLAPI(props.fromDate, props.toDate, props.status, navigate)
             .then((res) => {
                 if (res) {
                     if (res.data.length === 0) dispatch({ type: ActionTypeEnum.ERROR, message: "Không Có Hàng Được Xuất Trong Khoảng Thời Gian Này" })

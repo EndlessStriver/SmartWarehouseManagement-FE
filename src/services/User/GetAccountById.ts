@@ -2,8 +2,9 @@ import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { Account } from "../../interface/Account";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const GetAccountById = async (userId: string): Promise<Account | undefined> => {
+const GetAccountById = async (userId: string, navigate: NavigateFunction): Promise<Account | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

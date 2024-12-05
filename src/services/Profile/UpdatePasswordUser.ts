@@ -1,13 +1,14 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 interface UpdatePasswordUserProps {
     oldPassword: string;
     password: string;
 }
 
-const UpdatePasswordUser = async (data: UpdatePasswordUserProps): Promise<void> => {
+const UpdatePasswordUser = async (data: UpdatePasswordUserProps, navigate: NavigateFunction): Promise<void> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

@@ -5,6 +5,7 @@ import GetAllLocationHaveProduct, { Product } from "../../../services/StockEntry
 import { useDispatchMessage } from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import { NoData } from "../../../compoments/NoData/NoData";
+import { useNavigate } from "react-router-dom";
 
 interface ModelViewInventoryTrackingProps {
     onClose: () => void;
@@ -13,11 +14,12 @@ interface ModelViewInventoryTrackingProps {
 
 const ModelViewInventoryTracking: React.FC<ModelViewInventoryTrackingProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [product, setProduct] = React.useState<Product | null>(null);
 
     React.useEffect(() => {
-        GetAllLocationHaveProduct(props.productId)
+        GetAllLocationHaveProduct(props.productId, navigate)
             .then((res) => {
                 console.log(res);
                 if (res) setProduct(res);

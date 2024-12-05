@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { ResponseError } from "../../interface/ResponseError";
 import { checkTokenExpired } from "../../util/DecodeJWT";
@@ -55,7 +56,7 @@ interface UnitConversion {
 }
 
 
-const GetProductsByName = async (productName: string): Promise<Product[] | undefined> => {
+const GetProductsByName = async (navigate: NavigateFunction, productName: string): Promise<Product[] | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

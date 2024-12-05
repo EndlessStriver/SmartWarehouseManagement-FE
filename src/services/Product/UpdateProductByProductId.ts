@@ -2,8 +2,9 @@ import axios from "axios";
 import DataTypeUpdateProductAdmin from "../../interface/PageProduct/DataTypeUpdateProductAdmin";
 import { Product } from "../../interface/Entity/Product";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { NavigateFunction } from "react-router-dom";
 
-const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin): Promise<Product | undefined> => {
+const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin, navigate: NavigateFunction): Promise<Product | undefined> => {
     console.log(dataUpdate);
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

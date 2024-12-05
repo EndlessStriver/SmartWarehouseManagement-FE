@@ -10,9 +10,11 @@ import PaginationType from "../../interface/Pagination";
 import { NoData } from "../../compoments/NoData/NoData";
 import Pagination from "../../compoments/Pagination/Pagination";
 import ModelViewInventoryTracking from "./compoments/ModelViewInventoryTracking";
+import { useNavigate } from "react-router-dom";
 
 const InventoryTracking: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [products, setProducts] = React.useState<Product[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
@@ -29,7 +31,7 @@ const InventoryTracking: React.FC = () => {
     React.useEffect(() => {
         const id = setTimeout(() => {
             setLoading(true);
-            GetProductsByNameAndCodeAndSupplierName(key, pagination.limit, pagination.offset)
+            GetProductsByNameAndCodeAndSupplierName(navigate, key, pagination.limit, pagination.offset)
                 .then((res) => {
                     if (res) {
                         setProducts(res.data);

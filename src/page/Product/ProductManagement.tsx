@@ -13,9 +13,11 @@ import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import GetProductsByNameAndCodeAndSupplierName, { Product } from '../../services/Product/GetProductByNameAndCodeAndSupplierName';
 import ModelGenerateQRCode from './compoments/ModelGenerateQRCode';
+import { useNavigate } from 'react-router-dom';
 
 export const ProductManagement: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
     const [isLoadingDelete, setIsLoadingDelete] = React.useState<boolean>(false)
@@ -40,7 +42,7 @@ export const ProductManagement: React.FC = () => {
 
     React.useEffect(() => {
         setIsLoading(true)
-        GetProductsByNameAndCodeAndSupplierName(key, pagination.limit, pagination.offset)
+        GetProductsByNameAndCodeAndSupplierName(navigate, key, pagination.limit, pagination.offset)
             .then((response) => {
                 if (response) {
                     setProducts(response.data)
@@ -62,7 +64,7 @@ export const ProductManagement: React.FC = () => {
     const handleDeleteAccount = () => {
         if (productId) {
             setIsLoadingDelete(true);
-            DeleteProductById(productId)
+            DeleteProductById(productId, navigate)
                 .then(() => {
                     setReload(!reload);
                     setShowModelConfirmDelete(false);

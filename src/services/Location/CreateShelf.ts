@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ResponseError } from "../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 interface CreateShelfProps {
     name: string;
@@ -10,7 +11,7 @@ interface CreateShelfProps {
     categoryId: string;
 }
 
-const CreateShelf = async (data: CreateShelfProps) => {
+const CreateShelf = async (data: CreateShelfProps, navigate: NavigateFunction) => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE
         const token = localStorage.getItem('token');

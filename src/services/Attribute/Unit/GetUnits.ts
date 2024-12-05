@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../../util/DecodeJWT";
 import { ResponseError } from "../../../interface/ResponseError";
+import { NavigateFunction } from "react-router-dom";
 
 export interface Unit {
     id: string;
@@ -24,7 +25,7 @@ interface GetUnitsProps {
     offset?: number;
 }
 
-const GetUnits = async (data?: GetUnitsProps): Promise<DataResponse | undefined> => {
+const GetUnits = async (navigate: NavigateFunction, data?: GetUnitsProps): Promise<DataResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

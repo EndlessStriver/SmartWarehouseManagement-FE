@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { ExportOrder } from "./StatisticalOrderExportAPI";
+import { NavigateFunction } from "react-router-dom";
 
 export interface ExportOrderResponse {
     data: ExportOrder[];
@@ -8,7 +9,7 @@ export interface ExportOrderResponse {
 }
 
 
-const StatisticalOrderExportALLAPI = async (from: string, to: string, status: string): Promise<ExportOrderResponse | undefined> => {
+const StatisticalOrderExportALLAPI = async (from: string, to: string, status: string, navigate: NavigateFunction): Promise<ExportOrderResponse | undefined> => {
     try {
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');

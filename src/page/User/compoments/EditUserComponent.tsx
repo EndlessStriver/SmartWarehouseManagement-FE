@@ -27,6 +27,7 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import GetLogsUser, { Action } from "../../../services/User/UserLogs";
 import { NoData } from "../../../compoments/NoData/NoData";
 import Pagination from "../../../compoments/Pagination/Pagination";
+import { useNavigate } from "react-router-dom";
 
 interface EditUserComponentProps {
     hideOverlay: () => void;
@@ -41,6 +42,8 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
     updateUsers,
     updatePagination
 }) => {
+
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const file = React.useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -88,7 +91,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
 
     React.useEffect(() => {
         setIsLoading(true);
-        GetRolesAPI()
+        GetRolesAPI(navigate)
             .then((response) => {
                 if (response) setRoles(response);
             }).catch((err) => {
@@ -101,7 +104,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
 
     React.useEffect(() => {
         if (userId) {
-            GetLogsUser(userId, pagination.limit, pagination.offset)
+            GetLogsUser(navigate, userId, pagination.limit, pagination.offset)
                 .then((response) => {
                     if (response) {
                         setLogs(response.data);
@@ -121,7 +124,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
 
     React.useEffect(() => {
         if (userId) {
-            GetAccountById(userId)
+            GetAccountById(userId, navigate)
                 .then((response) => {
                     if (response) {
                         setFormData({
@@ -331,7 +334,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
         if (validate1() && validate2()) {
             setIsLoadingSubmit(true);
             if (userId) {
-                UpdateAccountAPI(userId, formartDataUpate())
+                UpdateAccountAPI(userId, formartDataUpate(), navigate)
                     .then((response) => {
                         if (response) {
                             setDataDefault({
@@ -360,7 +363,7 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                                 roleName: response.role.name,
                                 username: response.username,
                             });
-                            return GetAccountsAPI();
+                            return GetAccountsAPI(navigate);
                         }
                     }).then((response) => {
                         if (response) {
@@ -381,9 +384,9 @@ export const EditUserComponent: React.FC<EditUserComponentProps> = ({
                     })
                 return;
             } else {
-                RegisterAPI(formartDataRegister())
+                RegisterAPI(navigate, formartDataRegister())
                     .then(() => {
-                        return GetAccountsAPI();
+                        return GetAccountsAPI(navigate);
                     }).then((response) => {
                         if (response) {
                             updateUsers(response.data);

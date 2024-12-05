@@ -1,3 +1,4 @@
+import { NavigateFunction } from 'react-router-dom';
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import axios from "axios";
 import ReceiveHeader from "../../interface/Entity/ReceiveHeader";
@@ -10,7 +11,7 @@ interface GetStockEntriesResponse {
     totalElementOfPage: number
 }
 
-const GetStockEntries = async (limit?: number, offset?: number): Promise<GetStockEntriesResponse | undefined> => {
+const GetStockEntries = async (navigate: NavigateFunction, limit?: number, offset?: number): Promise<GetStockEntriesResponse | undefined> => {
 
     try {
         const HOST = process.env.REACT_APP_HOST_BE;

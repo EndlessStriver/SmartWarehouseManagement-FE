@@ -14,9 +14,11 @@ import FormEditIventory from "./compoments/FormEditIventory";
 import { NoData } from "../../compoments/NoData/NoData";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import CancelIventory from "../../services/StockEntry/CancelIventory";
+import { useNavigate } from "react-router-dom";
 
 const Iventory: React.FC = () => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [loading, setloading] = React.useState<boolean>(false);
     const [transactionData, setTransactionData] = React.useState<InventoryTransaction[]>([]);
@@ -37,7 +39,7 @@ const Iventory: React.FC = () => {
         const id = setTimeout(() => {
             setloading(true);
             if (!isSearch) {
-                GetAllTransactionIventory()
+                GetAllTransactionIventory(navigate)
                     .then((res) => {
                         if (res) {
                             console.log(res);
@@ -52,7 +54,7 @@ const Iventory: React.FC = () => {
                         setloading(false);
                     })
             } else {
-                FindIventory(from!.toDateString(), to!.toDateString(), pagination.limit, pagination.offset)
+                FindIventory(navigate, from!.toDateString(), to!.toDateString(), pagination.limit, pagination.offset)
                     .then((res) => {
                         if (res) {
                             setTransactionData(res.data);
@@ -101,7 +103,7 @@ const Iventory: React.FC = () => {
 
     const handleCancelIventory = () => {
         setLoadingCancel(true);
-        CancelIventory(iventoryId)
+        CancelIventory(iventoryId, navigate)
             .then(() => {
                 dispatch({ message: "Hủy phiếu kiểm kê thành công", type: ActionTypeEnum.SUCCESS });
                 setReaload(!reaload);

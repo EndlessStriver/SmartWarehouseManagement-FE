@@ -8,6 +8,7 @@ import DeleteOrderExport from "../../../services/StockEntry/DeleteOrderExport"
 import SpinnerLoadingOverLayer from "../../../compoments/Loading/SpinnerLoadingOverLay"
 import GetOrderExportById, { ExportOrder } from "../../../services/StockEntry/GetOrderExportById"
 import formatDateVietNam from "../../../util/FormartDateVietnam"
+import { useNavigate } from "react-router-dom"
 
 interface ModelConfirmOrderExportProps {
     onClose: () => void
@@ -17,12 +18,13 @@ interface ModelConfirmOrderExportProps {
 
 const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) => {
 
+    const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [orderExport, setOrderExport] = React.useState<ExportOrder>();
 
     React.useEffect(() => {
-        GetOrderExportById(props.exportOrderId)
+        GetOrderExportById(props.exportOrderId, navigate)
             .then((response) => {
                 setOrderExport(response);
             })
@@ -37,7 +39,7 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
 
     const handleConfirmOrderExport = () => {
         setIsLoading(true);
-        ConfirmOrderExport(props.exportOrderId)
+        ConfirmOrderExport(props.exportOrderId, navigate)
             .then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xác nhận đơn hàng xuất kho thành công" });
                 props.reload();
@@ -54,7 +56,7 @@ const ModelConfirmOrderExport: React.FC<ModelConfirmOrderExportProps> = (props) 
 
     const handleCancel = () => {
         setIsLoading(true);
-        DeleteOrderExport(props.exportOrderId)
+        DeleteOrderExport(props.exportOrderId, navigate)
             .then(() => {
                 dispatch({ type: ActionTypeEnum.SUCCESS, message: "Hủy đơn hàng xuất kho thành công" });
                 props.reload();

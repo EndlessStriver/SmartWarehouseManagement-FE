@@ -10,6 +10,7 @@ import ModelLocationDetail from "../../Shelfs/Compoments/ModelLocationDetail";
 import ConvertUnit from "../../../services/Attribute/Unit/ConvertUnit";
 import { useProductCheck } from "../../../Context/ContextProductCheck";
 import { Location } from "./ModelAddItemCheck";
+import { useNavigate } from "react-router-dom";
 
 interface ListLocationProps {
     locationMoveId?: string;
@@ -27,6 +28,7 @@ interface ListLocationProps {
 
 const ListLocation: React.FC<ListLocationProps> = (props) => {
 
+    const navigate = useNavigate();
     const productCheck = useProductCheck();
     const dispatch = useDispatchMessage();
     const [shelf, setShelf] = React.useState<Shelf>();
@@ -42,7 +44,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     const [valueConvert, setValueConvert] = React.useState(0);
 
     React.useEffect(() => {
-        GetLocationByShelfIdt(props.shelfId)
+        GetLocationByShelfIdt(props.shelfId, navigate)
             .then((response) => {
                 if (response) setLocations(response)
             }).catch((error) => {
@@ -53,7 +55,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
 
     React.useEffect(() => {
         if (props.shelfId) {
-            GetShelfById(props.shelfId)
+            GetShelfById(props.shelfId, navigate)
                 .then((response) => {
                     if (response) setShelf(response);
                 })
@@ -65,7 +67,7 @@ const ListLocation: React.FC<ListLocationProps> = (props) => {
     }, [dispatch, props.shelfId]);
 
     React.useEffect(() => {
-        ConvertUnit(props.unitId, props.quantity)
+        ConvertUnit(props.unitId, props.quantity, navigate)
             .then((response) => {
                 if (response) {
                     setValueConvert(response)
