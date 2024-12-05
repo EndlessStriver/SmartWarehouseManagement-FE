@@ -29,7 +29,7 @@ const GetRolesAPI = async (navigate: NavigateFunction): Promise<Role[] | undefin
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
-                window.location.href = "/session-expired";
+                navigate("/session-expired");
             }
             const data = error.response.data as ResponseError;
             throw new Error(data.message || "An unexpected error occurred.");

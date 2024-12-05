@@ -3,6 +3,7 @@ import DataTypeUpdateProductAdmin from "../../interface/PageProduct/DataTypeUpda
 import { Product } from "../../interface/Entity/Product";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { NavigateFunction } from "react-router-dom";
+import { ResponseError } from "../../interface/ResponseError";
 
 const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeUpdateProductAdmin, navigate: NavigateFunction): Promise<Product | undefined> => {
     console.log(dataUpdate);
@@ -29,9 +30,9 @@ const UpdateProductByProductId = async (productId: string, dataUpdate: DataTypeU
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
-                window.location.href = "/session-expired";
+                navigate("/session-expired");
             }
-            const data = error.response.data;
+            const data = error.response.data as ResponseError;
             throw new Error(data.message || "An unexpected error occurred.");
         } else {
             throw new Error("An unexpected error occurred.");

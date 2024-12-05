@@ -2,6 +2,7 @@ import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import StockEntry from "../../interface/Entity/StockEntry";
 import { NavigateFunction } from "react-router-dom";
+import { ResponseError } from "../../interface/ResponseError";
 
 const GetStockEntryById = async (id: string, navigate: NavigateFunction): Promise<StockEntry | undefined> => {
     try {
@@ -24,17 +25,16 @@ const GetStockEntryById = async (id: string, navigate: NavigateFunction): Promis
             return response.data.data;
         }
     } catch (error) {
-        console.error(error);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
-                window.location.href = "/session-expired";
+                navigate("/session-expired");
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An unexpected error occurred.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
     }
 }

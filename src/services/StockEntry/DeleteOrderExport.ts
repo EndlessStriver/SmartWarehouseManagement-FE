@@ -1,6 +1,7 @@
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
 import { NavigateFunction } from "react-router-dom";
+import { ResponseError } from "../../interface/ResponseError";
 
 const DeleteOrderExport = async (orderExportId: string, navigate: NavigateFunction): Promise<void> => {
     try {
@@ -21,17 +22,16 @@ const DeleteOrderExport = async (orderExportId: string, navigate: NavigateFuncti
             });
         }
     } catch (error) {
-        console.error(error);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
-                window.location.href = "/session-expired";
+                navigate("/session-expired");
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An unexpected error occurred.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
     }
 }

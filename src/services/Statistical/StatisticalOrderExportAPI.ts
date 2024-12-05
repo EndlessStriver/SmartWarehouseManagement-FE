@@ -1,6 +1,7 @@
 import { NavigateFunction } from 'react-router-dom';
 import axios from "axios";
 import { checkTokenExpired } from "../../util/DecodeJWT";
+import { ResponseError } from '../../interface/ResponseError';
 
 interface ExportData {
     data: ExportOrder[];
@@ -100,17 +101,16 @@ const StatisticalOrderExportAPI = async (navigate: NavigateFunction, from: strin
             return response.data.data;
         }
     } catch (error) {
-        console.error(error);
         if (axios.isAxiosError(error) && error.response) {
             if (error.response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('profile');
-                window.location.href = "/session-expired";
+                navigate("/session-expired");
             }
-            const data = error.response.data
-            throw new Error(data.message || "An unexpected error occurred.")
+            const data = error.response.data as ResponseError;
+            throw new Error(data.message || "An unexpected error occurred.");
         } else {
-            throw new Error("An unexpected error occurred.")
+            throw new Error("An unexpected error occurred.");
         }
     }
 }
