@@ -25,6 +25,7 @@ import StaticticalStockEntry from './page/Statistical/StatisticalStockEntry';
 import StatisticalOrderExport from './page/Statistical/StatisticalOrderExport';
 import GenerateQRCodePage from './page/QRCode/GenerateQRCodePage';
 import Iventory from './page/StockEntry/Iventory';
+import Dashboard from './page/Dashboard/Dashboard';
 
 const router = createBrowserRouter([
     {
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <ProtectedDashboard />,
+                element: <Dashboard />,
             },
             {
                 path: "management-user",

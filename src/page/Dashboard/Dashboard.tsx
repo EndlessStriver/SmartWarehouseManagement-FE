@@ -1,9 +1,18 @@
 import React from "react";
 import "./Dashboard.css";
-import checkIsLogin from "../../util/Authen/CheckIsLogin";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
+
+    const navigate = useNavigate();
+
+    React.useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+        }
+    }, [navigate]);
+
     return (
         <div className="landing-page">
             <header className="landing-header">
@@ -34,9 +43,4 @@ const Dashboard: React.FC = () => {
     );
 }
 
-const ProtectedDashboard: React.FC = () => {
-    const AuthenticatedOutlet = checkIsLogin(Dashboard);
-    return <AuthenticatedOutlet />;
-}
-
-export default ProtectedDashboard;
+export default Dashboard;
