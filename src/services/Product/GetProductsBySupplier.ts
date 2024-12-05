@@ -85,11 +85,11 @@ const GetProductsBySupplier = async (navigate: NavigateFunction, supplierId: str
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/products/supplier/${supplierId}?limit=${pageRequest?.limit || 5}&offset=${pageRequest?.offset || 1}&order=${pageRequest?.order || "ASC"}&orderBy=${pageRequest?.orderBy || "name"}`, {
                 headers: {

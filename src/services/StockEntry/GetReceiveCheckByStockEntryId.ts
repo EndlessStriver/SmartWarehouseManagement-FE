@@ -75,11 +75,11 @@ const GetReceiveCheckByStockEntryId = async (stockEntryId: string, navigate: Nav
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/receive-check/receive/${stockEntryId}`, {
                 headers: {

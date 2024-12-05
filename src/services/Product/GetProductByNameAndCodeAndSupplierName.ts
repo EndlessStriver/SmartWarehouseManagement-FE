@@ -80,11 +80,11 @@ const GetProductsByNameAndCodeAndSupplierName = async (navigate: NavigateFunctio
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem('token');
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/products/name-pagination?name=${key}&limit=${limit || 5}&offset=${offset || 1}`, {
                 headers: {

@@ -85,11 +85,11 @@ const FindStockEntry = async (navigate: NavigateFunction, from: string, to: stri
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/receives/date-paginition?from=${from}&to=${to}&offset=${offset || 1}&limit=${limit || 10}&order=DESC`, {
                 headers: {

@@ -12,11 +12,11 @@ const LogoutAPI = async (navigate: NavigateFunction): Promise<LogoutResponse | u
         const HOST = process.env.REACT_APP_HOST_BE;
         const token = localStorage.getItem("token");
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             return (await axios.post(`${HOST}/auth/logout`, {}, {
                 headers: {

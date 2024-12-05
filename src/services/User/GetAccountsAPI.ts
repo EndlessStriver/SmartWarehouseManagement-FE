@@ -36,11 +36,11 @@ const GetAccountsAPI = async (navigate: NavigateFunction, input?: GetAccountsAPI
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/account/ad?limit=${input?.limit || 10}&offset=${input?.offset || 1}&order=${input?.order || Order.ASC}&orderBy=${input?.orderBy || OrderBy.FullName}`, {
                 headers: {

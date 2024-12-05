@@ -10,11 +10,11 @@ const FindAccount = async (navigate: NavigateFunction, key: string, offset?: num
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/account/all-accounts?name=${key}&limit=${limit || 10}&offset=${offset || 1}&order=${order || "DESC"}`, {
                 headers: {

@@ -44,11 +44,11 @@ const GetLocationHistoryById = async (navigate: NavigateFunction, locationId: st
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             const response = await axios.get(`${HOST}/whtransaction/transaction-by-location?locationId=${locationId}&limit=${limit || 10}&offset=${offset || 1}&order=${order || "ASC"}`, {
                 headers: {

@@ -16,11 +16,11 @@ const MoveProductInLocation = async (data: MoveProductInLocationProps, navigate:
         const token = localStorage.getItem('token');
 
         if (!token) {
-            window.location.href = "/login";
+            navigate("/login");
         } else if (checkTokenExpired(token)) {
             localStorage.removeItem('token');
             localStorage.removeItem('profile');
-            window.location.href = "/session-expired";
+            navigate("/session-expired");
         } else {
             axios.post(`${HOST}/whtransaction/location-mover`, data, {
                 headers: {
