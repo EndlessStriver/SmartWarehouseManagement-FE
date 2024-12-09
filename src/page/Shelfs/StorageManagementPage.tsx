@@ -3,20 +3,20 @@ import './css/ShelfDetails.css';
 import Shelf from '../../interface/Entity/Shelf';
 import PaginationType from "../../interface/Pagination";
 import GetShelfs from "../../services/Location/GetShelfs";
-import { useDispatchMessage } from "../../Context/ContextMessage";
+import {useDispatchMessage} from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import Pagination from "../../compoments/Pagination/Pagination";
-import { NoData } from "../../compoments/NoData/NoData";
+import {NoData} from "../../compoments/NoData/NoData";
 import ShelfDetails from "./Compoments/ShelfDetails";
-import { Badge, Button, CloseButton } from "react-bootstrap";
+import {Badge, Button, CloseButton} from "react-bootstrap";
 import ModelCreateShelf from "./Compoments/ModelCreateShelf";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import DeleteShelf from "../../services/Location/DeleteShelf";
 import './css/StorageManagementPage.css'
 import ModelQRCodeShelf from "./Compoments/ModelQRCodeShelf";
 import GetLocationByShelfIdt from "../../services/Location/GetLocationByShelfIdt";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const ShelfsPage: React.FC = () => {
 
@@ -42,7 +42,7 @@ const ShelfsPage: React.FC = () => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const response = await GetShelfs(navigate, { offset: pagination.offset });
+                const response = await GetShelfs(navigate, {offset: pagination.offset});
                 if (response) {
                     const updatedShelfs = await Promise.all(
                         response.data.map(async (shelf) => {
@@ -67,7 +67,7 @@ const ShelfsPage: React.FC = () => {
                 }
             } catch (error) {
                 console.error(error);
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Lỗi trong quá trình lấy danh sách kệ" });
+                dispatch({type: ActionTypeEnum.ERROR, message: "Lỗi trong quá trình lấy danh sách kệ"});
             } finally {
                 setIsLoading(false);
             }
@@ -81,7 +81,7 @@ const ShelfsPage: React.FC = () => {
     }, [dispatch, pagination.offset]);
 
     const handleChangePage = (page: number) => {
-        setPagination({ ...pagination, offset: page })
+        setPagination({...pagination, offset: page})
     }
 
     const handleUpdatePage = (page: PaginationType) => {
@@ -98,72 +98,73 @@ const ShelfsPage: React.FC = () => {
             .then(() => {
                 return GetShelfs(navigate)
             }).then((res) => {
-                if (res) {
-                    setShelfList(res.data.map((shelf) => {
-                        GetLocationByShelfIdt(shelf.id, navigate)
-                            .then((res) => {
-                                if (res) {
-                                    shelf.currentColumnsUsed = res.filter((lolcation) => lolcation.occupied).length
-                                }
-                            }).catch((error) => {
-                                console.error(error)
-                            })
-                        return shelf;
-                    }))
-                    setPagination({
-                        limit: Number(res.limit),
-                        offset: Number(res.offset),
-                        totalPage: res.totalPage,
-                        totalElementOfPage: res.totalElementOfPage
+            if (res) {
+                setShelfList(res.data.map((shelf) => {
+                    GetLocationByShelfIdt(shelf.id, navigate)
+                        .then((res) => {
+                            if (res) {
+                                shelf.currentColumnsUsed = res.filter((lolcation) => lolcation.occupied).length
+                            }
+                        }).catch((error) => {
+                        console.error(error)
                     })
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Xóa kệ thành công" })
-                    setShelfId('')
-                    setShowModelConfirmDelete(false)
-                }
-            }).catch((error) => {
-                console.error(error)
-                dispatch({ type: ActionTypeEnum.ERROR, message: error.message })
-            }).finally(() => {
-                setIsLoadingDelete(false)
-            })
+                    return shelf;
+                }))
+                setPagination({
+                    limit: Number(res.limit),
+                    offset: Number(res.offset),
+                    totalPage: res.totalPage,
+                    totalElementOfPage: res.totalElementOfPage
+                })
+                dispatch({type: ActionTypeEnum.SUCCESS, message: "Xóa kệ thành công"})
+                setShelfId('')
+                setShowModelConfirmDelete(false)
+            }
+        }).catch((error) => {
+            console.error(error)
+            dispatch({type: ActionTypeEnum.ERROR, message: error.message})
+        }).finally(() => {
+            setIsLoadingDelete(false)
+        })
     }
 
-    const renderShelfs = shelfList.map((shelf: Shelf, index: number) => {
+    const renderShelfs = shelfList.sort((a, b) => a.name.localeCompare(b.name, 'vi')).map((shelf: Shelf, index: number) => {
         return (
             <div
                 className="d-flex gap-1 flex-column justify-content-center align-items-center shadow btn btn-light position-relative"
                 key={index}
-                style={{ height: "250px" }}
+                style={{height: "250px"}}
             >
                 <CloseButton
                     className="position-absolute"
-                    style={{ top: "10px", right: "10px" }}
+                    style={{top: "10px", right: "10px"}}
                     onClick={() => {
                         setShelfId(shelf.id)
                         setShowModelConfirmDelete(true)
                     }}
                 />
                 <div className="d-flex w-100">
-                    <div style={{ flex: 1 }} className="text-end">Tên kệ: &nbsp;</div>
-                    <div style={{ flex: 1 }} className="fw-bold text-start">{shelf.name}</div>
+                    <div style={{flex: 1}} className="text-end">Tên kệ: &nbsp;</div>
+                    <div style={{flex: 1}} className="fw-bold text-start">{shelf.name}</div>
                 </div>
                 <div className="d-flex w-100">
-                    <div style={{ flex: 1 }} className="text-end">Loại kệ: &nbsp;</div>
-                    <div style={{ flex: 1 }} className="fw-bold text-start">
-                        <Badge bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
+                    <div style={{flex: 1}} className="text-end">Loại kệ: &nbsp;</div>
+                    <div style={{flex: 1}} className="fw-bold text-start">
+                        <Badge
+                            bg={`${shelf.typeShelf === "NORMAL" ? "primary" : (shelf.typeShelf === "COOLER") ? "info" : "danger"}`}>
                             {shelf.typeShelf === "NORMAL" ? "Thường" : "Lỗi"}
                         </Badge>
                     </div>
                 </div>
                 <div className="d-flex w-100">
-                    <div style={{ flex: 1 }} className="text-end">Loại hàng: &nbsp;</div>
-                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                    <div style={{flex: 1}} className="text-end">Loại hàng: &nbsp;</div>
+                    <div style={{flex: 1}} className="fw-bold text-start">
                         <span>{shelf.category?.name || ""}</span>
                     </div>
                 </div>
                 <div className="d-flex w-100">
-                    <div style={{ flex: 1 }} className="text-end">Vị trí trống: &nbsp;</div>
-                    <div style={{ flex: 1 }} className="fw-bold text-start">
+                    <div style={{flex: 1}} className="text-end">Vị trí trống: &nbsp;</div>
+                    <div style={{flex: 1}} className="fw-bold text-start">
                         <span>{shelf.totalColumns - shelf.currentColumnsUsed}</span>
                     </div>
                 </div>
@@ -211,11 +212,11 @@ const ShelfsPage: React.FC = () => {
                             {renderShelfs}
                         </div>
                         :
-                        <NoData />
+                        <NoData/>
                 }
             </div>
             {
-                isLoading && <SpinnerLoading />
+                isLoading && <SpinnerLoading/>
             }
             {
                 (shelfList.length > 0) &&
