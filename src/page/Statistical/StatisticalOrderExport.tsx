@@ -72,19 +72,21 @@ const StatisticalOrderExport = () => {
 
     const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
         return data.map((item) => {
-            return item.orderExportDetails[0].locationExport.map((location) => {
-                return {
-                    orderExportCode: item.exportCode,
-                    createDate: formatDateVietNam(item.create_at),
-                    exportBy: item.exportBy,
-                    productName: item.orderExportDetails[0].product.name,
-                    quantity: location.exportQuantity,
-                    unit: item.orderExportDetails[0].unit.name,
-                    location: location.locationCode,
-                    status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy",
-                }
+            return item.orderExportDetails.map((exportDetail) => {
+                return exportDetail.locationExport.map((locationEP) => {
+                    return {
+                        orderExportCode: item.exportCode,
+                        createDate: formatDateVietNam(item.create_at),
+                        exportBy: item.exportBy,
+                        productName: item.orderExportDetails[0].product.name,
+                        quantity: locationEP.exportQuantity,
+                        unit: item.orderExportDetails[0].unit.name,
+                        location: locationEP.locationCode,
+                        status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy",
+                    }
+                })
             })
-        }).flat()
+        }).flat(3)
     }
 
     const exportToExcel = () => {
@@ -290,28 +292,32 @@ const StatisticalOrderExport = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {
-                            orderExport.map((item) => (
-                                item.orderExportDetails[0].locationExport.map((location) => (
-                                    <tr key={uuidv4().toString()}>
+                        {orderExport.map((item) =>
+                            item.orderExportDetails.map((orderExportDetail) =>
+                                orderExportDetail.locationExport.map((locationEP) => (
+                                    <tr key={`${item.exportCode}-${locationEP.locationCode}`}>
                                         <td>{item.exportCode}</td>
                                         <td>{formatDateVietNam(item.create_at)}</td>
                                         <td>{item.exportBy}</td>
-                                        <td>{item.orderExportDetails[0].product.name}</td>
-                                        <td>{location.exportQuantity}</td>
-                                        <td>{item.orderExportDetails[0].unit.name}</td>
-                                        <td>{location.locationCode}</td>
+                                        <td>{orderExportDetail.product.name}</td>
+                                        <td>{locationEP.exportQuantity}</td>
+                                        <td>{orderExportDetail.unit.name}</td>
+                                        <td>{locationEP.locationCode}</td>
                                         <td>
-                                            {item.status === "PENDING" &&
-                                                <span className="badge bg-warning">Chờ xuất</span>}
-                                            {item.status === "EXPORTED" &&
-                                                <span className="badge bg-success">Đã xuất</span>}
-                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                            {item.status === "PENDING" && (
+                                                <span className="badge bg-warning">Chờ xuất</span>
+                                            )}
+                                            {item.status === "EXPORTED" && (
+                                                <span className="badge bg-success">Đã xuất</span>
+                                            )}
+                                            {item.status === "CANCEL" && (
+                                                <span className="badge bg-danger">Hủy</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
-                            )).flat()
-                        }
+                            )
+                        )}
                         </tbody>
                     </Table>
                 </div>
