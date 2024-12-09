@@ -97,28 +97,32 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {
-                            orderExport?.data.map((item) => (
-                                item.orderExportDetails[0].locationExport.map((location) => (
-                                    <tr key={uuidv4().toString()}>
-                                        <td>{item.exportCode}</td>
-                                        <td>{formatDateVietNam(item.create_at)}</td>
-                                        <td>{item.exportBy}</td>
-                                        <td>{item.orderExportDetails[0].product.name}</td>
-                                        <td>{location.exportQuantity}</td>
-                                        <td>{item.orderExportDetails[0].unit.name}</td>
-                                        <td>{location.locationCode}</td>
+                        {orderExport?.data?.map((item) =>
+                            item?.orderExportDetails?.map((orderExportDetail) =>
+                                orderExportDetail?.locationExport?.map((locationEP) => (
+                                    <tr key={`${item.exportCode}-${locationEP.locationCode}`}>
+                                        <td>{item.exportCode || "N/A"}</td>
+                                        <td>{item.create_at ? formatDateVietNam(item.create_at) : "N/A"}</td>
+                                        <td>{item.exportBy || "N/A"}</td>
+                                        <td>{orderExportDetail?.product?.name || "N/A"}</td>
+                                        <td>{locationEP?.exportQuantity || 0}</td>
+                                        <td>{orderExportDetail?.unit?.name || "N/A"}</td>
+                                        <td>{locationEP?.locationCode || "N/A"}</td>
                                         <td>
-                                            {item.status === "PENDING" &&
-                                                <span className="badge bg-warning">Chờ xuất</span>}
-                                            {item.status === "EXPORTED" &&
-                                                <span className="badge bg-success">Đã xuất</span>}
-                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                            {item.status === "PENDING" && (
+                                                <span className="badge bg-warning">Chờ xuất</span>
+                                            )}
+                                            {item.status === "EXPORTED" && (
+                                                <span className="badge bg-success">Đã xuất</span>
+                                            )}
+                                            {item.status === "CANCEL" && (
+                                                <span className="badge bg-danger">Hủy</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
-                            )).flat()
-                        }
+                            )
+                        )}
                         </tbody>
                     </Table>
                     <p>Tổng số lượng sản phẩm đã xuất: <span className="fw-bold">{orderExport?.totalQuantity}</span> Sản
