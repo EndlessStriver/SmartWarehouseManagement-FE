@@ -1,21 +1,21 @@
 import React from "react";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
-import { Table } from "react-bootstrap";
-import StatisticalOrderExportAPI, { ExportOrder } from "../../services/Statistical/StatisticalOrderExportAPI";
-import { useDispatchMessage } from "../../Context/ContextMessage";
+import {Table} from "react-bootstrap";
+import StatisticalOrderExportAPI, {ExportOrder} from "../../services/Statistical/StatisticalOrderExportAPI";
+import {useDispatchMessage} from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import PaginationType from "../../interface/Pagination";
 import Pagination from "../../compoments/Pagination/Pagination";
-import { NoData } from "../../compoments/NoData/NoData";
+import {NoData} from "../../compoments/NoData/NoData";
 import SpinnerLoading from "../../compoments/Loading/SpinnerLoading";
 import formatDateVietNam from "../../util/FormartDateVietnam";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faFileExcel, faFilePdf} from "@fortawesome/free-solid-svg-icons";
 import ViewPDFOrderExport from "./compoments/ViewPDFOrderExport";
 import StatisticalOrderExportALLAPI from "../../services/Statistical/StatisticalOrderExportAllAPI";
 import ExcelJS from "exceljs";
-import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from "react-router-dom";
+import {v4 as uuidv4} from 'uuid';
+import {useNavigate} from "react-router-dom";
 
 interface ConvertDataToDataExcel {
     orderExportCode: string;
@@ -51,7 +51,7 @@ const StatisticalOrderExport = () => {
         StatisticalOrderExportAPI(navigate, fromDate, toDate, status, pagination.limit, pagination.offset)
             .then((res) => {
                 if (res) {
-                    console.log(res.data.length);
+                    console.log(res.data);
                     setOrderExport(res.data);
                     setPagination({
                         limit: res.limit,
@@ -63,7 +63,7 @@ const StatisticalOrderExport = () => {
             })
             .catch((err) => {
                 console.error(err);
-                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
+                dispatch({type: ActionTypeEnum.ERROR, message: err.message})
             })
             .finally(() => {
                 setLoading(false);
@@ -72,15 +72,15 @@ const StatisticalOrderExport = () => {
 
     const convertDataToDataExcel = (data: ExportOrder[]): ConvertDataToDataExcel[] => {
         return data.map((item) => {
-            return item.orderExportDetails.map((location) => {
+            return item.orderExportDetails[0].locationExport.map((location) => {
                 return {
                     orderExportCode: item.exportCode,
                     createDate: formatDateVietNam(item.create_at),
                     exportBy: item.exportBy,
                     productName: item.orderExportDetails[0].product.name,
-                    quantity: location.locationExport[0].exportQuantity,
+                    quantity: location.exportQuantity,
                     unit: item.orderExportDetails[0].unit.name,
-                    location: location.locationExport[0].locationCode,
+                    location: location.locationCode,
                     status: item.status === "PENDING" ? "Chờ xuất" : item.status === "EXPORTED" ? "Đã xuất" : "Hủy",
                 }
             })
@@ -111,13 +111,13 @@ const StatisticalOrderExport = () => {
                 mainTitleCell.font = {
                     size: 16,
                     bold: true,
-                    color: { argb: "FFFFFFFF" },
+                    color: {argb: "FFFFFFFF"},
                 };
-                mainTitleCell.alignment = { horizontal: "center", vertical: "middle" };
+                mainTitleCell.alignment = {horizontal: "center", vertical: "middle"};
                 mainTitleCell.fill = {
                     type: "pattern",
                     pattern: "solid",
-                    fgColor: { argb: "FF1976D2" },
+                    fgColor: {argb: "FF1976D2"},
                 };
 
                 worksheet.addRow([]);
@@ -135,18 +135,18 @@ const StatisticalOrderExport = () => {
                 worksheet.addRow(headers);
 
                 worksheet.getRow(3).eachCell((cell) => {
-                    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+                    cell.font = {bold: true, color: {argb: "FFFFFFFF"}};
                     cell.fill = {
                         type: "pattern",
                         pattern: "solid",
-                        fgColor: { argb: "FF4CAF50" },
+                        fgColor: {argb: "FF4CAF50"},
                     };
-                    cell.alignment = { horizontal: "center", vertical: "middle" };
+                    cell.alignment = {horizontal: "center", vertical: "middle"};
                     cell.border = {
-                        top: { style: "thin" },
-                        left: { style: "thin" },
-                        bottom: { style: "thin" },
-                        right: { style: "thin" },
+                        top: {style: "thin"},
+                        left: {style: "thin"},
+                        bottom: {style: "thin"},
+                        right: {style: "thin"},
                     };
                 });
 
@@ -157,12 +157,12 @@ const StatisticalOrderExport = () => {
                 worksheet.eachRow((row, rowIndex) => {
                     if (rowIndex > 3) {
                         row.eachCell((cell) => {
-                            cell.alignment = { horizontal: "center", vertical: "middle" };
+                            cell.alignment = {horizontal: "center", vertical: "middle"};
                             cell.border = {
-                                top: { style: "thin" },
-                                left: { style: "thin" },
-                                bottom: { style: "thin" },
-                                right: { style: "thin" },
+                                top: {style: "thin"},
+                                left: {style: "thin"},
+                                bottom: {style: "thin"},
+                                right: {style: "thin"},
                             };
                         });
                     }
@@ -192,7 +192,7 @@ const StatisticalOrderExport = () => {
             })
             .catch((err) => {
                 console.error(err);
-                dispatch({ type: ActionTypeEnum.ERROR, message: err.message });
+                dispatch({type: ActionTypeEnum.ERROR, message: err.message});
             })
             .finally(() => {
                 setLoadingExportExcel(false);
@@ -209,11 +209,16 @@ const StatisticalOrderExport = () => {
                 </div>
                 <div className="d-flex flex-row text-nowrap justify-content-center align-items-center gap-3">
                     <span>Từ ngày:</span>
-                    <input type="date" value={formatDateForInputNoTime(fromDate)} onChange={(e) => setFromDate(e.target.value)} className="form-control" style={{ width: "250px" }} />
+                    <input type="date" value={formatDateForInputNoTime(fromDate)}
+                           onChange={(e) => setFromDate(e.target.value)} className="form-control"
+                           style={{width: "250px"}}/>
                     <span>Đến ngày:</span>
-                    <input type="date" value={formatDateForInputNoTime(toDate)} onChange={(e) => setToDate(e.target.value)} className="form-control" style={{ width: "250px" }} />
+                    <input type="date" value={formatDateForInputNoTime(toDate)}
+                           onChange={(e) => setToDate(e.target.value)} className="form-control"
+                           style={{width: "250px"}}/>
                     <span>Trạng thái:</span>
-                    <select className="form-select" style={{ width: "250px" }} value={status} onChange={(e) => setStatus(e.target.value as any)}>
+                    <select className="form-select" style={{width: "250px"}} value={status}
+                            onChange={(e) => setStatus(e.target.value as any)}>
                         <option value="PENDING">Chờ xuất</option>
                         <option value="EXPORTED">Đã xuất</option>
                         <option value="CANCEL">Hủy</option>
@@ -225,7 +230,10 @@ const StatisticalOrderExport = () => {
                             const toDateConvert = new Date(toDate);
 
                             if (fromDateConvert > currentDate) {
-                                dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày bắt đầu không được lớn hơn ngày hiện tại" })
+                                dispatch({
+                                    type: ActionTypeEnum.ERROR,
+                                    message: "Ngày bắt đầu không được lớn hơn ngày hiện tại"
+                                })
                                 return;
                             }
                             // if (toDateConvert > currentDate) {
@@ -233,7 +241,10 @@ const StatisticalOrderExport = () => {
                             //     return;
                             // }
                             if (fromDateConvert > toDateConvert) {
-                                dispatch({ type: ActionTypeEnum.ERROR, message: "Ngày bắt đầu không được lớn hơn ngày kết thúc" })
+                                dispatch({
+                                    type: ActionTypeEnum.ERROR,
+                                    message: "Ngày bắt đầu không được lớn hơn ngày kết thúc"
+                                })
                                 return;
                             }
                             setReload(!reload)
@@ -247,7 +258,7 @@ const StatisticalOrderExport = () => {
                         className="btn btn-danger"
                         onClick={() => setShowViewPDFOrderExport(true)}
                     >
-                        <FontAwesomeIcon icon={faFilePdf} className="me-1" />
+                        <FontAwesomeIcon icon={faFilePdf} className="me-1"/>
                         Xuất PDF
                     </button>
                     <button
@@ -255,49 +266,52 @@ const StatisticalOrderExport = () => {
                         className="btn btn-success"
                         onClick={exportToExcel}
                     >
-                        <FontAwesomeIcon icon={faFileExcel} className="me-1" />
+                        <FontAwesomeIcon icon={faFileExcel} className="me-1"/>
                         {loadingExportExcel ? "Đang Xuất" : "Xuất Excel"}
                     </button>
                 </div>
                 <div className="mt-5">
                     <h3 className="text-center fw-bold">BẢNG THỐNG KÊ HÀNG HÓA XUẤT KHO</h3>
                     <div>
-                        <p className="text-center">Từ ngày: {formatDateVietNam(fromDate)} - Đến ngày: {formatDateVietNam(toDate)}</p>
+                        <p className="text-center">Từ ngày: {formatDateVietNam(fromDate)} - Đến
+                            ngày: {formatDateVietNam(toDate)}</p>
                     </div>
                     <Table striped bordered hover responsive className="mt-4">
                         <thead>
-                            <tr>
-                                <th>Mã Phiếu Xuất</th>
-                                <th>Ngày xuất</th>
-                                <th>Người xuất</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Đơn vị</th>
-                                <th>Vị trí</th>
-                                <th>Trạng thái</th>
-                            </tr>
+                        <tr>
+                            <th>Mã Phiếu Xuất</th>
+                            <th>Ngày xuất</th>
+                            <th>Người xuất</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn vị</th>
+                            <th>Vị trí</th>
+                            <th>Trạng thái</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {
-                                orderExport.map((item) => (
-                                    item.orderExportDetails.map((location) => (
-                                        <tr key={uuidv4().toString()}>
-                                            <td>{item.exportCode}</td>
-                                            <td>{formatDateVietNam(item.create_at)}</td>
-                                            <td>{item.exportBy}</td>
-                                            <td>{item.orderExportDetails[0].product.name}</td>
-                                            <td>{location.locationExport[0].exportQuantity}</td>
-                                            <td>{item.orderExportDetails[0].unit.name}</td>
-                                            <td>{location.locationExport[0].locationCode}</td>
-                                            <td>
-                                                {item.status === "PENDING" && <span className="badge bg-warning">Chờ xuất</span>}
-                                                {item.status === "EXPORTED" && <span className="badge bg-success">Đã xuất</span>}
-                                                {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
-                                            </td>
-                                        </tr>
-                                    ))
-                                )).flat()
-                            }
+                        {
+                            orderExport.map((item) => (
+                                item.orderExportDetails[0].locationExport.map((location) => (
+                                    <tr key={uuidv4().toString()}>
+                                        <td>{item.exportCode}</td>
+                                        <td>{formatDateVietNam(item.create_at)}</td>
+                                        <td>{item.exportBy}</td>
+                                        <td>{item.orderExportDetails[0].product.name}</td>
+                                        <td>{location.exportQuantity}</td>
+                                        <td>{item.orderExportDetails[0].unit.name}</td>
+                                        <td>{location.locationCode}</td>
+                                        <td>
+                                            {item.status === "PENDING" &&
+                                                <span className="badge bg-warning">Chờ xuất</span>}
+                                            {item.status === "EXPORTED" &&
+                                                <span className="badge bg-success">Đã xuất</span>}
+                                            {item.status === "CANCEL" && <span className="badge bg-danger">Hủy</span>}
+                                        </td>
+                                    </tr>
+                                ))
+                            )).flat()
+                        }
                         </tbody>
                     </Table>
                 </div>
@@ -307,17 +321,17 @@ const StatisticalOrderExport = () => {
                         currentPage={pagination.offset}
                         totalPages={pagination.totalPage}
                         onPageChange={(page) => {
-                            setPagination({ ...pagination, offset: page });
+                            setPagination({...pagination, offset: page});
                         }}
                     />
                 }
                 {
                     orderExport.length === 0 &&
-                    <NoData />
+                    <NoData/>
                 }
                 {
                     loading &&
-                    <SpinnerLoading />
+                    <SpinnerLoading/>
                 }
             </div>
             {

@@ -1,7 +1,7 @@
-import { NavigateFunction } from 'react-router-dom';
+import {NavigateFunction} from 'react-router-dom';
 import axios from "axios";
-import { ResponseError } from "../../interface/ResponseError";
-import { Profile } from "../../interface/Profile";
+import {ResponseError} from "../../interface/ResponseError";
+import {Profile} from "../../interface/Profile";
 
 const GetProfileByTokenAPI = async (token: string, navigate: NavigateFunction): Promise<Profile> => {
     try {
