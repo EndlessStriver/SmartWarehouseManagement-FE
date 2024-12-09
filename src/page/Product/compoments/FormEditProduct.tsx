@@ -1,8 +1,8 @@
 import React from "react";
-import { OverLay } from "../../../compoments/OverLay/OverLay";
-import { Button, CloseButton, Col, Container, Form, Image, Row } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faEdit, faImage, faImages } from "@fortawesome/free-solid-svg-icons";
+import {OverLay} from "../../../compoments/OverLay/OverLay";
+import {Button, CloseButton, Col, Container, Form, Image, Row} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChevronLeft, faEdit, faImage, faImages} from "@fortawesome/free-solid-svg-icons";
 import Select from 'react-select';
 import GetSizesByName from "../../../services/Attribute/Size/GetSizesByName";
 import GetColorsByName from "../../../services/Attribute/Color/GetColorsByName";
@@ -12,11 +12,11 @@ import GetCategoriesByName from "../../../services/Attribute/Category/GetCategor
 import GetSuppliersByName from "../../../services/Supplier/GetSuppliersByName";
 import DataTypeCreateProductAdmin from "../../../interface/PageProduct/DataTypeCreateProductAdmin";
 import CreateProduct from "../../../services/Product/CreateProduct";
-import { useDispatchMessage } from "../../../Context/ContextMessage";
+import {useDispatchMessage} from "../../../Context/ContextMessage";
 import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import GetProductById from "../../../services/Product/GetProductById";
 import SpinnerLoadingOverLay from "../../../compoments/Loading/SpinnerLoadingOverLay";
-import { Product } from "../../../interface/Entity/Product";
+import {Product} from "../../../interface/Entity/Product";
 import DeepEqual from "../../../util/DeepEqual";
 import DataTypeUpdateProductAdmin from "../../../interface/PageProduct/DataTypeUpdateProductAdmin";
 import UpdateProductByProductId from "../../../services/Product/UpdateProductByProductId";
@@ -25,7 +25,8 @@ import ModelConfirmDelete from "../../../compoments/ModelConfirm/ModelConfirmDel
 import '../css/FormEditProduct.css'
 import AddImagesProduct from "../../../services/Product/AddImagesProduct";
 import OptionType from "../../../interface/OptionType";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {v4 as uuidv4} from 'uuid';
 
 interface FormEditProductProps {
     handleClose: () => void;
@@ -158,72 +159,75 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 value: data.productDetails[0].sku[0].material.id,
                 label: data.productDetails[0].sku[0].material.name
             },
-            size: { value: data.productDetails[0].sku[0].size.id, label: data.productDetails[0].sku[0].size.name },
-            category: { value: data.category!.id, label: data.category!.name },
-            supplier: { value: data.productDetails[0].sku[0].supplier.id, label: data.productDetails[0].sku[0].supplier.name },
+            size: {value: data.productDetails[0].sku[0].size.id, label: data.productDetails[0].sku[0].size.name},
+            category: {value: data.category!.id, label: data.category!.name},
+            supplier: {
+                value: data.productDetails[0].sku[0].supplier.id,
+                label: data.productDetails[0].sku[0].supplier.name
+            },
             exportCriteria: data.export_criteria
         }
     }
 
     const validate1 = (): boolean => {
         if (formData.name === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên sản phẩm" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập tên sản phẩm"});
             return true;
         }
         if (formData.description === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mô tả"});
             return true;
         }
         if (formData.weight === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập trọng lượng" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập trọng lượng"});
             return true;
         }
         if (formData.unitName === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính cơ bản" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập đơn vị tính cơ bản"});
             return true;
         }
         if (formData.productCode === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mã sản phẩm" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập mã sản phẩm"});
             return true;
         }
         if (formData.length === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều dài" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều dài"});
             return true;
         }
         if (formData.width === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều rộng" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều rộng"});
             return true;
         }
         if (formData.height === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều cao" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng nhập chiều cao"});
             return true;
         }
         if (formData.color === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn màu sắc" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn màu sắc"});
             return true;
         }
         if (formData.branch === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn thương hiệu" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn thương hiệu"});
             return true;
         }
         if (formData.model === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn mẫu mã" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn mẫu mã"});
             return true;
         }
         if (formData.size === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn kích cỡ" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn kích cỡ"});
             return true;
         }
         if (formData.category === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn loại sản phẩm" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn loại sản phẩm"});
             return true;
         }
         if (formData.supplier === null) {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn nhà cung cấp" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn nhà cung cấp"});
             return true;
         }
         if (formData.exportCriteria === "") {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Vui lòng chọn tiêu chí xuất kho" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Vui lòng chọn tiêu chí xuất kho"});
             return true;
         }
         return false;
@@ -250,23 +254,23 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         setDataDefault(FormatDataGet(data));
                         setImagePreviews(data.productDetails[0].images.filter((image) => !image.isDeleted).map((image) => {
                             return {
-                                key: crypto.randomUUID().toString(),
+                                key: uuidv4().toString(),
                                 url: image.url
                             }
                         }) || []);
                         setImagePreviewsDefault(data.productDetails[0].images.filter((image) => !image.isDeleted).map((image) => {
                             return {
-                                key: crypto.randomUUID().toString(),
+                                key: uuidv4().toString(),
                                 url: image.url
                             }
                         }) || []);
                     }
                 }).catch((error) => {
-                    console.error(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
-                }).finally(() => {
-                    setLoading(false);
-                })
+                console.error(error);
+                dispatch({type: ActionTypeEnum.ERROR, message: error.message});
+            }).finally(() => {
+                setLoading(false);
+            })
         }
     }, [props.productId, dispatch, reload])
 
@@ -274,11 +278,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetColorsByName(color, navigate)
                 .then((data) => {
-                    if (data) setColors(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setColors(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -288,11 +292,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetBrandsByName(branch, navigate)
                 .then((data) => {
-                    if (data) setBranches(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setBranches(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -302,11 +306,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetMaterialsByName(model, navigate)
                 .then((data) => {
-                    if (data) setModels(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setModels(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -316,11 +320,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetSizesByName(size, navigate)
                 .then((data) => {
-                    setSizes(data.map((size) => ({ value: size.id, label: size.name })));
+                    setSizes(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -330,11 +334,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetCategoriesByName(category, navigate)
                 .then((data) => {
-                    if (data) setCategories(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setCategories(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -344,11 +348,11 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         const id = setTimeout(() => {
             GetSuppliersByName(supplier, navigate)
                 .then((data) => {
-                    if (data) setSuppliers(data.map((size) => ({ value: size.id, label: size.name })));
+                    if (data) setSuppliers(data.map((size) => ({value: size.id, label: size.name})));
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 });
         }, 500);
         return () => clearTimeout(id);
@@ -404,7 +408,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         if (!props.productId) {
             CreateProduct(formatDataCreate(), navigate)
                 .then(() => {
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Tạo sản phẩm thành công" });
+                    dispatch({type: ActionTypeEnum.SUCCESS, message: "Tạo sản phẩm thành công"});
                     setTimeout(() => {
                         props.handleClose();
                         props.reload();
@@ -412,7 +416,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 })
                 .catch((error) => {
                     console.log(error);
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 })
                 .finally(() => {
                     setLoading(false);
@@ -420,7 +424,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         } else {
             const dataUpdate = formatDataUpdate();
             if (Object.keys(dataUpdate).length === 0) {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Không có dữ liệu thay đổi" });
+                dispatch({type: ActionTypeEnum.ERROR, message: "Không có dữ liệu thay đổi"});
                 setLoading(false);
             } else {
                 UpdateProductByProductId(props.productId, dataUpdate, navigate)
@@ -428,14 +432,14 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         if (response) {
                             setFormData(FormatDataGet(response));
                             setDataDefault(FormatDataGet(response));
-                            dispatch({ type: ActionTypeEnum.SUCCESS, message: "Cập nhật sản phẩm thành công" });
+                            dispatch({type: ActionTypeEnum.SUCCESS, message: "Cập nhật sản phẩm thành công"});
                             props.reload();
                             setIsEdit(false);
                         }
                     })
                     .catch((error) => {
                         console.error(error);
-                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                        dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                     })
                     .finally(() => {
                         setLoading(false);
@@ -450,7 +454,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
         if (files !== null) {
             for (let i = 0; i < files.length; i++) {
                 if (files[i].size > maxFileSize) {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: "File của bạn lớn hơn 10Mb" });
+                    dispatch({type: ActionTypeEnum.ERROR, message: "File của bạn lớn hơn 10Mb"});
                     break;
                 } else {
                     const keyRandom = crypto.randomUUID().toString();
@@ -459,7 +463,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         url: URL.createObjectURL(files[i])
                     });
                     setImages((preState) => {
-                        return [...preState, { key: keyRandom, file: files[i] }];
+                        return [...preState, {key: keyRandom, file: files[i]}];
                     });
                 }
             }
@@ -478,13 +482,13 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         setImagePreviewsDefault(newPreviews);
                     })
                     .catch((error) => {
-                        dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                        dispatch({type: ActionTypeEnum.ERROR, message: error.message});
 
                     }).finally(() => {
-                        setLoading(false);
-                    })
+                    setLoading(false);
+                })
             } else {
-                dispatch({ type: ActionTypeEnum.ERROR, message: "Không tìm thấy ảnh" });
+                dispatch({type: ActionTypeEnum.ERROR, message: "Không tìm thấy ảnh"});
             }
         } else {
             const newImages = images.filter((image) => image.key !== key);
@@ -521,16 +525,16 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 .then(() => {
                     setReload(!reload);
                     setImages([]);
-                    dispatch({ type: ActionTypeEnum.SUCCESS, message: "Thêm ảnh thành công" });
+                    dispatch({type: ActionTypeEnum.SUCCESS, message: "Thêm ảnh thành công"});
                 })
                 .catch((error) => {
-                    dispatch({ type: ActionTypeEnum.ERROR, message: error.message });
+                    dispatch({type: ActionTypeEnum.ERROR, message: error.message});
                 })
                 .finally(() => {
                     setLoading(false);
                 });
         } else {
-            dispatch({ type: ActionTypeEnum.ERROR, message: "Không có ảnh để thêm" });
+            dispatch({type: ActionTypeEnum.ERROR, message: "Không có ảnh để thêm"});
         }
     };
 
@@ -543,7 +547,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                             onClick={() => props.handleClose()}
                             className="btn fs-3 px-3 text-primary"
                         >
-                            <FontAwesomeIcon icon={faChevronLeft} />
+                            <FontAwesomeIcon icon={faChevronLeft}/>
                         </button>
                         <h2 className="fw-bold mb-0">{`${props.productId ? "Chỉnh Sửa Sản Phẩm" : "Tạo Mới Sản Phẩm"}`}</h2>
                     </div>
@@ -578,7 +582,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                     className="fw-semibold"
                                     onClick={() => setIsEdit(true)}
                                 >
-                                    <FontAwesomeIcon icon={faEdit} className={"me-2"} />
+                                    <FontAwesomeIcon icon={faEdit} className={"me-2"}/>
                                     Chỉnh Sửa
                                 </Button>
                             :
@@ -723,7 +727,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setColor}
                                         value={formData.color}
-                                        onChange={(value) => setFormData({ ...formData, color: value })}
+                                        onChange={(value) => setFormData({...formData, color: value})}
                                         options={colors}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -742,7 +746,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setModel}
                                         value={formData.model}
-                                        onChange={(value) => setFormData({ ...formData, model: value })}
+                                        onChange={(value) => setFormData({...formData, model: value})}
                                         options={models}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -763,7 +767,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setBranch}
                                         value={formData.branch}
-                                        onChange={(value) => setFormData({ ...formData, branch: value })}
+                                        onChange={(value) => setFormData({...formData, branch: value})}
                                         options={branches}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -782,7 +786,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setSize}
                                         value={formData.size}
-                                        onChange={(value) => setFormData({ ...formData, size: value })}
+                                        onChange={(value) => setFormData({...formData, size: value})}
                                         options={sizes}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -806,7 +810,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setCategory}
                                         value={formData.category}
-                                        onChange={(value) => setFormData({ ...formData, category: value })}
+                                        onChange={(value) => setFormData({...formData, category: value})}
                                         options={categories}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -827,7 +831,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                         }}
                                         onInputChange={setSupplier}
                                         value={formData.supplier}
-                                        onChange={(value) => setFormData({ ...formData, supplier: value })}
+                                        onChange={(value) => setFormData({...formData, supplier: value})}
                                         options={suppliers}
                                         required
                                         isDisabled={props.productId !== "" && !isEdit}
@@ -840,7 +844,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                             <Col md={12}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Tiêu Chí Xuất Kho</Form.Label>
-                                    <br />
+                                    <br/>
                                     <select
                                         disabled={props.productId !== "" && !isEdit}
                                         className="form-select py-3"
@@ -860,7 +864,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 <Row className="p-3">
                     <div className="border-bottom pb-2 mb-3 d-flex justify-content-between">
                         <h5 className="fw-semibold d-flex align-items-center">
-                            <FontAwesomeIcon icon={faImages} className="me-2" />
+                            <FontAwesomeIcon icon={faImages} className="me-2"/>
                             Danh Sách Ảnh
                         </h5>
                         <Button
@@ -909,12 +913,13 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                                             }
                                         }
                                     }}
-                                    style={{ top: "0.5rem", right: "0.5rem" }}
+                                    style={{top: "0.5rem", right: "0.5rem"}}
                                     disabled={props.productId !== "" && !isEdit}
                                 />
                                 {
                                     checkImageNew(image.key) &&
-                                    <span className="badge text-bg-danger position-absolute top-0 start-0">Ảnh mới</span>
+                                    <span
+                                        className="badge text-bg-danger position-absolute top-0 start-0">Ảnh mới</span>
                                 }
                             </div>
                         ))}
@@ -923,7 +928,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                         imagePreviews.length === 0 &&
                         <div
                             className="d-flex flex-column align-items-center justify-content-center gap-2 text-secondary">
-                            <FontAwesomeIcon icon={faImage} size="3x" />
+                            <FontAwesomeIcon icon={faImage} size="3x"/>
                             <span>Không Có Hình Ảnh!</span>
                         </div>
                     }
@@ -952,7 +957,7 @@ const FormEditProduct: React.FC<FormEditProductProps> = (props) => {
                 </Row>
             </Container>
             {
-                loading && <SpinnerLoadingOverLay />
+                loading && <SpinnerLoadingOverLay/>
             }
             {
                 showModelConfirmDeleteImage &&
