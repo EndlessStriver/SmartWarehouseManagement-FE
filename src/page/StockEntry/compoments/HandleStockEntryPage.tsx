@@ -271,7 +271,7 @@ const HandleStockEntryPage: React.FC<HandleStockEntryPageProps> = (props) => {
                                     variant="danger"
                                     className="text-light fw-bold"
                                     onClick={() => handleCancleStockEntry()}
-                                    disabled={productChecks.length === 0}
+                                    disabled={submitLoading || productChecks.length === 0}
                                 >
                                     Hủy phiếu
                                 </Button>
