@@ -20,6 +20,7 @@ const ContentHeader: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = React.useState(false);
     const [modelLogout, setModelLogout] = React.useState(false);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
+    const [loadingLogout, setLoadingLogout] = React.useState(false);
 
     React.useEffect(() => {
         const today = new Date();
@@ -57,6 +58,7 @@ const ContentHeader: React.FC = () => {
 
     const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        setLoadingLogout(true);
         LogoutAPI(navigate)
             .then(() => {
                 localStorage.removeItem("token");
@@ -64,6 +66,9 @@ const ContentHeader: React.FC = () => {
                 navigate("/login");
             }).catch((err) => {
                 console.error(err.message);
+            })
+            .finally(() => {
+                setLoadingLogout(false);
             });
     }
 
@@ -81,7 +86,7 @@ const ContentHeader: React.FC = () => {
                     {dropdownOpen && <DropDownMenu openModelLogout={openModelLogout} />}
                 </div>
             </div>
-            {modelLogout && <ModelClose closeModelLogout={closeModelLogout} handleLogout={handleLogout} />}
+            {modelLogout && <ModelClose closeModelLogout={closeModelLogout} handleLogout={handleLogout} loadingLogout={loadingLogout} />}
         </div>
     );
 }
