@@ -20,6 +20,7 @@ import DatePicker from "react-datepicker";
 import FindStockEntry from "../../services/StockEntry/FindStockEntry";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
 import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
 
 const StockEntry: React.FC = () => {
 
@@ -135,7 +136,7 @@ const StockEntry: React.FC = () => {
                 <td>{index + 1}</td>
                 <td>{stockEntry.receiveCode}</td>
                 <td>{stockEntry.receiveBy}</td>
-                <td>{formatDateVietNam(stockEntry.create_at)}</td>
+                <td>{formatDateTimeVietNamHaveTime(stockEntry.create_at)}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
                 <td>
                     <div className="d-flex flex-row gap-2">

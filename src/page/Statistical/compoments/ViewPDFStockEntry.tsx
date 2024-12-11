@@ -12,6 +12,7 @@ import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import StatisticalStockEntryAPI, { StatisticalStockEntryResponse } from "../../../services/Statistical/StatisticalStockEntryAPI";
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../../util/FormartDateVietnameHaveTime";
 
 interface ViewPDFStockEntryProps {
     onClose: () => void;
@@ -95,7 +96,7 @@ const ViewPDFStockEntry: React.FC<ViewPDFStockEntryProps> = (props) => {
                                             <td>{item1.receiveQuantity}</td>
                                             <td>{item1.unit ? item1.unit.name : "Không có"}</td>
                                             <td>{item1.locations[0].locationCode}</td>
-                                            <td>{formatDateVietNam(item1.create_at)}</td>
+                                            <td>{formatDateTimeVietNamHaveTime(item1.create_at)}</td>
                                         </tr>
                                     ))
                                 }).flat()

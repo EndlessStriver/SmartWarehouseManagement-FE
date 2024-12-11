@@ -1,8 +1,8 @@
-import {CloseButton, Table} from "react-bootstrap"
-import {OverLay} from "../../../compoments/OverLay/OverLay"
+import { CloseButton, Table } from "react-bootstrap"
+import { OverLay } from "../../../compoments/OverLay/OverLay"
 import formatDateVietNam from "../../../util/FormartDateVietnam";
 import React from "react";
-import {useDispatchMessage} from "../../../Context/ContextMessage";
+import { useDispatchMessage } from "../../../Context/ContextMessage";
 import StatisticalOrderExportALLAPI, {
     ExportOrderResponse
 } from "../../../services/Statistical/StatisticalOrderExportAllAPI";
@@ -10,10 +10,11 @@ import ActionTypeEnum from "../../../enum/ActionTypeEnum";
 import SpinnerLoading from "../../../compoments/Loading/SpinnerLoading";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faFilePdf} from "@fortawesome/free-solid-svg-icons";
-import {v4 as uuidv4} from 'uuid';
-import {useNavigate} from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../../util/FormartDateVietnameHaveTime";
 
 interface ViewPDFOrderExportProps {
     onClose: () => void;
@@ -44,7 +45,7 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
             })
             .catch((err) => {
                 console.error(err);
-                dispatch({type: ActionTypeEnum.ERROR, message: err.message})
+                dispatch({ type: ActionTypeEnum.ERROR, message: err.message })
             })
             .finally(() => {
                 setLoading(false);
@@ -54,7 +55,7 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
     const handleExportPDF = () => {
         const input = contentRef.current;
         if (input) {
-            html2canvas(input, {scale: 2})
+            html2canvas(input, { scale: 2 })
                 .then((canvas) => {
                     const imgData = canvas.toDataURL('image/png');
                     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -69,14 +70,14 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
 
     return (
         <OverLay>
-            <div className="bg-light rounded p-4 position-relative" style={{width: "1200px"}}>
+            <div className="bg-light rounded p-4 position-relative" style={{ width: "1200px" }}>
                 <CloseButton onClick={() => props.onClose()} className="position-absolute"
-                             style={{top: "15px", right: "15px"}}/>
+                    style={{ top: "15px", right: "15px" }} />
                 <button
                     className="btn btn-danger"
                     onClick={() => handleExportPDF()}
                 >
-                    <FontAwesomeIcon icon={faFilePdf} className="me-1"/>
+                    <FontAwesomeIcon icon={faFilePdf} className="me-1" />
                     Xuất PDF
                 </button>
                 <div ref={contentRef}>
@@ -85,44 +86,44 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                         ngày: {formatDateVietNam(props.toDate)}</h6>
                     <Table striped bordered hover responsive className="mt-4">
                         <thead>
-                        <tr>
-                            <th>Mã Phiếu Xuất</th>
-                            <th>Ngày xuất</th>
-                            <th>Người xuất</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn vị</th>
-                            <th>Vị trí</th>
-                            <th>Trạng thái</th>
-                        </tr>
+                            <tr>
+                                <th>Mã Phiếu Xuất</th>
+                                <th>Ngày xuất</th>
+                                <th>Người xuất</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn vị</th>
+                                <th>Vị trí</th>
+                                <th>Trạng thái</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {orderExport?.data?.map((item) =>
-                            item?.orderExportDetails?.map((orderExportDetail) =>
-                                orderExportDetail?.locationExport?.map((locationEP) => (
-                                    <tr key={`${item.exportCode}-${locationEP.locationCode}`}>
-                                        <td>{item.exportCode || "N/A"}</td>
-                                        <td>{item.create_at ? formatDateVietNam(item.create_at) : "N/A"}</td>
-                                        <td>{item.exportBy || "N/A"}</td>
-                                        <td>{orderExportDetail?.product?.name || "N/A"}</td>
-                                        <td>{locationEP?.exportQuantity || 0}</td>
-                                        <td>{orderExportDetail?.unit?.name || "N/A"}</td>
-                                        <td>{locationEP?.locationCode || "N/A"}</td>
-                                        <td>
-                                            {item.status === "PENDING" && (
-                                                <span className="badge bg-warning">Chờ xuất</span>
-                                            )}
-                                            {item.status === "EXPORTED" && (
-                                                <span className="badge bg-success">Đã xuất</span>
-                                            )}
-                                            {item.status === "CANCEL" && (
-                                                <span className="badge bg-danger">Hủy</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
-                            )
-                        )}
+                            {orderExport?.data?.map((item) =>
+                                item?.orderExportDetails?.map((orderExportDetail) =>
+                                    orderExportDetail?.locationExport?.map((locationEP) => (
+                                        <tr key={`${item.exportCode}-${locationEP.locationCode}`}>
+                                            <td>{item.exportCode || "N/A"}</td>
+                                            <td>{item.create_at ? formatDateTimeVietNamHaveTime(item.create_at) : "N/A"}</td>
+                                            <td>{item.exportBy || "N/A"}</td>
+                                            <td>{orderExportDetail?.product?.name || "N/A"}</td>
+                                            <td>{locationEP?.exportQuantity || 0}</td>
+                                            <td>{orderExportDetail?.unit?.name || "N/A"}</td>
+                                            <td>{locationEP?.locationCode || "N/A"}</td>
+                                            <td>
+                                                {item.status === "PENDING" && (
+                                                    <span className="badge bg-warning">Chờ xuất</span>
+                                                )}
+                                                {item.status === "EXPORTED" && (
+                                                    <span className="badge bg-success">Đã xuất</span>
+                                                )}
+                                                {item.status === "CANCEL" && (
+                                                    <span className="badge bg-danger">Hủy</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )
+                            )}
                         </tbody>
                     </Table>
                     <p>Tổng số lượng sản phẩm đã xuất: <span className="fw-bold">{orderExport?.totalQuantity}</span> Sản
@@ -130,7 +131,7 @@ const ViewPDFOrderExport: React.FC<ViewPDFOrderExportProps> = (props) => {
                 </div>
                 {
                     loading &&
-                    <SpinnerLoading/>
+                    <SpinnerLoading />
                 }
             </div>
         </OverLay>

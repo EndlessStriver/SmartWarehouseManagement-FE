@@ -15,6 +15,7 @@ import formatDateVietNam from "../../util/FormartDateVietnam";
 import DatePicker from "react-datepicker";
 import FindOrderExport from "../../services/StockEntry/FindOrderExport";
 import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
 
 const ExportProduct: React.FC = () => {
 
@@ -188,7 +189,7 @@ const ExportProduct: React.FC = () => {
                                     <td>{index + 1}</td>
                                     <td>{item.exportCode}</td>
                                     <td>{item.exportBy}</td>
-                                    <td>{formatDateVietNam(item.create_at)}</td>
+                                    <td>{formatDateTimeVietNamHaveTime(item.create_at)}</td>
                                     <td>
                                         {
                                             item.status === "PENDING" ? <Badge bg="warning" text="dark">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="primary">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)

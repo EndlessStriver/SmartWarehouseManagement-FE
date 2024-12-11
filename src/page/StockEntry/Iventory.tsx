@@ -15,6 +15,7 @@ import { NoData } from "../../compoments/NoData/NoData";
 import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import CancelIventory from "../../services/StockEntry/CancelIventory";
 import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
 
 const Iventory: React.FC = () => {
 
@@ -189,7 +190,7 @@ const Iventory: React.FC = () => {
                             <tr key={item.id}>
                                 <td>{index + 1}</td>
                                 <td>{item.id}</td>
-                                <td>{formatDateVietNam(item.transactionDate)}</td>
+                                <td>{formatDateTimeVietNamHaveTime(item.transactionDate)}</td>
                                 <td>{item.inventory[0].status === "PENDING" ? <Badge bg="warning" text="dark">Chờ xử lý</Badge> : (item.inventory[0].status === "COMPLETED" ? <Badge bg="primary">Đã xử lý</Badge> : <Badge bg="danger">Đã hủy</Badge>)}</td>
                                 <td>
                                     <div className="d-flex gap-2">

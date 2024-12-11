@@ -13,6 +13,7 @@ import ViewPDFStockEntry from "./compoments/ViewPDFStockEntry";
 import ExcelJS from 'exceljs';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from "react-router-dom";
+import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
 
 interface CheckedProductToDataExcel {
     productCode: string;
@@ -62,7 +63,7 @@ const StaticticalStockEntry = () => {
                     receiveQuantity: item1.receiveQuantity,
                     unit: item1.unit ? item1.unit.name : "Không có",
                     location: item1.locations[0].locationCode,
-                    importDate: formatDateVietNam(item.create_at),
+                    importDate: formatDateTimeVietNamHaveTime(item.create_at),
                 }
             })
         }).flat();
@@ -230,7 +231,7 @@ const StaticticalStockEntry = () => {
                                             <td>{item1.receiveQuantity}</td>
                                             <td>{item1.unit ? item1.unit.name : "Không có"}</td>
                                             <td>{item1.locations[0].locationCode}</td>
-                                            <td>{formatDateVietNam(item1.create_at)}</td>
+                                            <td>{formatDateTimeVietNamHaveTime(item1.create_at)}</td>
                                         </tr>
                                     ))
                                 }).flat()
