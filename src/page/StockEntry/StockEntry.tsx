@@ -9,21 +9,21 @@ import { useDispatchMessage } from "../../Context/ContextMessage";
 import ActionTypeEnum from "../../enum/ActionTypeEnum";
 import FormEditStockEntry from "./compoments/FormEditStockEntry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboardCheck, faEye, faPencilAlt, faRedo, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck, faEye, faPencilAlt, faRedo } from "@fortawesome/free-solid-svg-icons";
 import RemoveStockEntry from "../../services/StockEntry/RemoveStockEntry";
-import ModelConfirmDelete from "../../compoments/ModelConfirm/ModelConfirmDelete";
 import './css/StockEntry.css';
 import HandleStockEntryPage from "./compoments/HandleStockEntryPage";
 import { NoData } from "../../compoments/NoData/NoData";
-import formatDateVietNam from "../../util/FormartDateVietnam";
 import DatePicker from "react-datepicker";
 import FindStockEntry from "../../services/StockEntry/FindStockEntry";
 import formatDateForInputNoTime from "../../util/FormartDateInputNoTime";
 import { useNavigate } from "react-router-dom";
 import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
+import GetProfile from "../../util/GetProfile";
 
 const StockEntry: React.FC = () => {
 
+    const user = GetProfile();
     const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [reload, setReload] = React.useState<boolean>(false);
@@ -138,44 +138,47 @@ const StockEntry: React.FC = () => {
                 <td>{stockEntry.receiveBy}</td>
                 <td>{formatDateTimeVietNamHaveTime(stockEntry.create_at)}</td>
                 <td>{renderTypeStatus(stockEntry.status)}</td>
-                <td>
-                    <div className="d-flex flex-row gap-2">
-                        {
-                            stockEntry.status === "PENDING" &&
-                            <>
-                                <Button onClick={() => {
-                                    setStockEntryId(stockEntry.id);
-                                    setShowHandleStockEntry(true);
-                                }} variant="info" size="sm">
-                                    <FontAwesomeIcon icon={faClipboardCheck} />
-                                </Button>
-                                <Button onClick={() => {
-                                    setStockEntryId(stockEntry.id);
-                                    setShowFormEdit(true);
-                                }} variant="primary" size="sm">
-                                    <FontAwesomeIcon icon={faPencilAlt} />
-                                </Button>
-                                {/* <Button onClick={() => {
+                {
+                    user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                    <td>
+                        <div className="d-flex flex-row gap-2">
+                            {
+                                stockEntry.status === "PENDING" &&
+                                <>
+                                    <Button onClick={() => {
+                                        setStockEntryId(stockEntry.id);
+                                        setShowHandleStockEntry(true);
+                                    }} variant="info" size="sm">
+                                        <FontAwesomeIcon icon={faClipboardCheck} />
+                                    </Button>
+                                    <Button onClick={() => {
+                                        setStockEntryId(stockEntry.id);
+                                        setShowFormEdit(true);
+                                    }} variant="primary" size="sm">
+                                        <FontAwesomeIcon icon={faPencilAlt} />
+                                    </Button>
+                                    {/* <Button onClick={() => {
                                     setStockEntryId(stockEntry.id);
                                     setShowModelConfirmDelete(true);
                                 }} variant="danger" size="sm">
                                     <FontAwesomeIcon icon={faTrash} />
                                 </Button> */}
-                            </>
-                        }
-                        {
-                            stockEntry.status !== "PENDING" &&
-                            <>
-                                <Button onClick={() => {
-                                    setStockEntryId(stockEntry.id);
-                                    setShowHandleStockEntry(true);
-                                }} variant="info" size="sm">
-                                    <FontAwesomeIcon icon={faEye} />
-                                </Button>
-                            </>
-                        }
-                    </div>
-                </td>
+                                </>
+                            }
+                            {
+                                stockEntry.status !== "PENDING" &&
+                                <>
+                                    <Button onClick={() => {
+                                        setStockEntryId(stockEntry.id);
+                                        setShowHandleStockEntry(true);
+                                    }} variant="info" size="sm">
+                                        <FontAwesomeIcon icon={faEye} />
+                                    </Button>
+                                </>
+                            }
+                        </div>
+                    </td>
+                }
             </tr>
         );
     });
@@ -221,9 +224,12 @@ const StockEntry: React.FC = () => {
                     <p className={"h6"}>Bạn có thể quản lý nhập kho ở đây</p>
                 </div>
                 <div className="d-flex flex-row gap-3">
-                    <Button onClick={() => {
-                        setShowFormEdit(true);
-                    }} variant="info text-light fw-bold">+ Tạo Mới</Button>
+                    {
+                        user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                        <Button onClick={() => {
+                            setShowFormEdit(true);
+                        }} variant="info text-light fw-bold">+ Tạo Mới</Button>
+                    }
                 </div>
             </div>
             <div className='d-flex flex-row gap-3 justify-content-end align-items-center mb-3'>
@@ -277,7 +283,10 @@ const StockEntry: React.FC = () => {
                         <th>Tạo Bởi</th>
                         <th>Ngày Tạo</th>
                         <th>Trạng Thái</th>
-                        <th>Hành Động</th>
+                        {
+                            user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                            <th>Hành Động</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>

@@ -11,14 +11,15 @@ import Pagination from "../../compoments/Pagination/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboardCheck, faEdit, faEye, faRedo } from "@fortawesome/free-solid-svg-icons";
 import ModelConfirmOrderExport from "./compoments/ModelConfirmOrderExport";
-import formatDateVietNam from "../../util/FormartDateVietnam";
 import DatePicker from "react-datepicker";
 import FindOrderExport from "../../services/StockEntry/FindOrderExport";
 import { useNavigate } from "react-router-dom";
 import formatDateTimeVietNamHaveTime from "../../util/FormartDateVietnameHaveTime";
+import GetProfile from "../../util/GetProfile";
 
 const ExportProduct: React.FC = () => {
 
+    const user = GetProfile();
     const navigate = useNavigate();
     const dispatch = useDispatchMessage();
     const [showFormEditExportProduct, setShowFormEditExportProduct] = React.useState<boolean>(false);
@@ -121,11 +122,14 @@ const ExportProduct: React.FC = () => {
                     <h2 className={"h2 fw-bold"}>Quản Lý Xuất Kho</h2>
                     <p className={"h6"}>Bạn có thể quản lý việc xuất kho ở đây</p>
                 </div>
-                <div className="d-flex flex-row gap-3">
-                    <Button onClick={() => {
-                        setShowFormEditExportProduct(true);
-                    }} variant="info text-light fw-bold">+ Tạo Mới</Button>
-                </div>
+                {
+                    user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                    <div className="d-flex flex-row gap-3">
+                        <Button onClick={() => {
+                            setShowFormEditExportProduct(true);
+                        }} variant="info text-light fw-bold">+ Tạo Mới</Button>
+                    </div>
+                }
             </div>
             <div className='d-flex flex-row gap-3 justify-content-end align-items-center mb-3'>
                 <span className='fw-bold'>Từ ngày</span>
@@ -178,7 +182,10 @@ const ExportProduct: React.FC = () => {
                         <th>Tạo Bởi</th>
                         <th>Ngày Tạo</th>
                         <th>Trạng Thái</th>
-                        <th>Hành Động</th>
+                        {
+                            user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                            <th>Hành Động</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -195,31 +202,34 @@ const ExportProduct: React.FC = () => {
                                             item.status === "PENDING" ? <Badge bg="warning" text="dark">Chờ xử lý</Badge> : (item.status === "EXPORTED" ? <Badge bg="primary">Đã xuất kho</Badge> : <Badge bg="danger">Đã hủy</Badge>)
                                         }
                                     </td>
-                                    <td>
-                                        <div className="d-flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setExportOrderId(item.id);
-                                                    setShowModelConfirmOrderExport(true);
-                                                }}
-                                                className="btn btn-info"
-                                            >
-                                                {item.status === "PENDING" ? <FontAwesomeIcon icon={faClipboardCheck} /> : <FontAwesomeIcon icon={faEye} />}
-                                            </button>
-                                            {
-                                                item.status === "PENDING" &&
+                                    {
+                                        user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
+                                        <td>
+                                            <div className="d-flex gap-2">
                                                 <button
                                                     onClick={() => {
                                                         setExportOrderId(item.id);
-                                                        setShowFormEditExportProduct(true);
+                                                        setShowModelConfirmOrderExport(true);
                                                     }}
-                                                    className="btn btn-primary"
+                                                    className="btn btn-info"
                                                 >
-                                                    <FontAwesomeIcon icon={faEdit} />
+                                                    {item.status === "PENDING" ? <FontAwesomeIcon icon={faClipboardCheck} /> : <FontAwesomeIcon icon={faEye} />}
                                                 </button>
-                                            }
-                                        </div>
-                                    </td>
+                                                {
+                                                    item.status === "PENDING" &&
+                                                    <button
+                                                        onClick={() => {
+                                                            setExportOrderId(item.id);
+                                                            setShowFormEditExportProduct(true);
+                                                        }}
+                                                        className="btn btn-primary"
+                                                    >
+                                                        <FontAwesomeIcon icon={faEdit} />
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    }
                                 </tr>
                             )
                         })

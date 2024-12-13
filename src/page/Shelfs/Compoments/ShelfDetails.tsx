@@ -17,6 +17,7 @@ import OptionType from "../../../interface/OptionType";
 import ModelLocationHistory from "./ModelLocationHistory";
 import ModelQRCodeLocation from "./ModelQRCodeLocation";
 import { useNavigate } from "react-router-dom";
+import GetProfile from "../../../util/GetProfile";
 
 interface ShelfDetailsProps {
     shelfId: string;
@@ -443,6 +444,7 @@ interface MyLocationProps {
 
 const MyLocation: React.FC<MyLocationProps> = (props) => {
 
+    const user = GetProfile();
     const [showOptions, setShowOptions] = React.useState(false);
     const [showMoveLocation, setShowMoveLocation] = React.useState(false);
     const [showLocationHistory, setShowLocationHistory] = React.useState(false);
@@ -485,7 +487,7 @@ const MyLocation: React.FC<MyLocationProps> = (props) => {
                         Chi Tiết
                     </button>
                     {
-                        props.location.occupied &&
+                        props.location.occupied && user !== null && (user.role.name === "admin" || user.role.name === "warehouse_manager") &&
                         <button
                             onClick={() => {
                                 setShowMoveLocation(true)

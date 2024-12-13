@@ -65,7 +65,7 @@ export const Sidebar: React.FC = () => {
                     href={"/management-user"}
                     icon={<FontAwesomeIcon icon={faUser} />}
                     label={"Người dùng"}
-                    role={["admin", "warehouse_manager"]}
+                    role={["admin"]}
                 />
                 <SidebarItem
                     icon={<FontAwesomeIcon icon={faChartBar} />}
